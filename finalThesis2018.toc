@@ -1,0 +1,55 @@
+\contentsline {chapter}{\noindent ACKNOWLEDGEMENT}{iii}
+\contentsline {chapter}{\noindent LIST OF TABLES}{vi}
+\contentsline {chapter}{\noindent LIST OF FIGURES}{vii}
+\contentsline {chapter}{\noindent ABSTRACT}{viii}
+\noindent CHAPTER \vspace {-10pt}
+\vspace *{3pt}
+\contentsline {chapter}{\makebox [0.75in][r]{1.}\hspace *{3pt} \uppercase {INTRODUCTION}}{1}
+\vspace *{10pt}
+\vspace *{3pt}
+\contentsline {chapter}{\makebox [0.75in][r]{2.}\hspace *{3pt} \uppercase {Bayesian Cubature}}{4}
+\vspace *{10pt}
+\contentsline {section}{\numberline {2.1}Bayesian posterior error}{4}
+\contentsline {section}{\numberline {2.2}Parameter estimation}{6}
+\contentsline {subsection}{\numberline {2.2.1}Empirical Bayes}{6}
+\contentsline {subsection}{\numberline {2.2.2}Full Bayes}{7}
+\contentsline {subsection}{\numberline {2.2.3}Generalized Cross-Validation}{9}
+\contentsline {section}{\numberline {2.3}The automatic Bayesian cubature algorithm}{12}
+\contentsline {section}{\numberline {2.4}Example with the Mat\'ern kernel}{12}
+\vspace *{3pt}
+\contentsline {chapter}{\makebox [0.75in][r]{3.}\hspace *{3pt} \uppercase {Fast Automatic Bayesian Cubature}}{17}
+\vspace *{10pt}
+\contentsline {subsection}{\numberline {3.0.1}Fast Transform Kernel}{17}
+\contentsline {subsection}{\numberline {3.0.2}Empirical Bayes}{19}
+\contentsline {subsection}{\numberline {3.0.3}Full Bayes}{20}
+\contentsline {subsection}{\numberline {3.0.4}Generalized Cross-Validation}{21}
+\vspace *{3pt}
+\contentsline {chapter}{\makebox [0.75in][r]{4.}\hspace *{3pt} \uppercase {Integration Lattices and Shift Invariant Kernels}}{22}
+\vspace *{10pt}
+\contentsline {section}{\numberline {4.1}Extensible Integration Lattice Node Sets}{22}
+\contentsline {section}{\numberline {4.2}Shift Invariant Kernels}{23}
+\contentsline {subsection}{\numberline {4.2.1}Eigenvectors}{24}
+\contentsline {subsection}{\numberline {4.2.2}Iterative Computation of the Fast Transform}{26}
+\contentsline {subsection}{\numberline {4.2.3}Overcoming Cancellation Error}{28}
+\vspace *{3pt}
+\contentsline {chapter}{\makebox [0.75in][r]{5.}\hspace *{3pt} \uppercase {Sobol Points and Walsh Kernels}}{31}
+\vspace *{10pt}
+\vspace *{3pt}
+\contentsline {chapter}{\makebox [0.75in][r]{6.}\hspace *{3pt} \uppercase {Numerical Implementation}}{32}
+\vspace *{10pt}
+\contentsline {section}{\numberline {6.1}Periodizing Variable Transformations}{32}
+\vspace *{3pt}
+\contentsline {chapter}{\makebox [0.75in][r]{7.}\hspace *{3pt} \uppercase {Numerical Results and Observations}}{34}
+\vspace *{10pt}
+\contentsline {section}{\numberline {7.1}Test Results and Observations}{34}
+\contentsline {paragraph}{Multivariate Normal Probability.}{34}
+\contentsline {paragraph}{Keister's Example.}{35}
+\contentsline {paragraph}{Option Pricing.}{38}
+\contentsline {section}{\numberline {7.2}Diagnostics for the Gaussian Process Assumption}{43}
+\vspace *{3pt}
+\contentsline {chapter}{\makebox [0.75in][r]{8.}\hspace *{3pt} \uppercase {Discussion and Further Work}}{44}
+\vspace *{10pt}
+\contentsline {section}{Acknowledgments}{45}
+\contentsline {chapter}{\vspace {20pt}\noindent APPENDIX\vspace *{-20pt}}{46}
+\vspace *{0pt}
+\contentsline {chapter}{\noindent BIBLIOGRAPHY}{46}

@@ -1,0 +1,13 @@
+\contentsline {figure}{\numberline {2.1}{\ignorespaces The $d=3$ multivarivate normal probability transformed to an integral of $f_{\text {Genz}}$ with $d=2$.\relax }}{14}
+\contentsline {figure}{\numberline {2.2}{\ignorespaces Multivariate Normal probability estimated using Matern kernel in d=2 using empirical stopping criterion. Top: Guaranteed integration within error tolerance $\varepsilon $. Bottom: Computation time rapidly increases with increase of $n$\relax }}{15}
+\contentsline {figure}{\numberline {4.1}{\ignorespaces Example of a shifted integration lattice node set in $d=2$ \relax }}{23}
+\contentsline {figure}{\numberline {4.2}{\ignorespaces Fourier kernel}}{24}
+\contentsline {figure}{\numberline {7.1}{\ignorespaces Guaranteed:}}{35}
+\contentsline {figure}{\numberline {7.2}{\ignorespaces MVN guaranteed : FB}}{36}
+\contentsline {figure}{\numberline {7.3}{\ignorespaces MVN guaranteed : GCV}}{37}
+\contentsline {figure}{\numberline {7.4}{\ignorespaces Keister guaranteed:MLE}}{39}
+\contentsline {figure}{\numberline {7.5}{\ignorespaces Keister guaranteed:FB}}{39}
+\contentsline {figure}{\numberline {7.6}{\ignorespaces Keister guaranteed:GCV}}{40}
+\contentsline {figure}{\numberline {7.7}{\ignorespaces Option pricing Guaranteed: MLE}}{41}
+\contentsline {figure}{\numberline {7.8}{\ignorespaces OptPrice guaranteed : FB}}{42}
+\contentsline {figure}{\numberline {7.9}{\ignorespaces OptPrice guaranteed : GCV}}{42}
