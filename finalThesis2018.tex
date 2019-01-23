@@ -79,6 +79,7 @@
 \newcommand{\vbeta}{{\bm{\beta}}}
 \newcommand{\vDelta}{{\boldsymbol{\Delta}}}
 \newcommand{\vlambda}{{\bm{\lambda}}}
+\newcommand{\vgamma}{{\bm{\gamma}}}
 \newcommand{\vphi}{{\bm{\phi}}}
 \newcommand{\vpsi}{{\bm{\psi}}}
 \newcommand{\vtheta}{{\bm{\theta}}}
@@ -96,6 +97,7 @@
 \newcommand{\vf}{\bm{f}}
 \newcommand{\vk}{\bm{k}}
 \newcommand{\vm}{\bm{m}}
+\newcommand{\vr}{\bm{r}}
 \newcommand{\vs}{\bm{s}}
 \newcommand{\vt}{\bm{t}}
 \newcommand{\vv}{\bm{v}}
@@ -167,6 +169,7 @@
 
 \newcommand{\MVN}{\textup{MVN}}
 \newcommand{\MLE}{\textup{MLE}}
+\newcommand{\wal}{\textup{wal}}
 \newcommand{\full}{\textup{full}}
 \newcommand{\GCV}{\textup{GCV}}
 %\newcommand{\errtol}{\text{tol}}
@@ -211,8 +214,8 @@
 
 \allowdisplaybreaks[4]
 \begin{document}
-\setlength\abovedisplayskip{1pt}
-\setlength{\belowdisplayskip}{1pt}
+\setlength\abovedisplayskip{0pt}
+\setlength{\belowdisplayskip}{0pt}
 
 \title{Fast Automatic Bayesian Cubature Using Matching Kernels and Design
 %\thanks{}
@@ -362,9 +365,9 @@ We need the following lemma to derive the posterior error of our cubature.
 	\end{pmatrix} 
 	\end{gather*}
 	then 
-	\begin{multline*}
-	\vY_1 \vert \vY_2 \; \sim \; \calN \bigl(\vm_1 + \mC_{21}^T \mC_{22}^{-1}(\vY_2 - \vm_2), \\ \mC_{11} - \mC_{21}^T \mC_{22}^{-1} \mC_{21} \bigr).
-	\end{multline*}
+	\begin{align*}
+	\vY_1 \vert \vY_2 \; \sim \; \calN \bigl(\vm_1 + \mC_{21}^T \mC_{22}^{-1}(\vY_2 - \vm_2), \quad \mC_{11} - \mC_{21}^T \mC_{22}^{-1} \mC_{21} \bigr).
+	\end{align*}
 Moreover, the inverse of the matrix $\mC$ may be partitioned as
 \begin{gather*}
 \mC^{-1} = \begin{pmatrix} \mA_{11} & \mA_{21}^T \\ \mA_{21} & \mA_{22} \end{pmatrix}, \\
@@ -377,11 +380,10 @@ Moreover, the inverse of the matrix $\mC$ may be partitioned as
 
 
 It follows from Lemma \ref{thrm:condDist} that the \emph{conditional} distribution of the integral given observed function values, $\vf = \vy$ is also Gaussian:
-\begin{multline} \label{eqn:condInteg}
+\begin{align} \label{eqn:condInteg}
 \mu | (\vf = \vy) \sim \calN \bigl(m (1 - \vc^T \mC^{-1} \vone)  + \vc^T \mC^{-1} \vy, 
-\\
 s^2(c_0  -\vc ^T \mC^{-1} \vc) \bigr).
-\end{multline}
+\end{align}
 The natural choice for  the cubature is the posterior mean of the integral, namely, 
 \begin{equation}
 \label{eqn:BayesCub}
@@ -396,7 +398,7 @@ Under this definition, the cubature error has zero mean and a variance depending
 (\mu-\hmu) | (\vf = \vy)
  \sim  \calN 
 \left(
-0, \;
+0, \quad
 s^2 (c_0 - \vc^T\mC^{-1}\vc) 
 \right).
 \end{equation*}
@@ -404,7 +406,7 @@ A credible interval for the integral is given given by
 \begin{equation}
 \label{eqn_prob_confidence_interval}
 \mathbb{P}_f \left[
-|\mu-\hmu| \leq  2.58 s \sqrt{c_0 - \vc^T\mC^{-1}\vc } 
+|\mu-\hmu| \; \leq \; 2.58 s \sqrt{c_0 - \vc^T\mC^{-1}\vc } 
 \right] = 99\%.
 \end{equation}
 Natually, $2.58$ and $99\%$ can be replaced by other quantiles and credible levels.
@@ -415,12 +417,12 @@ The credible interval in \eqref{eqn_prob_confidence_interval} suggests how our a
 
 \subsection{Empirical Bayes}  \label{sec:MLE}
 One approach is to estimate the parameters is via maximum likelihood estimation (MLE).  The log-likelihood function of the parameters given the function data $\vy$ is:
-\begin{multline*}
+\begin{align*}
 l(s,m,\vtheta | \vy)
-= -\frac{1}{2} s^{-2} (\vy-m\vone)^T\mCInv(\vy-m\vone) 
-\\
+&= -\frac{1}{2} s^{-2} (\vy-m\vone)^T\mCInv(\vy-m\vone) 
+\\ & \qquad
  - \frac{1}{2} \log(\det\, \mC) - \frac{n}{2} \log(s^2) + \text{constants.}
-\end{multline*}
+\end{align*}
 Maximizing the log-likelihood first with respect to $m$, then with respect to $s$, and finally with respect to $\vtheta$ yields
 \begin{align}
 \label{eqn_m_MLE}
@@ -457,20 +459,18 @@ Under these estimates of the parameters, the cubature \eqref{eqn:BayesCub} and t
 \left(
 \frac{ (1 - \vone^T  \mCInv\vc )  \vone }{ \vone^T \mCInv \vone}   +  \vc 
 \right)^T  \mCInv \vy, \\
-\nonumber 
+\label{eqn:errMLE} 
 \err_\MLE^2 & : = \frac{2.58^2}{n}
  \vy^T \left[ \mCInv - 
 \frac{ \mCInv \vone \vone^T \mCInv }{\vone^T\mCInv \vone}
-\right] \vy \\
-\label{eqn:errMLE}
-&\qquad \qquad \times 
+\right] \vy  
 (c_0 - \vc^T\mC^{-1}\vc ),
 \end{align}
-\begin{equation}
+\begin{align}
 \label{eqn_prob_CI_MLE}
 \mathbb{P}_f \left[
 |\mu-\hmu_\MLE| \leq \err_\MLE \right]  = 99\%.
-\end{equation}
+\end{align}
 Here $c_0$, $\vc$, and $\mC$ are assumed implicitly to be based on $\vtheta = \vtheta_\MLE$.   
 
 \subsection{Full Bayes}
@@ -478,21 +478,23 @@ Here $c_0$, $\vc$, and $\mC$ are assumed implicitly to be based on $\vtheta = \v
 Rather than use maximum likelihood to determine $m$ and $s$ one can treat them as hyper-parameters with a non-informative, conjugate prior, namely $\vrho_{m,s^2}(\xi, \lambda) \propto 1/\lambda$. Then the posterior density for the integral given the data using Bayes theorem is
 \begin{align*}
 \MoveEqLeft[1]{\rho_{\mu}(z | \vf = \vy)} \\
-& \propto \int_{0}^\infty \int_{-\infty}^\infty \rho_{\mu}(z | \vf = \vy, m = \xi, s^2 = \lambda) \\
-& \qquad \qquad \times  \rho_{\vf}(\vy | \xi, \lambda ) \rho_{m, s^2}(\xi, \lambda) \, \D \xi \D \lambda \\
-& \propto \displaystyle \int_{0}^\infty  \frac{1}{\lambda^{(n+3)/2}} \\
-& \times \int_{-\infty}^\infty  \exp \biggl( -\frac{1}{2\lambda}\biggl\{
+& \propto \int_{0}^\infty \int_{-\infty}^\infty \rho_{\mu}(z | \vf = \vy, m = \xi, s^2 = \lambda)  \rho_{\vf}(\vy | \xi, \lambda ) \rho_{m, s^2}(\xi, \lambda) \, \D \xi \D \lambda \\
+&\qquad \qquad \qquad \qquad \text{by the properties of conditional probability} \\
+& \propto \int_{0}^\infty \int_{-\infty}^\infty \rho_{\mu}(z | \vf = \vy, m = \xi, s^2 = \lambda)  \rho_{\vf}(\vy | \xi, \lambda ) \rho_{m, s^2}(\xi, \lambda) \, \D \xi \D \lambda \\
+&\qquad \qquad \qquad \qquad \text{by Bayes' Theorem} \\
+& \propto \displaystyle \int_{0}^\infty  \frac{1}{\lambda^{(n+3)/2}} 
+ \int_{-\infty}^\infty  \exp \biggl( -\frac{1}{2\lambda}\biggl\{
 \frac{
 [z - \xi (1 - \vc^T \mC^{-1} \vone)  -  \vc^T \mC^{-1} \vy]^2}
 {c_0  -\vc ^T \mC^{-1} \vc}  \\
-& \qquad \qquad  + (\vy - \xi \vone)^T \mC^{-1}(\vy - \xi \vone) \biggr \} \biggr) \, \D \xi \D \lambda \\
+& \qquad \qquad \qquad  + (\vy - \xi \vone)^T \mC^{-1}(\vy - \xi \vone) \biggr \} \biggr) \, \D \xi \D \lambda \\
 &\qquad \qquad
 \text{by \eqref{eqn:fGaussDist}, \eqref{eqn:condInteg}} \; \text{and} \; \rho_{m,s^2}(\xi,\lambda) \propto 1/\lambda \\
-& \propto \displaystyle \int_{0}^\infty  \frac{1}{\lambda^{(n+3)/2}} \cdots \\ & \qquad \cdots \int_{-\infty}^\infty  \exp\left( -\frac{\alpha \xi^2 -2 \beta \xi + \gamma}{2\lambda(c_0  -\vc ^T \mC^{-1} \vc)} \right) \, \D \xi \D \lambda, \\
+& \propto \displaystyle \int_{0}^\infty  \frac{1}{\lambda^{(n+3)/2}} \int_{-\infty}^\infty  \exp\left( -\frac{\alpha \xi^2 -2 \beta \xi + \gamma}{2\lambda(c_0  -\vc ^T \mC^{-1} \vc)} \right) \, \D \xi \D \lambda, \\
 \intertext{where}
 \alpha & = (1 - \vc^T \mC^{-1} \vone)^2 + \vone^T \mC^{-1} \vone (c_0  -\vc ^T \mC^{-1} \vc),\\
-\beta & =(1 - \vc^T \mC^{-1} \vone)(z - \vc^T \mC^{-1} \vy ) \\
-& \qquad \qquad  + \vone^T \mC^{-1} \vy (c_0  -\vc ^T \mC^{-1} \vc),\\
+\beta & =(1 - \vc^T \mC^{-1} \vone)(z - \vc^T \mC^{-1} \vy )
+  + \vone^T \mC^{-1} \vy (c_0  -\vc ^T \mC^{-1} \vc),\\
 \gamma &  = (z - \vc^T \mC^{-1} \vy )^2  + \vy^T \mC^{-1} \vy (c_0  -\vc ^T \mC^{-1} \vc).
 \end{align*}
 In the derivation above and below, factors that are independent of $\xi$, $\lambda$, or $z$ can be discarded since we only need to preserve the proportion.  But, factors that depend on $\xi$, $\lambda$, or $z$ must be kept.  
@@ -509,21 +511,42 @@ allows us to evaluate the integrals with respect to $\xi$ and $\lambda$:
 & \propto \displaystyle \int_{0}^\infty  \frac{1}{\lambda^{(n+2)/2}}  \exp\left( -\frac{  \gamma - \beta^2/\alpha}{2\lambda(c_0  -\vc ^T \mC^{-1} \vc)} \right) \D \lambda \\
 & \propto \left(\gamma - \frac{\beta^2}{\alpha}\right)^{-n/2} \propto \left(\alpha \gamma - \beta^2\right)^{-n/2}.
 \end{align*}
-Finally, we simplify the key term via straightforward calculations to the following:
-\begin{equation*}
-\alpha \gamma - \beta^2 \propto 1 +  \frac{(z - \hmu_{\textup{MLE}})^2}{(n-1)\widehat{\sigma}_{\textup{full}}^2}, \\
-\end{equation*}
-where 
+Finally, we simplify the key term:
+\begin{align*}
+\alpha \gamma - \beta^2 
+& = \vone^T \mC^{-1} \vone (c_0  -\vc ^T \mC^{-1} \vc) (z - \vc^T \mC^{-1} \vy )^2 \\
+& \qquad \qquad - 2 \vone^T \mC^{-1} \vy (c_0  -\vc ^T \mC^{-1} \vc)(1 - \vc^T \mC^{-1} \vone)(z - \vc^T \mC^{-1} \vy ) \\
+& \qquad \qquad + (1 - \vc^T \mC^{-1} \vone)^2 \vy^T \mC^{-1} \vy (c_0  -\vc ^T \mC^{-1} \vc) \\
+&\qquad \qquad  + [\vone^T \mC^{-1} \vone \vy^T \mC^{-1} \vy - (\vone^T \mC^{-1} \vy)^2](c_0  -\vc ^T \mC^{-1} \vc)^2  \\
+& \propto \vone^T \mC^{-1} \vone  \left (z - \vc^T \mC^{-1} \vy - \frac{(1 - \vc^T \mC^{-1} \vone)\vone^T \mC^{-1} \vy}{\vone^T \mC^{-1} \vone } \right )^2 \\
+& \qquad \qquad -  \frac{[(1 - \vc^T \mC^{-1} \vone)\vone^T \mC^{-1} \vy]^2}{\vone^T \mC^{-1} \vone }  
++ (1 - \vc^T \mC^{-1} \vone)^2 \vy^T \mC^{-1} \vy \\
+& \qquad \qquad (c_0  -\vc ^T \mC^{-1} \vc) [\vone^T \mC^{-1} \vone  \vy^T \mC^{-1} \vy
+- (\vone^T \mC^{-1} \vy)^2] \\
+& \propto \left (z - \left[ \frac{(1 - \vc^T \mC^{-1} \vone)\vone}{\vone^T \mC^{-1} \vone } + \vc \right]^T \mC^{-1} \vy \right )^2 \\
+& \qquad  + \left[\frac{(1 - \vc^T \mC^{-1} \vone)^2}{\vone^T \mC^{-1} \vone} + (c_0  -\vc ^T \mC^{-1} \vc) \right] \times \vy^T\left[ \mC^{-1} 
+- \frac{ \mC^{-1} \vone\vone^T \mC^{-1}}{\vone^T \mC^{-1} \vone}  \right]\vy
+\\
+& \propto (z - \widehat{\mu}_{\textup{full}})^2 + (n-1) \sigma_{\textup{full}}^2
+\\
+& \propto \left(1 +  \frac{1}{n-1} \frac{(z - \mu_{\textup{full}})^2}{\widehat{\sigma}_{\textup{full}}^2} \right)
+\end{align*}
+i.e.,
+\begin{align*}
+\alpha \gamma - \beta^2 \propto 
+\left(
+1 +  \frac{(z - \hmu_{\textup{full}})^2}{(n-1)\widehat{\sigma}_{\textup{full}}^2}, 
+\right)
+\end{align*}
+where $\hmu_{\textup{full}} = \hmu_{\MLE}$ and 
 \begin{multline*}
 %\label{FJH:eq:signmaFull}
 \hsigma^2_{\textup{full}} 
 := \frac{1}{n-1}
 \vy^T\left[ \mC^{-1} 
 - \frac{ \mC^{-1} \vone\vone^T \mC^{-1}}{\vone^T \mC^{-1} \vone}  \right]\vy
-\\ 
 \times  \left[\frac{(1 - \vc^T \mC^{-1} \vone)^2}{\vone^T \mC^{-1} \vone} + (c_0  -\vc ^T \mC^{-1} \vc) \right].
 \end{multline*}
-
 This means that $\mu \vert (\vf = \vy )$, properly centered and scaled, has a Student's $t$-distribution with $n-1$ degrees of freedom.   The estimated integral is the same as in the empirical Bayes case, $\hmu_{\textup{full}} = \hmu_{\MLE}$, but the confidence interval is wider:
 \begin{equation}
 \label{eqn_prob_CI_full}
@@ -536,7 +559,7 @@ where
 \err_{\textup{full}} 
 := t_{n_j-1,0.995} \hsigma_{\textup{full}} > \err_\MLE .
 \end{equation}
-Here $t_{n-1,0.995}$ denotes the $99.5$ percentile of a standard Student's $t$-distribution with $n-1$ degrees of freedom.
+Here $t_{n-1,0.995}$ denotes the $99.5$ percentile of a standard Student's $t$-distribution with $n-1$ degrees of freedom. The stopping criterion for the full Bayes case is more conservative than that in the empirical Bayes case, \eqref{eqn_prob_CI_MLE}.
 
 Because the shape parameter, $\vtheta$, enters the definition of the covariance kernel in a non-trivial way, the only way to treat it as a hyperparameter and assign a tractable prior would be for the prior to be discrete.  We believe in practice that choosing such a prior involves more guesswork than using the empirical Bayes estimate of $\vtheta$ in \eqref{eqn:thetaMLE} or the cross-validation approach described next.
 
@@ -550,7 +573,7 @@ A third parameter optimization technique is \emph{leave-one-out cross-validation
 Let $\mA = \mC^{-1}$, let $\vzeta = \mA (\vy - m \vone)$, and partition $\mC$, $\mA$, and $\vzeta$ as
 \begin{gather*}
 \mC = \begin{pmatrix} c_{ii}  & \vC_{-i,i}^T \\  \vC_{-i,i} & \mC_{-i,-i}\end{pmatrix}, \qquad
-\mA = \begin{pmatrix} a_{ii}  & \vA_{-i,i}^T \\  \vA_{-i,i} & \mA_{-i,-i}\end{pmatrix}, \\ \vzeta = \begin{pmatrix} \zeta_i   \\  \vzeta_{-i} \end{pmatrix},
+\mA = \begin{pmatrix} a_{ii}  & \vA_{-i,i}^T \\  \vA_{-i,i} & \mA_{-i,-i}\end{pmatrix}, \qquad \vzeta = \begin{pmatrix} \zeta_i   \\  \vzeta_{-i} \end{pmatrix},
 \end{gather*}
 where the subscript $i$ denotes the $i^{\text{th}}$ row or column, and the subscript $-i$ denotes all rows or columns except the $i^{\text{th}}$. Following this notation, Lemma \ref{thrm:condDist} implies that 
 \begin{align*}
@@ -561,7 +584,8 @@ where the subscript $i$ denotes the $i^{\text{th}}$ row or column, and the subsc
 \end{align*}
 Thus, \eqref{FJH:eq:CVA} may be re-written as 
 \begin{equation*} %\label{FJH:eq:CVB}
-\textup{CV} = \sum_{i=1}^n \left(\frac{\zeta_i}{a_{ii}} \right)^2, \qquad \vzeta = \mC^{-1}(\vy - m \vone).
+\textup{CV} = \sum_{i=1}^n \left(\frac{\zeta_i}{a_{ii}} \right)^2, \quad 
+\text{where} \quad \vzeta = \mC^{-1}(\vy - m \vone).
 \end{equation*}
 The \emph{generalized cross-validation} criterion (GCV) replaces the $i^{\text{th}}$ diagonal element of $\mA$ in the denominator by the average diagonal element of $\mA$ \cite{CraWah79a,GolHeaWah79a,Wah90}:
 \begin{align*} 
@@ -576,7 +600,7 @@ m_{\textup{GCV}} = \frac{\vone^T \mC^{-2} \vy}{\vone^T \mC^{-2} \vone},\\
 \end{equation*}
 \begin{multline}
 \label{vthetaGCV}
-\vtheta_{\textup{GCV}} = \argmin_\vtheta \biggl\{\log \left(  \vy^T \left[\mC^{-2} - \frac{\mC^{-2} \vone \vone^T \mC^{-2}}{\vone^T \mC^{-2} \vone}  \right] \vy \right)  \\
+\vtheta_{\textup{GCV}} = \argmin_\vtheta \biggl\{\log \left(  \vy^T \left[\mC^{-2} - \frac{\mC^{-2} \vone \vone^T \mC^{-2}}{\vone^T \mC^{-2} \vone}  \right] \vy \right)  
 - 2 \log \left ( \trace(\mC^{-1}) \right ) \biggr\} .
 \end{multline}
 Plugging this value of $m$ into \eqref{eqn:BayesCub} yields
@@ -587,19 +611,18 @@ Plugging this value of $m$ into \eqref{eqn:BayesCub} yields
 \end{equation}
 
 An estimate for $s$ may be obtained by noting that by Lemma \ref{thrm:condDist},
-\[
+\begin{align*}
 \var[f(\vx_i ) | \vf_{-i} = \vy_{-i}] = s^2 a_{ii}^{-1}.
-\]
-Thus, we may estimate $s$ using an argument similar to that used in deriving the GCV and then substituting $m_{\textup{GCV}}$ for $m$:
+\end{align*}
+Thus, we may estimate `$s$' using an argument similar to that used in deriving the GCV and then substituting $m_{\textup{GCV}}$ for $m$:
 \begin{align*}
 s^2 &= \var[f(\vx_i ) | \vf_{-i} = \vy_{-i}] a_{ii} \\ 
-& \approx \frac 1n \sum_{i=1}^n (y_i - \widetilde{y}_i)^2a_{ii}
- = \frac 1n \sum_{i=1}^n \frac{\zeta_i^2}{a_{ii}} \\ 
- & \approx \frac{ \frac 1n \sum_{i=1}^n \zeta_i^2}{\frac 1n \sum_{i=1}^n a_{ii} } = \frac{(\vy - m\vone)^T \mC^{-2} (\vy - m \vone)}{ \trace(\mC^{-1}) } \\ 
- & \approx  s^2_{\textup{GCV}}, \\
+& \approx \frac 1n \sum_{i=1}^n (y_i - \widetilde{y}_i)^2a_{ii} \\
+& = \frac 1n \sum_{i=1}^n \frac{\zeta_i^2}{a_{ii}} \\ 
+& \approx \frac{ \frac 1n \sum_{i=1}^n \zeta_i^2}{\frac 1n \sum_{i=1}^n a_{ii} } \\
+& = \frac{(\vy - m\vone)^T \mC^{-2} (\vy - m \vone)}{ \trace(\mC^{-1}) } \quad = \quad s^2_{\textup{GCV}}, \\
  \intertext{where}
- s^2_{\textup{GCV}} & : = \vy^T \left[\mC^{-2} - \frac{\mC^{-2} \vone \vone^T \mC^{-2}}{\vone^T \mC^{-2} \vone}  \right] \vy \\
- &\qquad \qquad  \qquad \qquad  \times \left[ \trace(\mC^{-1}) \right]^{-1}. 
+ s^2_{\textup{GCV}} & : = \vy^T \left[\mC^{-2} - \frac{\mC^{-2} \vone \vone^T \mC^{-2}}{\vone^T \mC^{-2} \vone}  \right] \vy  \left[ \trace(\mC^{-1}) \right]^{-1}. 
 \end{align*}
 
 The confidence interval based on generalized cross-validation corresponds to \eqref{eqn_prob_confidence_interval} with the GCV estimates for $m$, $s$, and $\vtheta$:
@@ -669,31 +692,27 @@ where $(\va,\vb)$ is a finite, semi-infinite or infinite box in $\reals^d$.  Thi
 
 Genz \cite{Gen93} introduced a variable transformation to transform \eqref{eqn:GaussDef} into an integral on the unit cube.  Let $\mSigma= \mL \mL^T$ be the Cholesky decomposition where $\mL = (l_{jk})_{j,k=1}^d$ is a lower triangular matrix.  Iteratively define
 \begin{align*}
-\alpha_1& = \Phi(a_1), \qquad \beta_1 = \Phi(b_1)
+\alpha_1 = \Phi(a_1), 
+&\qquad
+\beta_1 = \Phi(b_1),
 \\
-\alpha_j&(x_1,...,x_{j-1}) = 
-\\
-&\; \Phi
+\alpha_j(x_1,...,x_{j-1}) &= 
+\Phi
 \left(
 \frac{1}{l_{jj}} 
 \left(
 a_j - \sum_{k=1}^{j-1} l_{jk} \Phi^{-1}(\alpha_k + x_k(\beta_k-\alpha_k))
 \right)
-\right), 
+\right), \quad j=2,...,d,
 \\
-&\hspace{5cm} j=2,...,d,
-\\
-\beta_j&(x_1,...,x_{j-1}) = 
-\\
-&\; \Phi
+\beta_j(x_1,...,x_{j-1}) &= 
+\Phi
 \left(
 \frac{1}{l_{jj}} 
 \left(
 b_j - \sum_{k=1}^{j-1} l_{jk} \Phi^{-1}(\alpha_k + x_k(\beta_k-\alpha_k))
 \right)
-\right), 
-\\
-&\hspace{5cm} j=2,...,d,
+\right), \quad j=2,...,d,
 \end{align*}
 \begin{align}
 \label{fGenzdef}
@@ -847,25 +866,22 @@ m_\MLE &=  \frac{\widetilde{y}_1}{n} = \frac 1n \sum_{i=1}^n y_i,
 s^2_\MLE 
 & =
 \frac{1}{n^2} 
-\sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i} \\
-\nonumber
+\sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i}, \\
+\label{eqn_MLE_loss_func_optimized_2}
 \vtheta_\MLE
 &= 
 \argmin_{\vtheta}
 \left[
 \log\left(
 \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i}
-\right) \right .\\
-\label{eqn_MLE_loss_func_optimized_2}
-& \hspace{3cm} \left .
-  + 
+\right)   + 
 \frac{1}{n}\sum_{i=1}^n \log(\lambda_i)
-\right]
+\right],
 \\
 \nonumber
 \hmu_\MLE  &= 
 \frac{\widetilde{y}_1}{n} +
-\frac 1n \sum_{i=2}^n \frac{ \widetilde{c}_i^* \widetilde{y}_i}{\lambda_i} \\
+\frac 1n \sum_{i=2}^n \frac{ \widetilde{c}_i^* \widetilde{y}_i}{\lambda_i}, \\
 \nonumber
 \err_\MLE  &
 =
@@ -898,14 +914,11 @@ Thus, in this  case $\hmu$ is simply the sample mean.
 \subsection{Full Bayes}
 For the full Bayes approach the cubature is the same as for empirical Bayes.  We also defer to empirical Bayes to estimate the parameter $\vtheta$.  The width of the confidence interval is $\err_{\textup{full}} 
 := t_{n_j-1,0.995} \hsigma_{\textup{full}}$, where $\hsigma_{\textup{full}}^2$ can also be computed swiftly under assumptions \eqref{fastcompAssump}:
-\begin{multline*} %\label{FJH:eq:signmaFull}
-\widehat{\sigma}^2_{\textup{full}}
-=
+\begin{align*} %\label{FJH:eq:signmaFull}
+\widehat{\sigma}^2_{\textup{full}} =
 \frac{1}{n(n-1)} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i}
-\\
-\times
 \left[\frac{\lambda_1}{n}{\left(1 - \frac{\widetilde{c}_1}{\lambda_1}\right)^2} + \left(c_0  - \frac 1n \sum_{i=1}^n \frac{\abs{\widetilde{c}_i}^2}{\lambda_i}\right) \right],
-\end{multline*}
+\end{align*}
 Under assumption \eqref{addAssump} further simplification can be made:
 \begin{equation*} %\label{FJH:eq:signmaFullSimple}
 \widehat{\sigma}^2_{\textup{full}}
@@ -986,11 +999,11 @@ i & 0_2 & 1_2 & 10_2 & 11_2 & 100_2 & 101_2 & 110_2 & 111_2  & \cdots\\
 An example of $64$ nodes is given in Figure  \ref{latticefig}.  The even coverage of the unit cube is ensured by a well chosen generating vector.  The choice of generating vector is typically done offline by computer search.  See \cite{DicEtal14a} and \cite{HicNie03a} for more on extensible integration lattices.
 \begin{figure}[htp]
 	\centering
-	\includegraphics[height=5cm]{ShiftedLatticePoints}
+	\includegraphics[height=7cm]{ShiftedLatticePoints}
 	\caption{Example of a shifted integration lattice node set  in $d=2$ \label{latticefig} }
 \end{figure}
 
-\section{Shift Invariant Kernels}
+\section{Shift Invariant Kernels}\label{sec:shift_invar_kern}
 The covariance functions $C$ that match integration lattice node sets have the form
 \begin{equation} \label{eq:shInv}
 C(\vt,\vx) = K(\vt - \vx \bmod \vone).
@@ -998,20 +1011,42 @@ C(\vt,\vx) = K(\vt - \vx \bmod \vone).
 This is called a \emph{shift invariant kernel} because shifting both arguments of the covariance function by the same amount leaves the value unchanged.   By a proper scaling of the kernel $K$ it follows that assumption \eqref{addAssump} is satisfied. Of course, $K$ must also be of the form that ensures that $C$ is symmetric and positive definite, as assumed in \eqref{FJH:eq:CondPosDef}. 
 
 A family of shift invariant kernels is constructed via even degree Bernoulli polynomials:
-\begin{multline}
-\label{the_kernel_eqn_bernoulli}
+\begin{align*}
+C_\vtheta(\vx, \vt) := &  \sum_{\vk \in \mathbb{Z}^d} \alpha_{\vk,\vtheta}  e^{2 \pi\sqrt{-1} \vk^T\vx}
+e^{-2 \pi\sqrt{-1} \vk^T\vt},
+\end{align*}
+where $d$ is number of dimensions and $\alpha_{\vk}$ is a scalar. The Gram matrix formed by this kernel is Hermitian. 
+The \textit{shape parameter} $\vtheta$ changes the kernel's shape, so that the function space spanned by the kernel closely resembles the space bearing the integrand. 
+This form of the kernel is very convenient to use in any analytical derivations, but not suitable for use with finite precision computers as this involves infinite sum. 
+If the coefficients are chosen as 
+\begin{align*}
+\alpha_{\vk,\vtheta} := & \prod_{l=1}^d \frac{1}{\max(\frac{|k_l|}{\theta_l},1)^r_{\theta_l\leq 1}}  \;,  \quad \text{with} \; {\alpha}_{\bm{0},\vtheta} = 1,
+\end{align*}
+then there exists a simpler closed form expression without infinite sum
+\begin{align*}
+%\label{the_kernel_eqn_bernoulli}
 C_\vtheta(\vt, \vx) =
 \prod_{l=1}^d \biggl[
-1 - (-1)^{r} \gamma B_{2r}( |{x_l-t_l}| ) \biggr], \\  
-\forall \vt,\vx \in [0,1]^d, \  \vtheta = (r,\gamma), \ r \in \naturals, \ \gamma > 0.
-\end{multline}
-Symmetric, periodic, positive definite kernels of this form appear in  \cite{DicEtal14a} and \cite{Hic96a}.  The Bernoulli polynomials are described in \cite[Chapter 24]{OlvEtal10a}.
-
-Larger $r$ implies a greater degree of smoothness of the kernel.  Larger $\gamma$ implies greater fluctuations of the output with respect to the input.  Plots of $C(\cdot, 0.3)$ are given in \figref{fig:fourierkernel-dim1} for various $r$ and $\gamma$ values.
+1 - (-1)^{r} \gamma B_{2r}( |{x_l-t_l}| ) \biggr], \quad  
+\forall \vt,\vx \in [0,1]^d, \\ \qquad  \vtheta = (r,\gamma), \ r \in \naturals, \ \gamma > 0.
+\end{align*}
+Symmetric, periodic, positive definite kernels of this form appear in  \cite{DicEtal14a} and \cite{Hic96a}.  The Bernoulli polynomials $B_{r}(x)$ are described in \cite[Chapter 24]{OlvEtal10a}
+\begin{align*}
+%\label{dlmf_bernoulli_24_8_3}
+B_{r}(x) = \frac{-r!}{(2 \pi \sqrt{-1})^{r}} 
+\sum_{\substack{k \neq 0,\\ k=-\infty}}^\infty 
+\frac{e^{2\pi\sqrt{-1} k x}}{k^{r}}
+\;\;
+\begin{cases}
+\text{for} \;\; r=1, \;\; 0 < x < 1 \\
+\text{for} \;\; r=2,3,\hdots \;\; 0 \leq x \leq 1
+\end{cases}
+\end{align*}
+Larger `$r$' implies a greater degree of smoothness of the kernel.  Larger $\gamma$ implies greater fluctuations of the output with respect to the input.  Plots of $C(\cdot, 0.3)$ are given in \figref{fig:fourierkernel-dim1} for various $r$ and $\gamma$ values.
 
 \begin{figure}
 	\centering
-	\includegraphics[width=0.9\linewidth]{"figures/fourier_kernel dim_1"}
+	\includegraphics[height=7cm]{"figures/fourier_kernel dim_1"}
 	\caption[Fourier kernel]{Shift invariant kernel in 1D shifted by 0.3 to show the discontinuity }
 	\label{fig:fourierkernel-dim1}
 \end{figure}
@@ -1040,25 +1075,24 @@ Noting that the sequence $\{\phi(i-1)\}_{i=1}^n$ is a re-ordering of $0, \ldots,
 Since $\phi(j-1) - \phi(k-1)$ is some integer multiple of $1/n$, it follows that this sum is $n \delta_{j,k}$, where $\delta$ is the Kroneker delta function.  This establishes that $\mV^H = n \mV^{-1}$ as in \eqref{eqn:ftk_factor}.
 
 Next, let $\omega_{k, \ell}$ denote the $k,\ell$ element of $\mV^H \mC \mV$, which is given by the double sum
-\begin{multline*}
-\omega_{k, \ell} = \sum_{i,j=1}^n K(\vh(\phi(i-1) - \phi(j-1)) \bmod \vone ) \\
+\begin{align*}
+\omega_{k, \ell} = \sum_{i,j=1}^n K(\vh(\phi(i-1) - \phi(j-1)) \bmod \vone ) 
 \times   \me^{-2 \pi n \sqrt{-1} \phi(k-1)\phi(i-1)}  \me^{2 \pi n \sqrt{-1} \phi(j-1)\phi(l-1)}
-\end{multline*}
+\end{align*}
 Noting that the sequence $\{\phi(i-1)\}_{i=1}^n$ is a re-ordering of $0, \ldots, 1-1/n$ for $n$ a power of $2$, this sum may be re-written by replacing $\phi(i-1)$ by $(i-1)/n$ and $\phi(j-1)$ by $(j-1)/n$:
-\begin{multline*}
-\omega_{k, \ell} = \sum_{i,j=1}^n K\left (\vh \left(\frac{i-j}{n} \right) \bmod \vone \right) \\
+\begin{align*}
+\omega_{k, \ell} = \sum_{i,j=1}^n K\left (\vh \left(\frac{i-j}{n} \right) \bmod \vone \right) 
 \times   \me^{-2 \pi \sqrt{-1} \phi(k-1)(i-1)}  \me^{2 \pi \sqrt{-1} (j-1)\phi(\ell-1)}.
-\end{multline*}
+\end{align*}
 This sum also remains unchanged if $i$ is replaced by $i+m$ and $j$ is replaced by $j+m$ for any integer $m$:
-\begin{multline*}
-\omega_{k, \ell} = \sum_{i,j=1}^n K\left (\vh \left(\frac{i-j}{n} \right) \bmod \vone \right) \\
+\begin{align*}
+\omega_{k, \ell} &= \sum_{i,j=1}^n K\left (\vh \left(\frac{i-j}{n} \right) \bmod \vone \right) 
 \times   \me^{-2 \pi \sqrt{-1} \phi(k-1)(i+m-1)}  \me^{2 \pi \sqrt{-1} (j+m-1)\phi(\ell-1)} \\
-=   \omega_{k, \ell}  \me^{2 \pi \sqrt{-1} m(\phi(\ell-1) - \phi(k-1))}.
-\end{multline*}
+ &=   \omega_{k, \ell}  \me^{2 \pi \sqrt{-1} m(\phi(\ell-1) - \phi(k-1))}.
+\end{align*}
 For this last equality to hold for all integers $m$, we must have $k = \ell$ or $\omega_{k,\ell} = 0$.  Thus, 
 \begin{align*}
-\omega_{k, \ell} &= \delta_{k,\ell} \sum_{i,j=1}^n K\left (\vh \left(\frac{i-j}{n} \right) \bmod \vone \right) \\
-& \qquad \qquad \qquad \qquad \times   \me^{-2 \pi \sqrt{-1} (i - j) \phi(k-1)} \\
+\omega_{k, \ell} &= \delta_{k,\ell} \sum_{i,j=1}^n K\left (\vh \left(\frac{i-j}{n} \right) \bmod \vone \right) \times   \me^{-2 \pi \sqrt{-1} (i - j) \phi(k-1)} \\
 & = n \delta_{k,\ell}  \sum_{i=1}^n K\left ( \left(\frac{i\vh}{n} \right) \bmod \vone \right)  \me^{-2 \pi \sqrt{-1} i \phi(k-1) }.
 \end{align*}
 This establishes $\mV^H \mC \mV$ as a diagonal matrix whose diagonal elements are $n$ times the eigenvalues, i.e., $\lambda_k = \omega_{k,k}/n$.  Furthermore, $\mV$ is the matrix of eigenvectors, which satisfies assumption \eqref{fastcompAssumpA}.
@@ -1090,22 +1124,18 @@ It follows from these definitions and the definition of $\mV$ in  \eqref{lattice
 \begin{align*}
 \widetilde{\vb}^{(1)} &= \left( \sum_{j=1}^{2n}  \me^{-4 \pi n \sqrt{-1} \phi(2i-2)\phi(j-1)} b_{j} \right)_{i=1}^n \\
 &= \left( \sum_{j=1}^{2n}  \me^{-2 \pi n \sqrt{-1} \phi(i-1)\phi(j-1)} b_{j} \right)_{i=1}^n \quad \text{by \eqref{vdCProp}}\\
-&= \left( \sum_{j=1}^{n}  \me^{-2 \pi n \sqrt{-1} \phi(i-1)\phi(j-1)} b_{j} \right)_{i=1}^n \quad \\
-&\qquad \qquad +  \left( \sum_{j=1}^{n}  \me^{-2 \pi n \sqrt{-1} \phi(i-1)\phi(n+j-1)} b_{n+j} \right)_{i=1}^n \\
-&= \mV^{(n)H}\vb^{(1)}  +  \biggl(  \me^{-\pi \sqrt{-1} \phi(i-1)}  \\
-& \quad \times \sum_{j=1}^{n}  \me^{-2 \pi n \sqrt{-1} \phi(i-1)\phi(j-1)} b_{n+j} \biggr)_{i=1}^n \quad  \text{by \eqref{vdCPropB}}\\
+&= \left( \sum_{j=1}^{n}  \me^{-2 \pi n \sqrt{-1} \phi(i-1)\phi(j-1)} b_{j} \right)_{i=1}^n  +  \left( \sum_{j=1}^{n}  \me^{-2 \pi n \sqrt{-1} \phi(i-1)\phi(n+j-1)} b_{n+j} \right)_{i=1}^n \\
+&= \mV^{(n)H}\vb^{(1)}  +  \biggl(  \me^{-\pi \sqrt{-1} \phi(i-1)}  s \sum_{j=1}^{n}  \me^{-2 \pi n \sqrt{-1} \phi(i-1)\phi(j-1)} b_{n+j} \biggr)_{i=1}^n \quad  \text{by \eqref{vdCPropB}}\\
 &= \mV^{(n)H}\vb^{(1)} +  \left(  \me^{-\pi \sqrt{-1} \phi(i-1)} \right)_{i=1}^n \odot \bigl(\mV^{(n)H}\vb^{(2)} \bigr),
 \end{align*}
 where $\odot$ denotes the Hadamard (term-by-term) product.  By a similar argument, 
 \begin{align*}
 \widetilde{\vb}^{(2)} &= \left( \sum_{j=1}^{2n}  \me^{-4 \pi n \sqrt{-1} \phi(2i-1)\phi(j-1)} b_{j} \right)_{i=1}^n \\
 &= \left( \sum_{j=1}^{2n}  \me^{-2 \pi n \sqrt{-1} [\phi(i-1)+1]\phi(j-1)} b_{j} \right)_{i=1}^n \quad \text{by \eqref{vdCProp}}\\
-&= \left( \sum_{j=1}^{n}  \me^{-2 \pi n \sqrt{-1} [\phi(i-1)+1]\phi(j-1)} b_{j} \right)_{i=1}^n \quad \\
-&\qquad  +  \left( \sum_{j=1}^{n}  \me^{-2 \pi n \sqrt{-1} [\phi(i-1)+1]\phi(n+j-1)} b_{n+j} \right)_{i=1}^n \\
+&= \left( \sum_{j=1}^{n}  \me^{-2 \pi n \sqrt{-1} [\phi(i-1)+1]\phi(j-1)} b_{j} \right)_{i=1}^n 
+ +  \left( \sum_{j=1}^{n}  \me^{-2 \pi n \sqrt{-1} [\phi(i-1)+1]\phi(n+j-1)} b_{n+j} \right)_{i=1}^n \\
 &= \mV^{(n)H}\vb^{(1)} 
-+  \left(  \me^{ -\pi \sqrt{-1} [\phi(i-1) + 1]} \right. 
-\\
-& \qquad \qquad \left . \times \sum_{j=1}^{n}  \me^{-2 \pi n \sqrt{-1} \phi(i-1)\phi(j-1)} b_{n+j} \right)_{i=1}^n \\
++  \left(  \me^{ -\pi \sqrt{-1} [\phi(i-1) + 1]}  \sum_{j=1}^{n}  \me^{-2 \pi n \sqrt{-1} \phi(i-1)\phi(j-1)} b_{n+j} \right)_{i=1}^n \\
 & \hspace{4cm}  \text{by \eqref{vdCPropB} and \eqref{vdCPropC}}\\
 &= \mV^{(n)H}\vb^{(1)} -  \left(  \me^{-\pi \sqrt{-1} \phi(i-1)} \right)_{i=1}^n \odot \bigl(\mV^{(n)H}\vb^{(2)} \bigr).
 \end{align*}
@@ -1129,8 +1159,7 @@ C(\vt, \vx) = \prod_{\ell=1}^d \left[1 + \rC_\ell(t_\ell,x_\ell) \right], \qquad
 Direct computation of $\rC (\vt,\vx) = C(\vt,\vx) -1$ introduces cancellation error if the $ \rC_\ell$ are small.  So, we employ the iteration
 \begin{align*}
 \rC^{(1)} &= \rC_1(t_1,x_1),  \\
-\rC^{(\ell)} &  = \rC^{(\ell-1)}[1 + \rC_\ell(t_\ell,x_\ell)] + \rC_\ell(t_\ell,x_\ell), \\
-& \hspace{5cm} \ell = 2, \ldots, d, \\
+\rC^{(\ell)} &  = \rC^{(\ell-1)}[1 + \rC_\ell(t_\ell,x_\ell)] + \rC_\ell(t_\ell,x_\ell),  \hspace{1cm} \ell = 2, \ldots, d, \\
 \rC(\vt,\vx)  & = \rC^{(d)}.
 \end{align*}
 In this way, the Gram matrix $\rmC$, whose $i,j$-element is $\rC(\vx_i,\vx_j)$ can be constructed with minimal round-off error.
@@ -1211,8 +1240,374 @@ We have implemented the fast adaptive Bayesian cubature algorithm in MATLAB as p
 
 
 
+
+
+
+
+
+
 \Chapter{Sobol Points and Walsh Kernels}
 
+Another approach to formulate fast transform using matching kernel and point sets is presented in this section. Interlaced digital nets and smoother kernels are paired. Higher order digital nets with matching smoother kernels are expected to provide higher order error convergence $\Order(N^{-\alpha + \epsilon})$ for $\alpha \ge 1$ and $\epsilon > 0$ .
+
+\section{Higher order digital nets}
+Nets were developed to provide deterministic sample points for quasi-Monte Carlo rules \cite{Nie05a}.
+The $(t,m, s)$-nets in base $b$ introduced by Niederreiter are such point sets consist of $b^m$ points in $[0, 1)^s$, whose quality is governed by $t$, in particular, lower values of $t$ correspond to $(t,m, s)$-nets of higher quality \cite{Bald10a}.
+Digital $(t,m, s)$-nets are a special case of $(t,m, s)$-nets, constructed using matrix-vector multiplications over finite fields.
+
+Higher order digital nets are a modified $(t,m,s)$-nets, introduced in \cite{Dic08a} can be used to numerically integrate smoother functions which are not necessarily periodic, but have square integrable mixed partial derivatives of order $\alpha$, at a rate of $\Order(N^{-\alpha})$ multiplied by a power of a $\log N$ factor using rules corresponding to the modified $(t,m, s)$-nets.
+The qualifier ``higher order" emphasizes that quasi-Monte Carlo rules based on these point sets can achieve convergence rates faster than $\Order(N^{-1})$.
+
+Higher order digital nets are constructed using matrix-vector multiplications over finite
+fields. We use generating matrices from the magic point shop \cite{NuyMagic}.
+
+\subsection{Walsh functions}
+Like Fourier transform naturally occurred with Lattice points (Section \ref{sec:shift_invar_kern}), Walsh transform happens for the nets. Define $\naturals:=\lbrace1,2,\dots \rbrace$ and $\naturals_0 : \lbrace0,1,2,\dots \rbrace$.
+The one-dimensional Walsh functions in base $b$ are defined as
+\begin{align*}
+\textup{wal}_{b,h}(x) := e^{2\pi i (x_1 h_0 + x_2 h_1 + \dots + x_n h_{n-1})/b} 
+=
+e^{2\pi i [\vec{h}]_n^T[\vec {x}]_n/b}
+\end{align*}
+for $x \in [0,1)$ and $h \in \naturals_0$ and the unique base $b$ expansions 
+$x = \sum_{i \ge 1} x_i b^{-i} = (0.x_1 x_2 \dots)_b$,
+and
+$h = \sum_{i \ge 1} h_i b^{-i} = (0.h_1 h_2 \dots)_b, [\vec{h}] =  (h_1,\dots h_n)^T$,
+with $n$ at least as large as the number of digits to represent $x$ or $h$.
+Multivariate wlash functions are defined as the product of the one-dimensional walsh functions
+\begin{align*}
+\textup{wal}_{b,\vh} (\vx) := \prod_{j=1}^s \textup{wal}_{b,h_j} (x_j
+)
+\end{align*}
+
+\section{Higher order Walsh space}
+
+\section{Walsh kernels}
+
+Consider the kernels of the form
+\begin{align*}
+C(\vx, \vt) = 1 + \theta \omega_{r} (\vx \ominus \vt)
+\end{align*}
+where
+\begin{align*}
+\omega_r(x) = \sum_{h=1}^\infty 
+\frac{\textup{wal}_{b,h}(x) }{b^{qr \lfloor \log_b h \rfloor}}
+\end{align*}
+
+\begin{align*}
+\omega_1(\vx) &= \frac 16 - 2^{\lfloor \log_2 \vx\rfloor -1 },\\
+\omega_2(\vx) &= s_1(\vx) + \tilde{s}_2(\vx),\\
+\omega_3(\vx) &= s_1(\vx) + s_2(\vx) + \tilde{s}_3(\vx)
+\end{align*}
+where
+\begin{align*}
+s_1(\vx) &= 1-2\vx,\\
+s_2(\vx) &= 1/3 - 2(1-\vx) \vx, \\
+\tilde{s}_2(\vx) &= (1- 5 t_1)/2 - (a_1 - 2)\vx, \\
+\tilde{s}_3(\vx) &= (1- 43 t_2)/18 + (5t_1 - 1)\vx +(a_1 - 2)\vx^2.
+\end{align*}
+with, for $0 < \vx < 1$,
+\begin{align*}
+a_1 = -\lfloor \log_2 \vx\rfloor, \quad t_1 = 2^{-a_1}, \quad t_2 = 2^{-2 a_1},
+\end{align*}
+and $a_1=0, t_1=0$ and $t_2=0$ when $\vx=0$.
+
+
+\subsection{The worst-case error}
+
+Define the worst-case error of numerical integration using a cubature rule $Q$ for functions in a Hilbert space $\mathcal{F}$ by
+\begin{align*}
+e(Q,\mathcal{F}) := \sup_{f \in \mathcal{F}, \norm[\mathcal{F}]{f} \le 1 } 
+\abs{I(f) - Q(f)}
+\end{align*}
+We now choose cubature rule $Q$ to be a quasi-Monte Carlo using a higher order digital as its node set and denote it by $Q^{\text{net}}$
+\begin{align*}
+\abs{I(f) - Q^{\text{net}}(f)} = \abs{\sum_{\vzero \ne \vk \in \mathcal{D}} \widehat{f_{\vk}}} \le \sum_{\vzero \ne \vk \in \mathcal{D}} \abs{ \widehat{f_{\vk}}}
+\end{align*}
+
+
+Define $\mathcal{W}_{\alpha,d,\vgamma}$, the function space consisting of all functions $f \in L_2([0,1]^d)$ for which $\norm[\mathcal{W}_{\alpha,d,\vgamma}]{f} < \infty$, where 
+\begin{align*}
+\norm[\mathcal{W}_{\alpha,d,\vgamma}]{f}^2 := \sum_{\vk \in \naturals^d} 
+\left( \frac{\abs{\widehat{f_{\vk}}}}{\vr_{\alpha}(\vgamma,\vk)} \right)^2
+\end{align*}
+where $\widehat{f_{\vk}}$ are the walsh coefficients of $f$ which satisfy
+\begin{align*}
+\abs{\widehat{f_{\vk}}}^2 \le \norm[\mathcal{W}_{\alpha,d,\vgamma}]{f}  
+\left( {\vr_{\alpha}(\vgamma,\vk)} \right)^2 \qquad \forall \vk \in \naturals^d_0
+\end{align*}
+Given a fixed integer $\alpha > 1$ and a fixed sequence of positive weights $\vgamma = \{ \gamma_1, \gamma_2, \dots \}$, the decay function $\vr_{\alpha}(\vgamma,\vk)$ is defined as  
+\begin{align*}
+\vr^2_{\alpha}(\vgamma,\vk) = \prod_{j\in u} \gamma^2_j r^2_\alpha(k_j), \qquad r_\alpha(k) := 2^{- \sum_{i=1}^{\min(\#k,\alpha)} (a_i + 1)}
+\end{align*}
+where for $\vk = (k_1, \dots, k_d), k = \sum_{i=1}^{\#k} k_{a_i} b^{a_i}$, we set $u = \{1\le j \le d: k_j \neq 0 \}$ and $\#k$ is the number of non-zero binary digits of integer $k$.
+
+\begin{align*}
+\zeta(\vx) = \sum_{\vk \in \naturals} \vr_{\alpha} (\vgamma,\vk) \wal_{\vk} (\vx)
+\end{align*}
+
+
+
+\subsection{Calculating the infinite sum}
+
+For practical usage with a computer, we can not have infinite sum. In this section we show how to calculate in finite terms. If $x$ can be represented using $n$ digits in base $b$, then $\omega_{\alpha}(x)$ can be computed in $\Order(\alpha n)$ operations \cite{Bald12a}. Specifically, we will compute explicit forms for $b=2$ and $x \in [0,1)$.]
+
+\begin{align}
+\label{omega_func_split_1}
+\omega_{\alpha}(\vx) &:= \sum_{\vk \in \naturals} \vr^2_{\alpha} (\vk) \wal_{\vk} (\vx)
+\\
+&= \sum^\infty_{\substack{\vk \in \naturals \\ k= \sum_{i=1}^{\#k}k_{a_i} b^{a_i} }} 
+\prod_{i=1}^{\min(\alpha, \#k)} b^{-2(a_i + 1)} \exp(2\pi i k_{a_i} \xi_{a_i + 1}/b)
+\underbrace{\prod_{i=\alpha + 1}^{\#k}  \exp(2\pi i k_{a_i} \xi_{a_i + 1}/b)}_{\wal_{k'}(x)}
+\end{align}
+We used the definition $k= \sum_{i=1}^{\#k}k_{a_i} b^{a_i}$ with $a_1 > \dots a_{\#k}$, i.e., $k_{a_1}$ is the most significant digit of $k$ in base $b$. The second product in \ref{omega_func_split_1} can be seen as $\wal_{k'}(x)$ where $k' = k-\sum_{i=1}^{\min(\alpha, \#k)} k_{a_i}b^{a_i}$. The key technique used is to interpret the infinite sum in \ref{omega_func_split_1} as multiple sums over all possible digit expansions for all $k$'s with $r$ digits for $r\ge 1$.
+
+\begin{align*}
+\sum^\infty_{\substack{\vk \in \naturals \\ k= \sum_{i=1}^{\#k}k_{a_i} b^{a_i} }} 
+G(k,x) = \sum_{r=1}^\infty 
+\underbrace{ \sum_{a_1 = r-1}^\infty \dots \sum_{a_r=0}^{a_{r-1}-1}}_{r \text{sums s.t.} \infty > a_1 \dots a_r \ge 0}
+\underbrace{ \sum_{k_{a_1} = 1}^{b-1} \dots \sum_{k_{a_r}=1}^{b-1}}_{r \text{independent sums}}
+G(k_{a_i} b^{a_i},x)
+\end{align*}
+
+where $G(k,x) = r_\alpha(k) \wal_k(x)$. to simplify the notation and reveal the structure for further simplification, define the \emph{triangular sum operator}
+\begin{align*}
+T_m^M(r)(g) := \sum_{a_1 = m+r-1}^M \sum_{a_2 = m+r-2}^{a_1 -1} \dots \sum_{a_r=m}^{a_{r-1}-1} g(a_1,\dots a_r),
+\end{align*}
+where $T_m^M(0)(g) := g$, i.e., no sums taken. Next, define the \emph{concatenation} of two such operators as putting the sums next to each other:
+\begin{align*}
+\left( T_m^M(t) T_{m'}^{M'}(r-t)\right) (g) :=
+\sum_{a_1=m+t-1}^M \dots \sum_{a_t=m}^{a_{t-1}-1}
+\sum_{a_{t+1}=m'+(r-t)-1}^{M'} \dots \sum_{a_r=m'}^{a_{r-1}-1}
+g(a_1,\dots,a_r),
+\end{align*}
+
+
+
+
+
+
+
+\subsection{Closed form expressions}
+
+\begin{align*}
+\omega_2(x) &= \sum_{k=1}^\infty r_2(k) \wal_k(x)
+\\
+&= s_1(x) + \tilde{s}_2(x)
+\end{align*}
+
+
+\begin{align*}
+s_1(x) &= \sum_{\substack{k=1 \\ k = 2^{a_1}}}^\infty r_2(k) \wal_k(x)
+\\
+&= \sum_{\substack{k=1; k = 2^{a_1}}}^\infty 2^{(-a_1 + 1)} \exp(\pi \sqrt{-1} \xi_{a_1 + 1})
+\\
+&= \sum_{\substack{a_1=0}}^\infty 2^{-(a_1 + 1)} \exp(\pi \sqrt{-1} \xi_{a_1 + 1})
+\\
+&= \sum_{\substack{a_1=1}}^\infty 2^{(-a_1)} \exp(\pi \sqrt{-1} \xi_{a_1 }), \qquad \text{where} \; \xi_a \in \{0, 1\}
+\\
+&= \sum_{\substack{a_1=1}}^\infty 2^{(-a_1)} (-1)^{\xi_{a_1 }}
+\quad = \quad \sum_{\substack{a=1}}^\infty 2^{(-a)} (-1)^{\xi_{a }}
+\\
+&= \sum_{\substack{a=1}}^\infty 2^{-a} +  \sum_{\substack{a=1}}^\infty 2^{-a}( (-1)^{\xi_{a }} - 1)
+\\
+&= 1 +  \sum_{\substack{a=1}}^\infty 2^{-a}( (-1)^{\xi_{a }} - 1)
+\\
+&= 1 +  \sum_{\substack{a=1}}^\infty 2^{-a} (-2) [\xi_a = 1]
+\\
+&= 1 - 2  \sum_{\substack{a=1}}^\infty 2^{-a} [\xi_a = 1]
+\\
+&= 1 - 2  \sum_{\substack{j=1}}^{\#x} 2^{-a_j}, \quad \text{using} \; x = \sum_{\substack{j=1}}^{\#x} 2^{-a_j}
+\\
+&= 1 - 2  x
+\end{align*}
+
+
+
+\begin{align*}
+\tilde{s}_2(x) &= \sum_{\substack{k=1; k = 2^{a_1} + 2^{a_2} + k' }}^\infty r_2(k) \wal_k(x)
+\end{align*}
+where $k = 2^{a_1} + 2^{a_2} + k', \; k' \in \{0, \dots 2^{a_2}-1 \}$
+\begin{align*}
+\tilde{s}_2(x) &= \sum_{\substack{k=1; k = 2^{a_1} + 2^{a_2} + k'}}^\infty 
+2^{-(a_1+1)} (-1)^{\xi_{a_1+1}} 2^{-(a_2+1)} (-1)^{\xi_{a_2+1}} \wal_{k'}(x)
+\\
+&= \sum_{a_1=1}^\infty 2^{-(a_1+1)} (-1)^{\xi_{a_1+1}} 
+\sum_{a_2=0}^{a_1-1} 2^{-(a_2+1)} (-1)^{\xi_{a_2+1}} \sum_{k'=0}^{2^{a_2}-1} \wal_{k'}(x)
+\\
+&= \sum_{a_2=0}^{\infty} 2^{-(a_2+1)} (-1)^{\xi_{a_2+1}} \sum_{k'=0}^{2^{a_2}-1} \wal_{k'}(x)
+\sum_{a_1=a_2+1}^\infty  2^{-(a_1+1)} (-1)^{\xi_{a_1+1}} 
+\\
+&= \sum_{a_2=0}^{\infty} 2^{-(a_2+1)} (-1)^{\xi_{a_2+1}} 2^{a_2} [x < 2^{-a_2}]
+\sum_{a_1=a_2+1}^\infty  2^{-(a_1+1)} (-1)^{\xi_{a_1+1}} 
+\\
+&= \sum_{a_2=0}^{\infty} 2^{-(a_2+1)} (-1)^{\xi_{a_2+1}} 2^{a_2} [x < 2^{-a_2}]
+2^{-(a_2+1)} \sum_{a_1=1}^\infty  2^{-(a_1)} (-1)^{\xi_{a_1}} 
+\end{align*}
+
+
+
+\begin{align*}
+{s}_2(x) &= \sum_{\substack{k=1 \\ 
+		k = 2^{a_1} + 2^{a_2}}}^\infty 
+2^{-(a_1+1)} (-1)^{\xi_{a_1+1}} 2^{-(a_2+1)} (-1)^{\xi_{a_2+1}} 
+\\
+&= \sum_{a_1=1}^\infty 2^{-(a_1+1)} (-1)^{\xi_{a_1+1}} 
+\sum_{a_2=0}^{a_1-1} 2^{-(a_2+1)} (-1)^{\xi_{a_2+1}} 
+\\
+&= \sum_{a_1=2}^\infty 2^{-(a_1)} (-1)^{\xi_{a_1}} 
+\sum_{a_2=1}^{a_1-1} 2^{-(a_2)} (-1)^{\xi_{a_2}}, \quad \text{index shifted by 1}
+\\
+&= \sum_{a_2=1}^{\infty} 2^{-(a_2)} (-1)^{\xi_{a_2}} 
+\sum_{a_1=a_2+1}^\infty  2^{-(a_1)} (-1)^{\xi_{a_1}}
+\\
+&= \left( 
+\sum_{a_2=1}^{\infty} 2^{-(a_2)} (-1)^{\xi_{a_2}} [\xi_{a_2}=0] 
++
+\sum_{a_2=1}^{\infty} 2^{-(a_2)} (-1)^{\xi_{a_2}} [\xi_{a_2}\neq 0] \right)
+\\
+& \qquad
+\left(
+\sum_{a_1=a_2+1}^\infty  2^{-(a_1)} (-1)^{\xi_{a_1}} [\xi_{a_1}=0] 
++
+\sum_{a_1=a_2+1}^\infty  2^{-(a_1)} (-1)^{\xi_{a_1}} [\xi_{a_1}\neq 0]
+\right)
+\\
+&= 
+\left( 
+\sum_{a_2=1}^{\infty} 2^{-(a_2)} (-1)^{\xi_{a_2}} [\xi_{a_2}=0]	
+\sum_{a_1=a_2+1}^\infty  2^{-(a_1)} (-1)^{\xi_{a_1}} [\xi_{a_1}=0]
+\right)
+\\ & \qquad 
++ 
+\left(
+\sum_{a_2=1}^{\infty} 2^{-(a_2)} (-1)^{\xi_{a_2}} [\xi_{a_2} = 0]
+\sum_{a_1=a_2+1}^\infty  2^{-(a_1)} (-1)^{\xi_{a_1}} [\xi_{a_1}\neq 0]
+\right)
+\\ & \qquad 
++ 
+\left(
+\sum_{a_2=1}^{\infty} 2^{-(a_2)} (-1)^{\xi_{a_2}} [\xi_{a_2} \neq 0]
+\sum_{a_1=a_2+1}^\infty  2^{-(a_1)} (-1)^{\xi_{a_1}} [\xi_{a_1} = 0]
+\right)
+\\ & \qquad
++ 
+\left(
+\sum_{a_2=1}^{\infty} 2^{-(a_2)} (-1)^{\xi_{a_2}} [\xi_{a_2}\neq 0]
+\sum_{a_1=a_2+1}^\infty  2^{-(a_1)} (-1)^{\xi_{a_1}} [\xi_{a_1}\neq 0]
+\right)
+\\
+&= 
+\left( 
+\sum_{a_2=1}^{\infty} 2^{-(a_2)} (-1)^{\xi_{a_2}} [\xi_{a_2}=0]	
+\left(
+\sum_{a_1=a_2+1}^\infty  2^{-(a_1)} (-1)^{\xi_{a_1}} -
+\sum_{a_1=a_2+1}^\infty  2^{-(a_1)} (-1)^{\xi_{a_1}} [\xi_{a_1} \neq 0]
+\right)
+\right)
+\\ & \qquad 
++ 
+\left(
+\sum_{a_2=1}^{\infty} 2^{-(a_2)} (-1)^{\xi_{a_2}} [\xi_{a_2} = 0]
+\sum_{a_1=a_2+1}^\infty  2^{-(a_1)} (-1)^{\xi_{a_1}} [\xi_{a_1}\neq 0]
+\right)
+\\ & \qquad 
++ 
+\left(
+\sum_{a_2=1}^{\infty} 2^{-(a_2)} (-1)^{\xi_{a_2}} [\xi_{a_2} \neq 0]
+\sum_{a_1=a_2+1}^\infty  2^{-(a_1)} (-1)^{\xi_{a_1}} [\xi_{a_1} = 0]
+\right)
+\\ & \qquad
++ 
+\left(
+\sum_{a_2=1}^{\infty} 2^{-(a_2)} (-1)^{\xi_{a_2}} [\xi_{a_2}\neq 0]
+\sum_{a_1=a_2+1}^\infty  2^{-(a_1)} (-1)^{\xi_{a_1}} [\xi_{a_1}\neq 0]
+\right)
+\end{align*}
+
+
+Alternative approach
+\begin{align*}
+&= \sum_{a_2=1}^{\infty} 2^{-(a_2)} (-1)^{\xi_{a_2}} 
+2^{-a_2} \sum_{a_1=1}^\infty  2^{-(a_1)} (-1)^{\xi_{a_1}} 
+\\
+&= \sum_{a_2=1}^{\infty} 2^{-(2a_2)} (-1)^{\xi_{a_2}} 
+(1-2x)
+\\
+&= (1-2x) 
+\left( \sum_{a_2=1}^{\infty} 2^{-(2a_2)} (-1)^{\xi_{a_2}}[\xi_{a_2}= 0] 
++ 
+\sum_{a_2=1}^{\infty} 2^{-(2a_2)} (-1)^{\xi_{a_2}}[\xi_{a_2}\neq 0] \right)
+\\
+&= (1-2x) 
+\left( \sum_{a_2=1}^{\infty} 2^{-(2a_2)}
++ 
+2 \sum_{a_2=1}^{\infty} 2^{-(2a_2)} (-1)^{\xi_{a_2}}[\xi_{a_2}\neq 0] \right)
+\\
+&= (1-2x) 
+\left( \frac{1}{3}
++ 
+2 \sum_{j=1}^{\#x} 2^{-(2a_2)}  \right)
+\end{align*}
+
+\clearpage
+
+Simplify the first part in ${s}_2$
+\begin{align*}
+&
+\sum_{a_2=1}^{\infty} 2^{-(a_2)} (-1)^{\xi_{a_2}} [\xi_{a_2}=0]	
+\sum_{a_1=a_2+1}^\infty  2^{-(a_1)} (-1)^{\xi_{a_1}} [\xi_{a_1}=0]
+\\
+&=
+\sum_{a_2=1}^{\infty} 2^{-(a_2)}  [\xi_{a_2}=0]	
+\sum_{a_1=a_2+1}^\infty  2^{-(a_1)}  [\xi_{a_1}=0]
+\\
+&=
+\sum_{a_2=1}^{\infty} 2^{-(a_2)} [\xi_{a_2}=0]	
+\left(
+\sum_{a_1=a_2+1}^\infty  2^{-(a_1)}  -
+\sum_{a_1=a_2+1}^\infty  2^{-(a_1)} [\xi_{a_1} \neq 0]
+\right)
+\\
+&=
+\sum_{a_2=1}^{\infty} 2^{-(a_2)}  [\xi_{a_2}=0]	
+\sum_{a_1=a_2+1}^\infty  2^{-(a_1)} 
+ -
+\sum_{a_2=1}^{\infty} 2^{-(a_2)}  [\xi_{a_2}=0]	
+\sum_{a_1=a_2+1}^\infty  2^{-(a_1)} [\xi_{a_1} \neq 0]
+\\
+&=
+\sum_{a_2=1}^{\infty} \left( 2^{-(a_2)} [\xi_{a_2}=0] \right) 2^{-(a_2)} 
+-
+\sum_{a_2=1}^{\infty} 2^{-(a_2)}  [\xi_{a_2}=0]	
+\sum_{a_1=a_2+1}^\infty  2^{-(a_1)} [\xi_{a_1} \neq 0]
+\\
+&=
+\left(
+\sum_{a_2=1}^{\infty} 2^{-(a_2)}  -
+\sum_{a_2=1}^{\infty} 2^{-(a_2)}  [\xi_{a_2} \neq 0]	
+\right)
+ 2^{-(a_2)} 
+\\ & \quad -
+\sum_{a_2=1}^{\infty} 2^{-(a_2)}  [\xi_{a_2}=0]	
+\sum_{a_1=a_2+1}^\infty  2^{-(a_1)}  [\xi_{a_1} \neq 0]
+\\
+&=
+\sum_{a_2=1}^{\infty} 2^{-(2a_2)} 
+  -
+\sum_{a_2=1}^{\infty} 2^{-(2a_2)}  [\xi_{a_2} \neq 0]	
+\\ & \quad -
+\sum_{a_2=1}^{\infty} 2^{-(a_2)}  [\xi_{a_2}=0]	
+\sum_{a_1=a_2+1}^\infty  2^{-(a_1)}  [\xi_{a_1} \neq 0]
+\\
+&=
+\frac{1}{3} 
+-
+\sum_{a_2=1}^{\infty} 2^{-(2a_2)}  [\xi_{a_2} \neq 0]	
+ -
+\sum_{a_2=1}^{\infty} 2^{-(a_2)}  [\xi_{a_2}=0]	
+\sum_{a_1=a_2+1}^\infty  2^{-(a_1)}  [\xi_{a_1} \neq 0]
+\end{align*}
 
 \clearpage
 
@@ -1424,25 +1819,41 @@ Another noticeable aspect from the plots is how much the error bounds differ fro
 \section{Diagnostics for the Gaussian Process Assumption}
 
 
-The starting point for our Bayesian cubature is the assumption that the integrand arises from a Gaussian process. This means that the function data, $\vf$ satisfy a multivariate Gaussian distribution, as in \eqref{eqn:fGaussDist}.  The transformed data, $\vZ = ( n\mLambda)^{-\frac 12} \mV^H(\vf - m \vone)$ has zero mean and is also uncorrelated because
+The starting point for our Bayesian cubature is the assumption that the integrand arises from a Gaussian process. This means that the function data, $\vf$, satisfy a multivariate Gaussian distribution, as in \eqref{eqn:fGaussDist}.  The transformed data, $\vZ = \frac 1n \mV \mLambda^{-\frac 12} \mV^H(\vf - m \vone)$, has zero mean and is also uncorrelated because
+\begin{align*}
+\Ex\left[\vZ \right] &= 
+\frac 1n \mV \mLambda^{-\frac 12} \mV^H(\Ex\left[\vf\right] - m \vone) 
+\\
+& = 0
+\end{align*}
 \begin{align*}
 \cov (\vZ) 
-&= \frac 1n \Ex\left[  
-\mLambda^{-\frac 12} \mV^H (\vf - m \vone)
-(\vf - m \vone)^T \mV \mLambda^{-\frac 12}
+&= \frac {1}{n^2} \Ex\left[  
+\mV \mLambda^{-\frac 12} \mV^H (\vf - m \vone)
+(\vf - m \vone)^T \mV \mLambda^{-\frac 12} \mV^H
 \right]
 \\
 &=
- \mLambda^{-\frac 12} \mV^H 
-\Ex\left[ (\vf - m \vone)
-(\vf - m \vone)^T \right] \mV \mLambda^{-\frac 12}
+\frac {1}{n^2} \mV \mLambda^{-\frac 12} \mV^H 
+\Ex \biggl[ (\vf - m \vone)
+(\vf - m \vone)^T \biggr] \mV \mLambda^{-\frac 12} \mV^H
+\\ % Note : \mV^h \mV = n
+&=
+\frac{1}{n^2} \mV \mLambda^{-\frac 12} \mV^H 
+\frac 1n \mV \mLambda \mV^H \mV \mLambda^{-\frac 12} \mV^H
 \\
 &=
-\frac{1}{n} \mLambda^{-\frac 12} \mV^H 
-\frac 1n \mV \mLambda \mV^H \mV \mLambda^{-\frac 12}
- = \mathsf{I}
+\frac{1}{n^3} \mV \mLambda^{-\frac 12} (n) \mLambda (n) \mLambda^{-\frac 12} \mV^H
+= \mathsf{I}
 \end{align*}
 Thus, the elements of $\vZ$ are IID standard Gaussian random variables.  
+In practice, using the estimated $m_\MLE$ further simplifies, 
+\begin{align*}
+\vZ &= \frac 1n \mV \mLambda^{-\frac 12} \mV^H(\vf - m \vone) \\
+ &= \frac 1n \mV \mLambda^{-\frac 12} (\mV^H \vf - \frac{\tilde{f}_1}{n} \mV^H \vone) 
+\\
+ &= \frac 1n \mV \mLambda^{-\frac 12} \left(\mV^H \vf - \tilde{f}_1 \begin{pmatrix}1, 0, \hdots, 0 \end{pmatrix}^T \right) 
+\end{align*}
 
 \figref{fig:mvn-normplot} and \figref{fig:keister-normplot} are normal probability plots of the $Z_i$ using empirical Bayes estimates of $m$ and $\vtheta$. \textbf{more goes here}.
 
@@ -1466,6 +1877,160 @@ Thus, the elements of $\vZ$ are IID standard Gaussian random variables.
 \end{figure}
 
 \fi
+To verify this result, we build a toy function using the known Bernoulli polynomial series,
+\begin{align*}
+f(x) = \hat{f}_0 + \sqrt{\theta} \sum_{k \neq 0}^N 
+\frac{f_{kR} \cos(2\pi k x) + f_{kI} \sin(2\pi k x)}{k}
+\end{align*}
+where $f_0, f_{kR}, f_{kI} \sim \text{IID} \calN(0, 1) $ and the series is truncated to length $N$ for computability. It has zero mean and covariance
+\begin{align*}
+\cov(f) &= \Ex[f(x) f(t)] \\
+&= \cov(f_0) + \theta \sum_{k=1}^N 
+\left(	
+\Ex(f_{kR}^2) \frac{\cos(2\pi k x) \cos(2\pi k t)}{k^2} +
+\Ex(f_{kI}^2) \frac{\sin(2\pi k x) \sin(2\pi k t)}{k^2} \right) \\
+&= 1 + \theta \sum_{k=1}^N 	
+ \frac{\cos(2\pi k (x - t)) }{k^2} 
+\end{align*}
+
+
+
+\subsection{Posterior}
+
+\paragraph{Non-informative prior}
+Assume the prior is of the form $ \rho_{m,s^2} (\xi, \lambda) = \frac{1}{\lambda} $ 
+
+\begin{align*}
+\rho_{f(\vx)}(\vy) &=\int_{0}^\infty \int_{-\infty}^\infty \rho_{f} (\vy | m=\xi, s^2=\lambda) 
+\rho_{m,s^2} (\xi, \lambda) \dif{\xi} \dif{\lambda} 
+\\
+&= \int_{0}^\infty \int_{-\infty}^\infty \frac{1}{(\sqrt{2 \pi})^n \sqrt{\det(\lambda \mC)}} 
+\exp \left( -\frac{1}{2\lambda} (\vy - \xi \vone)^T\mCInv (\vy- \xi\vone)\right) \frac{1}{\lambda} \dif{\xi} \dif{\lambda}
+\\
+& \propto \frac{1}{(\sqrt{2 \pi})^n} \int_{0}^\infty \frac{1}{\lambda ^{\frac n2} \lambda}
+\int_{-\infty}^\infty \exp \left( -\frac{1}{2\lambda} (\vy - \xi \vone)^T\mCInv (\vy- \xi\vone)\right)  \dif{\xi} \dif{\lambda}
+\\
+& \propto \int_{0}^\infty \frac{1}{\lambda^{\frac n2 + 1}}
+\int_{-\infty}^\infty \exp \left( -\frac{1}{2\lambda} 
+\underbrace{(\vone^T \mCInv \vone)}_{D}
+\left[
+\xi^2 -2 \xi \underbrace{\frac{\vone^T \mCInv \vy }{\vone^T \mCInv \vone}}_{A} + \underbrace{\frac{\vy^T \mCInv \vy }{\vone^T \mCInv \vone}}_{B} 
+\right]
+\right)  \dif{\xi} \dif{\lambda}
+\\
+& \propto \int_{0}^\infty \frac{1}{\lambda^{\frac n2 + 1}}
+\int_{-\infty}^\infty \exp \left( -\frac{1}{2\lambda} D
+\left[
+\xi^2 -2 \xi A + A^2 - A^2 + B
+\right]
+\right)  \dif{\xi} \dif{\lambda}
+\\
+& \propto \int_{0}^\infty \frac{1}{\lambda^{\frac n2 + 1}}
+\int_{-\infty}^\infty \exp \left( -\frac{1}{2\lambda} D
+\left[
+\xi^2 -2 \xi A + A^2
+\right]
+\right) \dif{\xi}
+\exp \left(  - \frac{1}{2\lambda} D [B - A^2] \right)
+\dif{\lambda}
+\\
+& \propto \int_{0}^\infty \frac{1}{\lambda^{\frac{(n+1)}{2}}}
+\frac{1}{\sqrt{2\pi\lambda/D}}
+\int_{-\infty}^\infty \exp \left( -\frac{1}{2\lambda} D
+\left[
+\xi-A
+\right]^2
+\right) \dif{\xi}
+\exp \left(  - \frac{1}{2\lambda} D [B - A^2] \right)
+\dif{\lambda}
+\\
+& \propto \int_{0}^\infty \frac{1}{\lambda^{\frac{(n+1)}{2}}}
+\exp \left(  - \frac{1}{2\lambda} D [B - A^2] \right)
+\dif{\lambda}
+\\
+& \propto (D[B-A^2])^{-\frac{(n-1)}{2}}
+\\
+& \propto \left(\vy^T\mCInv\vy - \frac{(\vone^T\mCInv\vy)^2}{\vone^T\mCInv\vone} \right)^{-\frac{(n-1)}{2}}
+\\
+&=  \left(\vy^T \left[\mCInv - \frac{(\mCInv\vone \vone^T \mCInv)}{\vone^T\mCInv\vone} \right]\vy \right)^{-\frac{(n-1)}{2}}
+\end{align*}
+
+\paragraph{TODO: How to interpret as t-distribution?}
+
+
+
+
+\paragraph{Generic prior}
+Assume the prior is of the form $ \rho_{m,s^2} (\xi, \lambda) = g(\lambda) $ 
+
+\begin{align*}
+\rho_{f(\vx)}(\vy) &=\int_{0}^\infty \int_{-\infty}^\infty \rho_{f} (\vy | m=\xi, s^2=\lambda) 
+\rho_{m,s^2} (\xi, \lambda) \dif{\xi} \dif{\lambda} 
+\\
+&= \int_{0}^\infty \int_{-\infty}^\infty \frac{1}{(\sqrt{2 \pi})^n \sqrt{\det(\lambda \mC)}} 
+\exp \left( -\frac{1}{2\lambda} (\vy - \xi \vone)^T\mCInv (\vy- \xi\vone)\right) g(\lambda) \dif{\xi} \dif{\lambda}
+\\
+& \propto \frac{1}{(\sqrt{2 \pi})^n} \int_{0}^\infty \frac{g(\lambda)}{\lambda ^{\frac n2} } 
+\int_{-\infty}^\infty \exp \left( -\frac{1}{2\lambda} (\vy - \xi \vone)^T\mCInv (\vy- \xi\vone)\right)  \dif{\xi} \dif{\lambda}
+\\
+& \propto \int_{0}^\infty \frac{g(\lambda)}{\lambda^{\frac n2 }}
+\int_{-\infty}^\infty \exp \left( -\frac{1}{2\lambda} 
+\underbrace{(\vone^T \mCInv \vone)}_{D}
+\left[
+\xi^2 -2 \xi \underbrace{\frac{\vone^T \mCInv \vy }{\vone^T \mCInv \vone}}_{A} + \underbrace{\frac{\vy^T \mCInv \vy }{\vone^T \mCInv \vone}}_{B} 
+\right]
+\right)  \dif{\xi} \dif{\lambda}
+\\
+& \propto \int_{0}^\infty \frac{g(\lambda)}{\lambda^{\frac n2}}
+\int_{-\infty}^\infty \exp \left( -\frac{1}{2\lambda} D
+\left[
+\xi^2 -2 \xi A + A^2 - A^2 + B
+\right]
+\right)  \dif{\xi} \dif{\lambda}
+\\
+& \propto \int_{0}^\infty \frac{g(\lambda)}{\lambda^{\frac n2}}
+\int_{-\infty}^\infty \exp \left( -\frac{1}{2\lambda} D
+\left[
+\xi^2 -2 \xi A + A^2
+\right]
+\right) \dif{\xi}
+\exp \left(  - \frac{1}{2\lambda} D [B - A^2] \right)
+\dif{\lambda}
+\\
+& \propto \int_{0}^\infty \frac{g(\lambda)}{\lambda^{\frac{(n-1)}{2}}}
+\frac{1}{\sqrt{2\pi\lambda/D}}
+\int_{-\infty}^\infty \exp \left( -\frac{1}{2\lambda} D
+\left[
+\xi-A
+\right]^2
+\right) \dif{\xi}
+\exp \left(  - \frac{1}{2\lambda} D [B - A^2] \right)
+\dif{\lambda}
+\\
+& \propto \int_{0}^\infty \frac{g(\lambda)}{\lambda^{\frac{(n-1)}{2}}}
+\exp \left(  - \frac{1}{2\lambda} D [B - A^2] \right)
+\dif{\lambda}
+\\
+& \dots
+\end{align*}
+
+
+
+\paragraph{TODO: How to integrate further?}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
