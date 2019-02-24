@@ -1,6 +1,12 @@
 \def\Ignore#1{}\def\notesupp#1{}\providecommand{\HickernellFJ}{Hickernell\xspace}\def\Ignore#1{}\def\notesupp#1{}\providecommand{\HickernellFJ}{Hickernell\xspace}
 \begin{thebibliography}{10}
 
+\bibitem{Bald10a}
+J.~F. Baldeaux.
+\newblock {\em {H}igher order nets and sequences}.
+\newblock PhD thesis, The School of Mathematics and Statistics at The
+  University of New South Wales, June 2010.
+
 \bibitem{BriEtal18a}
 F-X Briol, C.~J. Oates, M.~Griolami, M.~A. Osborne, and D.~Sejdinovic.
 \newblock Probabilistic integration: A role in statistical computation?
@@ -34,6 +40,12 @@ P.~Diaconis.
   Theory and Related Topics {IV}, {P}apers from the 4th {P}urdue Symp., {W}est
   {L}afayette, {I}ndiana 1986}, volume~1, pages 163--175. Springer-Verlag, New
   York, 1988.
+
+\bibitem{Dic08a}
+J.~Dick.
+\newblock {W}alsh spaces containing smooth functions an quasi-monte carlo rules
+  of arbitrary high order.
+\newblock {\em SIAM J. Numer.\ Anal.}, 46(1519--1553), 2008.
 
 \bibitem{DicEtal14a}
 J.~Dick, F.~Kuo, and I.~H. Sloan.
@@ -86,18 +98,38 @@ F.~J. \HickernellFJ and H.~Niederreiter.
 \newblock The existence of good extensible rank-1 lattices.
 \newblock {\em J. Complexity}, 19:286--300, 2003.
 
+\bibitem{Bald12a}
+G.~Leobacher D. Nuyens F.~Pillichshammer J.~Baldeaux, J.~Dick.
+\newblock Efficient calculation of the worst-case error and (fast)
+  component-by-component construction of higher order polynomial lattice rules.
+\newblock {\em Numerical Algorithms}, 59:403--431, March 2012.
+
 \bibitem{JimHic16a}
 {{\relax Ll}}.~A. {Jim\'enez Rugama} and F.~J. \HickernellFJ.
 \newblock Adaptive multidimensional integration based on rank-1 lattices.
 \newblock In Cools and Nuyens \cite{CooNuy16a}, pages 407--422.
 \newblock arXiv:1411.1966.
 
+\bibitem{Dong2017a}
+H.~Nickisch D.~Bindel K.~Dong, D.~Eriksson and A.~G. Wilson.
+\newblock Scalable log determinants for gaussian process kernel learning.
+\newblock {\em NIPS}, 2017.
+\newblock in press.
+
 \bibitem{Kei96}
 B.~D. Keister.
 \newblock Multidimensional quadrature algorithms.
 \newblock {\em Computers in Physics}, 10:119--122, 1996.
 
+\bibitem{Nie05a}
+H.~Niederreiter.
+\newblock Constructions of $(t,m, s)$-nets and $(t, s)$-sequences.
+\newblock {\em Finite Fields Appl.}, 11:578--600, 2005.
+
 \bibitem{Nuy17a}
+D.~Nuyens.
+
+\bibitem{NuyMagic}
 D.~Nuyens.
 
 \bibitem{OHa91a}

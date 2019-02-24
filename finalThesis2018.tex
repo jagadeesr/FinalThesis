@@ -39,6 +39,7 @@
 \usepackage{booktabs, mathtools}
 \usepackage[dvipsnames]{xcolor}
 \usepackage{url}
+\usepackage[normalem]{ulem}
 %\usepackage{refcheck}  % points out unused labels, refs ...
 
 %\captionsetup{compatibility=false}
@@ -375,9 +376,7 @@ Moreover, the inverse of the matrix $\mC$ may be partitioned as
 \mA_{21} = -  \mC_{22}^{-1} \mC_{21} \mA_{11}, \\ 
 \mA_{22} = \mC_{22}^{-1} + \mC_{22}^{-1} \mC_{21} \mA_{11} \mC_{21}^T \mC_{22}^{-1}.
 \end{gather*}
-
 \end{lemma}
-
 
 It follows from Lemma \ref{thrm:condDist} that the \emph{conditional} distribution of the integral given observed function values, $\vf = \vy$ is also Gaussian:
 \begin{align} \label{eqn:condInteg}
@@ -439,16 +438,14 @@ s^2_{\MLE}
 \mCInv - 
 \frac{ \mCInv \vone \vone^T \mCInv }{\vone^T\mCInv \vone}
 \right] \vy, \\
-\nonumber
+\label{eqn:thetaMLE} 
 \vtheta_\MLE
 &= \argmin_{\vtheta} \biggl \{
 \log\left(\vy^T 
 \left[ \mCInv - 
 \frac{ \mCInv \vone \vone^T \mCInv }{\vone^T\mCInv \vone}
 \right] \vy 
-\right)  \\
-\label{eqn:thetaMLE}
- & \qquad +  \frac{1}{n} \log(\det(\mC))
+\right)  +  \frac{1}{n} \log(\det(\mC))
 \biggr \}.
 \end{align}
 The MLE estimate of $\vtheta$ balances minimizing the covariance scale factor, $s^2_{\MLE}$, against minimizing  $\det(\mC)$. 
@@ -472,6 +469,37 @@ Under these estimates of the parameters, the cubature \eqref{eqn:BayesCub} and t
 |\mu-\hmu_\MLE| \leq \err_\MLE \right]  = 99\%.
 \end{align}
 Here $c_0$, $\vc$, and $\mC$ are assumed implicitly to be based on $\vtheta = \vtheta_\MLE$.   
+
+\subsubsection{Gradient descent to find optimal shape parameter}
+
+Searching for $\vtheta_\MLE$ as defined in \eqref{eqn:thetaMLE} is not very efficient. Using the derivative of $l(s,m,\vtheta | \vy)$, We can apply gradient descent to find the optimal value faster. Let us define the objective function for the same purpose by excluding the negative sign, which modifies the problem as minimization
+\begin{align*}
+\mathcal{L}(\vtheta | \vy)
+&:= \frac{1}{n} \log(\det\, \mC) +  \log\left( (\vy-m_\MLE\vone)^T\mCInv(\vy-m_\MLE\vone) \right) + \text{constants.}
+\end{align*}
+Taking derivative with respect to $\vtheta_i$
+\begin{align*}
+\frac{\partial}{\partial \vtheta_i} \mathcal{L}(\vtheta | \vy)
+&=  \frac{1}{n} \frac{\partial}{\partial \vtheta_i} \log(\det\, \mC) + \frac{\partial}{\partial \vtheta_i} 
+\log\left((\vy-m_\MLE\vone)^T\mCInv(\vy-m_\MLE\vone) \right)
+\\
+&= \frac 1n \trace{\left( \mCInv \frac{\partial \mC}{\partial \vtheta_i} \right)}
+- 
+\frac
+{\left((\vy-m_\MLE\vone)^T\mCInv\right)^T 
+	\left( \frac{\partial \mC}{\partial \vtheta_i} \right)
+	((\vy-m_\MLE\vone)^T\mCInv)}
+{(\vy-m_\MLE\vone)^T\mCInv(\vy-m_\MLE\vone)}
+\end{align*}
+where we used some of the results from \cite{Dong2017a}. 
+This can be used further for steepest gradient descent as follows,
+\begin{align}
+\label{eqn:deep_descent}
+\vtheta_i^{(j+1)} = \vtheta_i^{(j+1)} - \nu \frac{\partial}{\partial \vtheta_i} \mathcal{L}(\vtheta | \vy)
+\end{align}
+where $\nu$ is the stepping constant. 
+
+
 
 \subsection{Full Bayes}
 
@@ -562,6 +590,191 @@ where
 Here $t_{n-1,0.995}$ denotes the $99.5$ percentile of a standard Student's $t$-distribution with $n-1$ degrees of freedom. The stopping criterion for the full Bayes case is more conservative than that in the empirical Bayes case, \eqref{eqn_prob_CI_MLE}.
 
 Because the shape parameter, $\vtheta$, enters the definition of the covariance kernel in a non-trivial way, the only way to treat it as a hyperparameter and assign a tractable prior would be for the prior to be discrete.  We believe in practice that choosing such a prior involves more guesswork than using the empirical Bayes estimate of $\vtheta$ in \eqref{eqn:thetaMLE} or the cross-validation approach described next.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+
+
+
+
+
+
+
+
+\subsection{Full Bayes with generic prior}
+
+Rather than use non-informative, conjugate prior one can use generic prior, namely $\vrho_{m,s^2}(\xi, \lambda) \propto g(\lambda)$, than can generalize to any generic function.
+Then the posterior density for the integral given the data using Bayes theorem is
+\begin{align*}
+\MoveEqLeft[1]{\rho_{\mu}(z | \vf = \vy)} \\
+& \propto \int_{0}^\infty \int_{-\infty}^\infty \rho_{\mu}(z | \vf = \vy, m = \xi, s^2 = \lambda)  \rho_{\vf}(\vy | \xi, \lambda ) \rho_{m, s^2}(\xi, \lambda) \, \D \xi \D \lambda \\
+&\qquad \qquad \qquad \qquad \text{by the properties of conditional probability} 
+\\
+& \propto \int_{0}^\infty \int_{-\infty}^\infty \rho_{\mu}(z | \vf = \vy, m = \xi, s^2 = \lambda)  \rho_{\vf}(\vy | \xi, \lambda ) \rho_{m, s^2}(\xi, \lambda) \, \D \xi \D \lambda \\
+&\qquad \qquad \qquad \qquad \text{by Bayes' Theorem} 
+\\
+& \propto \displaystyle \int_{0}^\infty  \frac{g(\lambda)}{\lambda^{(n+1)/2}} 
+\int_{-\infty}^\infty  \exp \biggl( -\frac{1}{2\lambda}\biggl\{
+\frac{
+	[z - \xi (1 - \vc^T \mC^{-1} \vone)  -  \vc^T \mC^{-1} \vy]^2}
+{c_0  -\vc ^T \mC^{-1} \vc}  \\
+& \qquad \qquad \qquad  + (\vy - \xi \vone)^T \mC^{-1}(\vy - \xi \vone) \biggr \} \biggr) \, \D \xi \D \lambda \\
+&\qquad \qquad
+\text{by \eqref{eqn:fGaussDist}, \eqref{eqn:condInteg}} \; \text{and} \; \rho_{m,s^2}(\xi,\lambda) \propto g(\lambda) \\
+& \propto \displaystyle \int_{0}^\infty  \frac{g(\lambda)}{\lambda^{(n+1)/2}} \int_{-\infty}^\infty  \exp\left( -\frac{\alpha \xi^2 -2 \beta \xi + \gamma}{2\lambda(c_0  -\vc ^T \mC^{-1} \vc)} \right) \, \D \xi \D \lambda, \\
+\intertext{where}
+\alpha & = (1 - \vc^T \mC^{-1} \vone)^2 + \vone^T \mC^{-1} \vone (c_0  -\vc ^T \mC^{-1} \vc),\\
+\beta & =(1 - \vc^T \mC^{-1} \vone)(z - \vc^T \mC^{-1} \vy )
++ \vone^T \mC^{-1} \vy (c_0  -\vc ^T \mC^{-1} \vc),\\
+\gamma &  = (z - \vc^T \mC^{-1} \vy )^2  + \vy^T \mC^{-1} \vy (c_0  -\vc ^T \mC^{-1} \vc).
+\end{align*}
+In the derivation above and below, factors that are independent of $\xi$, $\lambda$, or $z$ can be discarded since we only need to preserve the proportion.  But, factors that depend on $\xi$, $\lambda$, or $z$ must be kept.  
+%Completing the square allows us to compute the integral with respect to $\xi$:
+Completing the square $
+\alpha \xi^2 -2 \beta \xi + \gamma 
+= \alpha (\xi -\beta/\alpha)^2  - (\beta^2/\alpha) + \gamma,
+$
+allows us to evaluate the integrals with respect to $\xi$ and $\lambda$:
+\begin{align*}
+\MoveEqLeft{\rho_{\mu}(z | \vf = \vy)} &
+\\
+& \propto \displaystyle \int_{0}^\infty  \frac{g(\lambda)}{\lambda^{(n+1)/2}}  \exp\left( -\frac{  \gamma - \beta^2/\alpha}{2\lambda(c_0  -\vc ^T \mC^{-1} \vc)} \right)  \cdots 
+\\
+& \qquad \qquad \cdots \int_{-\infty}^\infty  \exp\left( -\frac{\alpha (\xi -\beta/\alpha)^2}{2\lambda(c_0  -\vc ^T \mC^{-1} \vc)} \right) \, \D \xi \D \lambda 
+\\
+& \propto \displaystyle \int_{0}^\infty  \frac{g(\lambda)}{\lambda^{n/2}}  \exp\left( -\frac{  \gamma - \beta^2/\alpha}{2\lambda(c_0  -\vc ^T \mC^{-1} \vc)} \right) \D \lambda 
+.
+\end{align*}
+This can be interpreted as Laplace transform of $g(\lambda)$.
+\begin{align*}
+{\rho_{\mu}(z | \vf = \vy)} 
+& \propto \displaystyle \int_{0}^\infty  \frac{g(\lambda)}{\lambda^{n/2}}  \exp\left( -\frac{  \gamma - \beta^2/\alpha}{2\lambda(c_0  -\vc ^T \mC^{-1} \vc)} \right) \D \lambda 
+\\
+& \propto \int_{0}^\infty \frac{g(\lambda)}{\lambda^{n/2}}
+\exp \left(  - \frac{1}{\lambda} \eta \right)
+\dif{\lambda}, \quad \text{where} \quad \eta = \frac{  \gamma - \beta^2/\alpha}{2(c_0  -\vc ^T \mC^{-1} \vc)}
+\end{align*}
+Let $\displaystyle \lambda = \frac{1}{w}, \quad \dif{\lambda} = -w^{-2} \dif{w}$ then,
+\begin{align*}
+{\rho_{\mu}(z | \vf = \vy)} 
+& \propto \int_{0}^\infty \frac{g(\lambda)}{\lambda^{n/2}}
+\exp \left(  - \frac{1}{\lambda} \eta \right)
+\dif{\lambda} 
+\\
+&= \int_{0}^\infty \frac{g(1/w)  }{w^{-n/2}}
+\exp \left(  - w \eta \right)
+(-w^{-2})\dif{w}
+\\
+&= \int_\infty^0 -g(1/w) w^{\frac n2 - 2}
+\exp \left(  - w \eta \right)
+\D{w}
+\\
+&= \int_0^\infty g(1/w) w^{\frac{n-4}2}
+\exp \left(  - w \eta \right)
+\D{w}
+\\
+& = \mathcal{LT} \{ g(1/\eta) \}^{(\frac{n-4}2)'}
+\end{align*}
+where $\mathcal{LT}(.)$ denotes the Laplace transform and $(\frac{n-4}2)'$ indicates the derivative taken after the transform.
+Here we used frequency domain derivative property of the Laplace transform. 
+Thus, $\rho_{\mu}(z | \vf = \vy)$  is proportional to $(\frac{n-4}{2})$th derivative of the Laplace transform of $g(1/\eta)$.
+
+
+If $\displaystyle g(\lambda) = \frac{1}{\lambda}$, then
+\begin{align*}
+{\rho_{\mu}(z | \vf = \vy)} 
+&= \int_{0}^\infty g(1/w)  w^{\frac n2 -2}
+\exp \left(  - w \eta \right)
+\D w
+\\
+& = \displaystyle \left(\mathcal{LT}(g(1/t)) \right)^{(\frac n2 -2)'} \lvert_{t=\eta}
+\\
+& = \left(1/t^{2} \right)^{(\frac n2 -2)'} \lvert_{t=\eta}
+\\
+& \propto \eta^{-n/2} = \left( \frac{  \gamma - \beta^2/\alpha}{2(c_0  -\vc ^T \mC^{-1} \vc)} \right)^{-n/2}
+\\
+& \propto \left(\gamma - \frac{\beta^2}{\alpha}\right)^{-n/2}
+\\
+& \propto \left(\alpha \gamma - \beta^2\right)^{-n/2}.
+\end{align*}
+Laplace transform of $g(1/t)$ is $1/t^2$, taking $\frac n2 -2$th derivative gives us 
+
+Finally, we simplify the key term $\eta$:
+\begin{align*}
+\alpha \gamma - \beta^2 
+& = \vone^T \mC^{-1} \vone (c_0  -\vc ^T \mC^{-1} \vc) (z - \vc^T \mC^{-1} \vy )^2 \\
+& \qquad \qquad - 2 \vone^T \mC^{-1} \vy (c_0  -\vc ^T \mC^{-1} \vc)(1 - \vc^T \mC^{-1} \vone)(z - \vc^T \mC^{-1} \vy ) \\
+& \qquad \qquad + (1 - \vc^T \mC^{-1} \vone)^2 \vy^T \mC^{-1} \vy (c_0  -\vc ^T \mC^{-1} \vc) \\
+&\qquad \qquad  + [\vone^T \mC^{-1} \vone \vy^T \mC^{-1} \vy - (\vone^T \mC^{-1} \vy)^2](c_0  -\vc ^T \mC^{-1} \vc)^2  \\
+& \propto \vone^T \mC^{-1} \vone  \left (z - \vc^T \mC^{-1} \vy - \frac{(1 - \vc^T \mC^{-1} \vone)\vone^T \mC^{-1} \vy}{\vone^T \mC^{-1} \vone } \right )^2 \\
+& \qquad \qquad -  \frac{[(1 - \vc^T \mC^{-1} \vone)\vone^T \mC^{-1} \vy]^2}{\vone^T \mC^{-1} \vone }  
++ (1 - \vc^T \mC^{-1} \vone)^2 \vy^T \mC^{-1} \vy \\
+& \qquad \qquad (c_0  -\vc ^T \mC^{-1} \vc) [\vone^T \mC^{-1} \vone  \vy^T \mC^{-1} \vy
+- (\vone^T \mC^{-1} \vy)^2] \\
+& \propto \left (z - \left[ \frac{(1 - \vc^T \mC^{-1} \vone)\vone}{\vone^T \mC^{-1} \vone } + \vc \right]^T \mC^{-1} \vy \right )^2 \\
+& \qquad  + \left[\frac{(1 - \vc^T \mC^{-1} \vone)^2}{\vone^T \mC^{-1} \vone} + (c_0  -\vc ^T \mC^{-1} \vc) \right] \times \vy^T\left[ \mC^{-1} 
+- \frac{ \mC^{-1} \vone\vone^T \mC^{-1}}{\vone^T \mC^{-1} \vone}  \right]\vy
+\\
+& \propto (z - \widehat{\mu}_{\textup{full}})^2 + (n-1) \sigma_{\textup{full}}^2
+\\
+& \propto \left(1 +  \frac{1}{n-1} \frac{(z - \mu_{\textup{full}})^2}{\widehat{\sigma}_{\textup{full}}^2} \right)
+\end{align*}
+i.e.,
+\begin{align*}
+\alpha \gamma - \beta^2 \propto 
+\left(
+1 +  \frac{(z - \hmu_{\textup{full}})^2}{(n-1)\widehat{\sigma}_{\textup{full}}^2}, 
+\right)
+\end{align*}
+where $\hmu_{\textup{full}} = \hmu_{\MLE}$ and 
+\begin{multline*}
+%\label{FJH:eq:signmaFull}
+\hsigma^2_{\textup{full}} 
+:= \frac{1}{n-1}
+\vy^T\left[ \mC^{-1} 
+- \frac{ \mC^{-1} \vone\vone^T \mC^{-1}}{\vone^T \mC^{-1} \vone}  \right]\vy
+\times  \left[\frac{(1 - \vc^T \mC^{-1} \vone)^2}{\vone^T \mC^{-1} \vone} + (c_0  -\vc ^T \mC^{-1} \vc) \right].
+\end{multline*}
+This means that $\mu \vert (\vf = \vy )$, properly centered and scaled, has a Student's $t$-distribution with $n-1$ degrees of freedom.   The estimated integral is the same as in the empirical Bayes case, $\hmu_{\textup{full}} = \hmu_{\MLE}$, but the confidence interval is wider:
+\begin{equation}
+\label{eqn_prob_CI_full}
+\mathbb{P}_f \left[
+|\mu-\hmu_\MLE| \leq \err_{\textup{full}} \right]  = 99\%,
+\end{equation}
+where
+\begin{equation}
+\label{FJH:eq:errFull}
+\err_{\textup{full}} 
+:= t_{n_j-1,0.995} \hsigma_{\textup{full}} > \err_\MLE .
+\end{equation}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 \subsection{Generalized Cross-Validation} \label{sec:GCV}
@@ -911,6 +1124,81 @@ Thus, in this  case $\hmu$ is simply the sample mean.
 
 
 
+
+\subsection{Kernel derivative using fast transform}
+If $\mV$ does not depend on $\vtheta$ then one can fast compute the derivative of matrix $\mC$. Starting from the definition \eqref{eqn:ftk_factor} and taking derivative w.r.t. $\theta_j$, 
+\begin{align*}
+\displaystyle \frac{\partial \mC}{\partial \theta_j} 
+= \frac 1n \mV \frac{\partial {\mLambda}}{\partial \theta_j} \mV^H
+= \frac 1n \mV \bar{\mLambda}_{(j)} \mV^H 
+\end{align*}
+where $\bar{\mLambda}_{(j)} = \diag(\bar{\vlambda}_{(j)})$ and $\bar{\vlambda}_{(j)} = \frac{\partial \vlambda}{\partial \theta_j} = \left( \frac{\partial \lambda_i}{\partial \theta_j} \right)_{i=1}^n $.
+Also, note that $\bar{\vlambda}_{(j)} = \mV^H \bar{\vC_1}_{(j)}$ computed using the fast transform,  where $\bar{\vC}_{1(j)}$ denotes the first row of the gram matrix after taking derivative, i.e.
+\begin{align*}
+\bar{\vC}_{1{(j)}} = \left(\frac{\partial }{\partial{\theta}_i} C_\vtheta(\vx_1,\vx_i) \right)_{i=1}^n.
+\end{align*}
+First, let's define the objective function from \eqref{eqn_MLE_loss_func_optimized_2},
+\begin{align*}
+\mathcal{L}(\vtheta | \vy) &= 
+\frac{1}{n}  \log(\det\, \mC) + \log\left((\vy-m_\MLE\vone)^T\mCInv(\vy-m_\MLE\vone) \right)
+\\ &= \mathcal{L}_{\abs{\mC}} + \mathcal{L}_{\vy}
+\end{align*}
+Now, let's take the derivative
+\begin{align*}
+\frac{\partial}{\partial \theta_i} \mathcal{L}(\vtheta | \vy)
+&=  \frac{\partial}{\partial \theta_i} \mathcal{L}_{\abs{\mC}} + \frac{\partial}{\partial \theta_i} \mathcal{L}_{\vy}
+\end{align*}
+Let's simplify the individual terms
+\begin{align*}
+\frac{\partial}{\partial \theta_i} \mathcal{L}_{\abs{\mC}} &= \frac{\partial}{\partial \theta_i}  \frac{1}{n} \log(\det\, \mC) 
+\\ & = \trace{\left( \mCInv \frac{\partial \mC}{\partial \vtheta_i} \right)}
+ =
+\trace{\left(
+\frac 1n \mV {\mLambda}^{-1} \mV^H
+\frac 1n \mV \overline{\mLambda} \mV^H
+\right)}
+\\
+& =
+\trace{\left(
+	\frac{1}{n} \mV {\mLambda}^{-1}  \overline{\mLambda} \mV^H
+	\right)}, \quad \text{where we used } \; \mV^H \mV = n
+\\
+& =
+\trace{\left(
+	\frac{1}{n} \mV \;
+	\diag\left( \frac{\overline{\lambda}_j}{\lambda_j} \right)_{j=1}^n \mV^H
+	\right)}
+= \sum_{j=1}^{n} \frac{\overline{\lambda}_j}{\lambda_j}
+\end{align*}
+Part of the $\mathcal{L}_{\vy}$ was already simplified using the fast transform,
+\begin{align*}
+{(\vy-m_\MLE\vone)^T\mCInv(\vy-m_\MLE\vone)} = \frac{1}{n} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i}
+\end{align*}
+Using the above result,
+\begin{align*}
+\frac{\partial}{\partial \theta_j} \mathcal{L}_{\vy} 
+&= \frac{\partial}{\partial \vtheta_j} \log\left(\frac{1}{n} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i} \right) 
+\\ 
+&= \left(\frac{1}{n} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i}\right)^{-1}
+\;
+\frac{\partial}{\partial \vtheta_j} \left(\frac{1}{n} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i} \right) 
+\\ &= \left(
+\frac{1}{n} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i} \right)^{-1} \frac{1}{n} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2}
+\left( -\frac{\partial \lambda_i}{\partial \vtheta_j} \right)
+\\ &= -\left(
+\sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i} \right)^{-1} 
+\left( \sum_{i=2}^n \abs{\widetilde{y}_i}^2 \frac{ \bar{ \lambda}_{i(j)} }{\lambda_i^2}
+ \right)
+\end{align*}
+Finally, using the results
+\begin{align*}
+\frac{\partial}{\partial \theta_j} \mathcal{L}(\vtheta | \vy) 
+&=  \frac 1n \sum_{i=1}^{n} \frac{\bar{\lambda}_{i(j)}}{\lambda_i}
+- \left({ \sum_{i=2}^n \frac{\abs{\tvy_i}^2 \bar{\lambda}_{i(j)}}{\lambda_i^2}}\right)
+\left( {\sum_{i=2}^n \frac{\abs{\tvy_i}^2}{\lambda_j}} \right)^{-1}
+\end{align*}
+
+
 \subsection{Full Bayes}
 For the full Bayes approach the cubature is the same as for empirical Bayes.  We also defer to empirical Bayes to estimate the parameter $\vtheta$.  The width of the confidence interval is $\err_{\textup{full}} 
 := t_{n_j-1,0.995} \hsigma_{\textup{full}}$, where $\hsigma_{\textup{full}}^2$ can also be computed swiftly under assumptions \eqref{fastcompAssump}:
@@ -970,6 +1258,8 @@ Moreover, under further assumption \eqref{addAssump} it follows that
 \right\}^{1/2}. \label{errGCVSimple}
 \end{align}
 In this case too, $\hmu$ is simply the sample mean.
+
+
 
 
 \Chapter{Integration Lattices and Shift Invariant Kernels}
@@ -1050,6 +1340,78 @@ Larger `$r$' implies a greater degree of smoothness of the kernel.  Larger $\gam
 	\caption[Fourier kernel]{Shift invariant kernel in 1D shifted by 0.3 to show the discontinuity }
 	\label{fig:fourierkernel-dim1}
 \end{figure}
+
+\subsection{Derivative of the kernel}
+
+\begin{align*}
+\frac{\partial}{\partial \gamma_i} C_\vtheta(\vt, \vx) 
+& =
+\frac{\partial}{\partial \gamma_i} 
+\prod_{l=1}^d \biggl[
+1 - (-1)^{r} \gamma B_{2r}( |{x_l-t_l}| ) \biggr]
+\\
+& = 
+\sum_{j=1}^d  
+\prod_{l=1, l \neq j}^d \biggl[
+1 - (-1)^{r} \gamma B_{2r}( |{x_l-t_l}| ) \biggr]
+\biggl( - (-1)^{r} B_{2r}( |{x_j-t_j}| ) \biggr)
+\\
+& =
+\prod_{l=1}^d \biggl[
+1 - (-1)^{r} \gamma B_{2r}( |{x_l-t_l}| ) \biggr]
+\sum_{j=1}^d 
+\frac{
+\biggl( - (-1)^{r} B_{2r}( |{x_j-t_j}| ) \biggr)
+}{
+1 - (-1)^{r} \gamma B_{2r}( |{x_j-t_j}| ) 
+}
+\\
+& =
+C_\vtheta(\vt, \vx) 
+\frac{1}{\gamma}
+\sum_{j=1}^d 
+\frac{
+	\biggl(1 - (-1)^{r} \gamma B_{2r}( |{x_j-t_j}|  - 1) \biggr)
+}{
+	1 - (-1)^{r} \gamma B_{2r}( |{x_j-t_j}| ) 
+}
+\\
+& =
+C_\vtheta(\vt, \vx) 
+\frac{1}{\gamma}
+\sum_{j=1}^d 
+\biggl(
+1 - 
+\frac{1
+}{
+	1 - (-1)^{r} \gamma B_{2r}( |{x_j-t_j}| ) 
+}
+\biggr)
+\\
+& =
+\frac{d}{\gamma} 
+\underbrace{
+\left(
+\prod_{l=1}^d \biggl[
+1 - (-1)^{r} \gamma B_{2r}( |{x_l-t_l}| ) \biggr]
+\right) }_
+{ C_\vtheta(\vt, \vx) }
+\biggl(
+1 - 
+\frac{1}{d} \sum_{j=1}^d
+\frac{1}
+{ 1 - (-1)^{r} \gamma B_{2r}( |{x_j-t_j}| ) }
+\biggr)
+\end{align*}
+
+\subsection{Shape parameter search using steepest descent}
+
+Now we can implement the steepest descent search introduced in \eqref{Dong2017a}
+
+\begin{align*}
+\vtheta_i^{(j+1)} = \vtheta_i^{(j+1)} - \nu \frac{\partial}{\partial \vtheta_i} \mathcal{L}(\vtheta | \vy)
+\end{align*}
+
 
 \subsection{Eigenvectors}
 For general shift-invariance covariance functions the Gram matrix takes the form
@@ -1391,60 +1753,155 @@ g(a_1,\dots,a_r),
 \subsection{Closed form expressions}
 
 \begin{align*}
-\omega_2(x) &= \sum_{k=1}^\infty r_2(k) \wal_k(x)
-\\
+\omega_{b,\alpha} := \sum_{\kappa=1}^\infty r_{b,\alpha} \wal_{b,\kappa} (x)
+\end{align*}
+for a given base $b$ and number $x \in [0,1)$. Given an integer $\kappa$, consider its base $b$ expansion 
+\begin{align*}
+\kappa = \sum_{i=0}^\infty \kappa_i b^i, \quad k_i \in \integers_b := \{0,1,\dots,b-1\}
+\end{align*}
+We are interested in the non-zero digits of $\kappa$ in base $b$. Denote the number of non-zero digits of $\kappa$ by $\#\kappa$.
+\begin{align*}
+\kappa = \sum_{i=1}^{\#\kappa} \kappa_{a_i} b^{a_i}, \quad k_{a_i} \in \integers_b \backslash
+ \{0\}, \quad a_1 > a_2 \dots a_{\#\kappa} \ge 0
+\end{align*}
+Now, define the function $r_{b,\alpha}(\kappa)$  
+\begin{align*}
+r_{b,\alpha}(\kappa) := b^{-\sum_{i=1}^{\min(\#\kappa,\alpha)} (a_i+1)} = 
+\begin{cases*}
+1, & if $\kappa$ = 0, \\
+b^{-((a_1+1)+\dots + (a_{\min(\#\kappa,\alpha)+1}))}, & for $\kappa$ as given above
+\end{cases*}
+\end{align*}
+Note that the function $r_{b,\alpha}(\kappa)$  only depends on the $\alpha$ most-significant base-$b$ digit locations of $\kappa$, but in a such a way their digit values do not matter
+
+Similarly, assume $x \in [0,1)$ has a base-$b$ expansion
+\begin{align*}
+x = \sum_{i=1}^{\infty} x_i b^{-i} = \sum_{i=1}^{\#x} x_{a_i} b^{-a_i}, 
+\quad 1 \le a_1 < a_2 < \dots < a_{\#x}, 
+\quad x_i \in \integers_b, \quad x_{a_i} \in \integers_b \backslash \{0\}
+\end{align*}
+where $-a_1$ is the most significant power of $b$. For non-zero $x$, we find $a_1 = - \lfloor \log_b(x)\rfloor$
+
+
+\paragraph{Consider the case $\alpha=2.$}
+\begin{align}
+\nonumber
+\omega_{b,2} &= 
+\sum_{l=0}^{\infty} \sum_{h_l=1}^{b-1} r_{b,2} (h_l b^l) \wal_{b,h_l b^l} (x) \\
+\nonumber
+& \qquad + 
+\sum_{l=0}^{\infty} \sum_{h_l=1}^{b-1} 
+\sum_{l'=0}^{l-1} \sum_{h_{l'}=1}^{b-1} \sum_{h'=0}^{b^{l'}-1} 
+r_{b,2} (h_l b^l + h_{l'} b^{l'} + h') \wal_{b, h_l b^l + h_{l'} b^{l'} + h'} (x) \\
 &= s_1(x) + \tilde{s}_2(x)
+\end{align}
+For $b=2$ it gets much simpler
+\begin{align*}
+\omega_{b,2} &= 
+\sum_{l=0}^{\infty} r_{b,2} (b^l) \wal_{b, b^l} (x)  + 
+\sum_{l=0}^{\infty}  
+\sum_{l'=0}^{l-1} \sum_{h'=0}^{b^{l'}-1} 
+r_{b,2} (b^l + b^{l'} + h') \wal_{b, b^l + b^{l'} + h'} (x) \\
+&= 
+\sum_{l=0}^{\infty} 2^{-(l+1)} \exp(2\pi i x_{l+1}/2)   + 
+\sum_{l=0}^{\infty}  
+\sum_{l'=0}^{l-1} \sum_{h'=0}^{b^{l'}-1} 
+r_{b,2} (b^l + b^{l'} + h') \wal_{b, b^l + b^{l'} + h'} (x) 
 \end{align*}
 
-
+Note that
 \begin{align*}
-s_1(x) &= \sum_{\substack{k=1 \\ k = 2^{a_1}}}^\infty r_2(k) \wal_k(x)
+\sum_{h_l=1}^{b-1} \wal_{b, h_l b^l} (x) = \exp(2\pi i x_{l+1}/2) = (-1)^{x_{l+1}}
+\end{align*}
+
+Let's start with $s_1$,
+\begin{align*}
+s_1(x) &= \sum_{l=0}^{\infty} r_{b,2} (b^l) \wal_{b, b^l} (x) 
 \\
-&= \sum_{\substack{k=1; k = 2^{a_1}}}^\infty 2^{(-a_1 + 1)} \exp(\pi \sqrt{-1} \xi_{a_1 + 1})
+&= \sum_{l=0}^\infty 2^{-(l + 1)} \exp(2\pi \sqrt{-1} x_{l + 1}/2)
 \\
-&= \sum_{\substack{a_1=0}}^\infty 2^{-(a_1 + 1)} \exp(\pi \sqrt{-1} \xi_{a_1 + 1})
+&= \sum_{l=1}^\infty 2^{(-l)} \exp(\pi \sqrt{-1} x_{l }), \qquad \text{where} \; x_l \in \{0, 1\}
 \\
-&= \sum_{\substack{a_1=1}}^\infty 2^{(-a_1)} \exp(\pi \sqrt{-1} \xi_{a_1 }), \qquad \text{where} \; \xi_a \in \{0, 1\}
+&= \sum_{l=1}^\infty 2^{(-l)} (-1)^{x_{l }}
 \\
-&= \sum_{\substack{a_1=1}}^\infty 2^{(-a_1)} (-1)^{\xi_{a_1 }}
-\quad = \quad \sum_{\substack{a=1}}^\infty 2^{(-a)} (-1)^{\xi_{a }}
+&= \sum_{l=1}^\infty 2^{-l} +  \sum_{l=1}^\infty 2^{-l}( (-1)^{x_{l }} - 1)
 \\
-&= \sum_{\substack{a=1}}^\infty 2^{-a} +  \sum_{\substack{a=1}}^\infty 2^{-a}( (-1)^{\xi_{a }} - 1)
+&= 1 +  \sum_{l=1}^\infty 2^{-l}( (-1)^{x_{l }} - 1)
 \\
-&= 1 +  \sum_{\substack{a=1}}^\infty 2^{-a}( (-1)^{\xi_{a }} - 1)
+&= 1 +  \sum_{l=1}^\infty 2^{-l} (-2) [x_l = 1]
 \\
-&= 1 +  \sum_{\substack{a=1}}^\infty 2^{-a} (-2) [\xi_a = 1]
+&= 1 - 2  \sum_{l=1}^\infty 2^{-l} [x_l = 1]
 \\
-&= 1 - 2  \sum_{\substack{a=1}}^\infty 2^{-a} [\xi_a = 1]
-\\
-&= 1 - 2  \sum_{\substack{j=1}}^{\#x} 2^{-a_j}, \quad \text{using} \; x = \sum_{\substack{j=1}}^{\#x} 2^{-a_j}
+&= 1 - 2  \sum_{j=1}^{\#x} 2^{-a_j}, \quad \text{using} \; x = \sum_{j=1}^{\#x} 2^{-a_j}
 \\
 &= 1 - 2  x
 \end{align*}
 
 
-
+Similarly, we can solve $\tilde{s}_2$
 \begin{align*}
-\tilde{s}_2(x) &= \sum_{\substack{k=1; k = 2^{a_1} + 2^{a_2} + k' }}^\infty r_2(k) \wal_k(x)
+\tilde{s}_2(x) &= \sum_{\substack{k=1; k = 2^{l} + 2^{l'} + k' }}^\infty r_2(k) \wal_k(x)
 \end{align*}
-where $k = 2^{a_1} + 2^{a_2} + k', \; k' \in \{0, \dots 2^{a_2}-1 \}$
+where $k = 2^{l} + 2^{l'} + k', \; k' \in \{0, \dots 2^{l'}-1 \}$
 \begin{align*}
-\tilde{s}_2(x) &= \sum_{\substack{k=1; k = 2^{a_1} + 2^{a_2} + k'}}^\infty 
-2^{-(a_1+1)} (-1)^{\xi_{a_1+1}} 2^{-(a_2+1)} (-1)^{\xi_{a_2+1}} \wal_{k'}(x)
+\tilde{s}_2(x) &= \sum_{\substack{k=1; k = 2^{l} + 2^{l'} + k'}}^\infty 
+2^{-(l+1)} (-1)^{x_{l+1}} 2^{-(l'+1)} (-1)^{x_{l'+1}} \wal_{k'}(x)
 \\
-&= \sum_{a_1=1}^\infty 2^{-(a_1+1)} (-1)^{\xi_{a_1+1}} 
-\sum_{a_2=0}^{a_1-1} 2^{-(a_2+1)} (-1)^{\xi_{a_2+1}} \sum_{k'=0}^{2^{a_2}-1} \wal_{k'}(x)
+&= \sum_{l=1}^\infty 2^{-(l+1)} (-1)^{x_{l+1}} 
+\sum_{l'=0}^{l-1} 2^{-(l'+1)} (-1)^{x_{l'+1}} \sum_{k'=0}^{2^{l'}-1} \wal_{k'}(x)
 \\
-&= \sum_{a_2=0}^{\infty} 2^{-(a_2+1)} (-1)^{\xi_{a_2+1}} \sum_{k'=0}^{2^{a_2}-1} \wal_{k'}(x)
-\sum_{a_1=a_2+1}^\infty  2^{-(a_1+1)} (-1)^{\xi_{a_1+1}} 
-\\
-&= \sum_{a_2=0}^{\infty} 2^{-(a_2+1)} (-1)^{\xi_{a_2+1}} 2^{a_2} [x < 2^{-a_2}]
-\sum_{a_1=a_2+1}^\infty  2^{-(a_1+1)} (-1)^{\xi_{a_1+1}} 
-\\
-&= \sum_{a_2=0}^{\infty} 2^{-(a_2+1)} (-1)^{\xi_{a_2+1}} 2^{a_2} [x < 2^{-a_2}]
-2^{-(a_2+1)} \sum_{a_1=1}^\infty  2^{-(a_1)} (-1)^{\xi_{a_1}} 
+&= \sum_{l'=0}^{\infty} 2^{-(l'+1)} (-1)^{x_{l'+1}} \sum_{k'=0}^{2^{l'}-1} \wal_{k'}(x)
+\sum_{l=l'+1}^\infty  2^{-(l+1)} (-1)^{x_{l+1}} 
 \end{align*}
 
+Using the character property or by the definition of $\wal$ function
+\begin{align*}
+\sum_{k=0}^{b^{l}-1} \wal_{k}(x) &= 
+\sum_{k_0=0}^{b-1} \sum_{k_1=0}^{b-1} \dots \sum_{k_{l-1}=0}^{b-1}
+\exp(2\pi i (x_1 k_0 + x_2 k_1 + \dots + x_{l} k_{l-1})/b) \\
+&= 
+\sum_{k_0=0}^{b-1} \exp(2\pi i (x_1 k_0)/b)
+\sum_{k_1=0}^{b-1} \exp(2\pi i (x_2 k_1)/b)
+\dots 
+\sum_{k_{l-1}=0}^{b-1} \exp(2\pi i (x_{l} k_{l-1})/b)
+\end{align*}
+For $b=2$
+\begin{align*}
+\sum_{k=0}^{b^{l}-1} \wal_{k}(x) 
+&= 
+\sum_{k_0=0}^{1} \exp(\pi i (x_1 k_0))
+\sum_{k_1=0}^{1} \exp(\pi i (x_2 k_1))
+\dots 
+\sum_{k_{l-1}=0}^{1} \exp(\pi i (x_{l} k_{l-1}))
+\\
+&= 
+\sum_{k_0=0}^{1} (-1)^{x_1 k_0}
+\sum_{k_1=0}^{1} (-1)^{x_2 k_1}
+\dots 
+\sum_{k_{l-1}=0}^{1} (-1)^{x_{l} k_{l-1}}
+\\
+&= 2^{l} \times [x < 2^{-l}] 
+\end{align*}
+Continuing with $\tilde{s}_2$
+\begin{align*}
+\tilde{s}_2(x) &= \sum_{l'=0}^{\infty} 2^{-(l'+1)} (-1)^{x_{l'+1}} 2^{l'} [x < 2^{-l'}]
+\sum_{l=l'+1}^\infty  2^{-(l+1)} (-1)^{x_{l+1}} 
+\end{align*}
+Now suppose $x=0$, then
+\begin{align*}
+\tilde{s}_2(0) &= \sum_{l'=0}^{\infty} 2^{-(l'+1)} 2^{l'} \sum_{l=l'+1}^\infty  2^{-(l+1)} 
+\\
+&= \sum_{l'=0}^{\infty} 2^{-(l'+1)}  2^{l'}  2^{-l'}  \sum_{l=1}^\infty  2^{-(l+1)} 
+\\
+&= \sum_{l'=0}^{\infty} 2^{-(l'+1)}   2^{-1} \sum_{l=1}^\infty  2^{-l} 
+\\
+&= \sum_{l'=0}^{\infty} 2^{-(l'+1)}   2^{-1} 
+\\
+&= 2^{-1}   \sum_{l'=1}^{\infty} 2^{-l'}   
+\\
+&= 2^{-1}   
+\end{align*}
+Now suppose $x = x_{a_1}b^{-a_1} \ne 0$
 
 
 \begin{align*}
@@ -1953,6 +2410,10 @@ Assume the prior is of the form $ \rho_{m,s^2} (\xi, \lambda) = \frac{1}{\lambda
 & \propto \left(\vy^T\mCInv\vy - \frac{(\vone^T\mCInv\vy)^2}{\vone^T\mCInv\vone} \right)^{-\frac{(n-1)}{2}}
 \\
 &=  \left(\vy^T \left[\mCInv - \frac{(\mCInv\vone \vone^T \mCInv)}{\vone^T\mCInv\vone} \right]\vy \right)^{-\frac{(n-1)}{2}}
+\\
+&=  \biggl((\vy-m_\MLE)^T \mCInv (\vy-m_\MLE) \biggr)^{-\frac{(n-1)}{2}}, 
+\quad \text{where} \quad
+m_\MLE=\frac{(\vone^T \mCInv \vy)}{\vone^T\mCInv\vone}
 \end{align*}
 
 \paragraph{TODO: How to interpret as t-distribution?}
@@ -2010,12 +2471,40 @@ Assume the prior is of the form $ \rho_{m,s^2} (\xi, \lambda) = g(\lambda) $
 & \propto \int_{0}^\infty \frac{g(\lambda)}{\lambda^{\frac{(n-1)}{2}}}
 \exp \left(  - \frac{1}{2\lambda} D [B - A^2] \right)
 \dif{\lambda}
-\\
-& \dots
 \end{align*}
+This can be interpreted as Laplace transform of $g(\lambda)$.
+Let $\eta = \frac{1}{2} D [B - A^2] $ and $\lambda = \frac{1}{w}, \dif{\lambda} = -w^{-2} \dif{w}$ 
+\begin{align*}
+\rho_{f(\vx)}(\vy) 
+& \propto \int_{0}^\infty \frac{g(\lambda)}{\lambda^{\frac{(n-1)}{2}}}
+\exp \left(  - \frac{1}{2\lambda} D [B - A^2] \right)
+\dif{\lambda} 
+\\
+&= \int_{0}^\infty \frac{g(1/w)  }{w^{-\frac{(n-1)}{2}}}
+\exp \left(  - w \eta \right)
+(-w^{-2})\dif{w}
+\\
+&= \int_\infty^0 -g(1/w) w^{\frac{(n-1)}{2} - 2}
+\exp \left(  - w \eta \right)
+\dif{w}
+\\
+&= \int_{0}^\infty g(1/w) w^{\frac{(n-5)}{2}}
+\exp \left(  - w \eta \right)
+\dif{w}
+\\
+& = \mathcal{LT}\{ g(1/\eta) \}^{(\frac{n-5}{2})'}
+\end{align*}
+where $\mathcal{LT}(.)$ denotes the Laplace transform and $(\frac{n-5}2)'$ indicates the $(\frac{n-5}2)$th derivative taken after the transform.
+Here we used frequency domain derivative property of the Laplace transform. 
+$\rho_{f(\vx)}(\vy)$  is proportional to $(\frac{n-5}2)$th derivative of the Laplace transform of $g(1/\eta)$.
 
-
-
+\begin{align*}
+D [B - A^2] &= \left(\vy^T\mCInv\vy - \frac{(\vone^T\mCInv\vy)^2}{\vone^T\mCInv\vone} \right)
+\\
+&= \biggl((\vy-m_\MLE)^T \mCInv (\vy-m_\MLE) \biggr), 
+\quad \text{where} \quad
+m_\MLE=\frac{(\vone^T \mCInv \vy)}{\vone^T\mCInv\vone}
+\end{align*}
 \paragraph{TODO: How to integrate further?}
 
 
@@ -2105,7 +2594,14 @@ number & number & number \\
 
 \fi
 
+\Chapter{Future work} 
+\label{sec:futureWork}
 
+\section{Future work}
+
+\begin{itemize}
+	\item Optimal kernel order selection for the integrand
+\end{itemize}
 
 \section*{Acknowledgments}
 This research was supported in part by the National Science Foundation grants DMS-1522687 and DMS-1638521 (SAMSI).
@@ -2134,24 +2630,6 @@ The authors would like to thank the organizers of the SAMSI-Lloyds-Turing Worksh
 
 
 
-
-
-\iffalse
-% Non-BibTeX users please use
-\begin{thebibliography}{}
-%
-% and use \bibitem to create references. Consult the Instructions
-% for authors for reference list style.
-%
-\bibitem{RefJ}
-% Format for Journal Reference
-Author, Article title, Journal, Volume, page numbers (year)
-% Format for books
-\bibitem{RefB}
-Author, Book title, page numbers. Publisher, place (year)
-% etc
-\end{thebibliography}
-\fi
 
 \end{document}
 % end of file template.tex
