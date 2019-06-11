@@ -53,6 +53,7 @@
 % please place your own definitions here and don't use \def but
 % \newcommand{}{}
 \newtheorem{prop}{Proposition}
+\newtheorem{defn}{Definition}
 \providecommand{\HickernellFJ}{Hickernell}
 \newcommand{\bm}[1]{\boldsymbol{#1}}
 \newcommand{\mSigma}{\mathsf{\Sigma}}
@@ -252,13 +253,28 @@
 
 
 %%%  Acknowledgement %%%
+%\begin{acknowledgement}     % acknowledgement environment, this is optional
+%\end{acknowledgement}
 \begin{acknowledgement}     % acknowledgement environment, this is optional
-
+	\par  I want to thank my advisor Prof. Fred Hickernell for his support and guidance in my completion of this thesis and throughout my studies here at IIT. 
+	His support and motivation have given me the confidence to endure through the research. 
+	
+	I would like to also thank the GAIL project collaborators with
+	whom I have worked to add my new algorithms to the GAIL Matlab toolbox: Professor Sou-Cheng Choi,
+	Yuhan Ding, Lan Jiang, Xin Tong, and Kan Zhang. Especially, Professor Sou-Cheng Choi’s support and guidance as the project leader helped me to focus of my cubature algorithms.
+	
+	My special gratitude also goes to my thesis committee members, Professor Jinqiao Duan,
+	Professor Fred J. Hickernell, Professor Shuwang Li, and Professor Geoffrey Williamson. Above all, I want to thank them because they were flexible and willing dedicate time to review my work and attend my comprehensive and defense examinations.
+	
+	I would like to specifically thank my friend Samuel Davidson for reviewing and suggesting the improvements on the text.
+	
+	Last but not least, I would not be able to make it without the support of my family. I would like to thank my wife for her continuous support and sacrifice. I also would like to thank my parents for their endless support.
+	
 \end{acknowledgement}
-
 
 % Table of Contents
 \tableofcontents
+
 \clearpage
 
 % List of Tables
@@ -271,22 +287,7 @@
 
 \clearpage
 
-\begin{acknowledgement}     % acknowledgement environment, this is optional
-\par  I want to thank my advisor Prof. Fred Hickernell for his support and guidance in my completion of this thesis and throughout my studies here at IIT. 
-His support and motivation have given me the confidence to endure through the research. 
 
-I would like to also thank the GAIL project collaborators with
-whom I have worked to add my new algorithms to the GAIL Matlab toolbox: Professor Sou-Cheng Choi,
-Yuhan Ding, Lan Jiang, Xin Tong, and Kan Zhang. Especially, Professor Sou-Cheng Choi’s support and guidance as the project leader helped me to focus of my cubature algorithms.
-
-My special gratitude also goes to my thesis committee members, Professor Jinqiao Duan,
-Professor Fred J. Hickernell, Professor Shuwang Li, and Professor Geoffrey Williamson. Above all, I want to thank them because they were flexible and willing dedicate time to review my work and attend my comprehensive and defense examinations.
-
-I would like to specifically thank my friend Samuel Davidson for reviewing and suggesting the improvements on the text.
-
-Last but not least, I would not be able to make it without the support of my family. I would like to thank my wife for her continuous support and sacrifice. I also would like to thank my parents for their endless support.
-
-\end{acknowledgement}
 
 
 \begin{abstract}
@@ -384,7 +385,6 @@ Numerical examples are provided in Chapter \ref{sec:NumExp} to demonstrate our n
 
 
 \Chapter{Bayesian Cubature}
-%\section{Bayesian cubature} 
 \label{sec:BC} 
 \JRNote{Briefly explain Bayesian approach using the words of diaconis, poincare work ..}
 
@@ -794,17 +794,17 @@ where $\hmu_{\textup{full}} = \hmu_{\MLE}$ and
 \times  \left[\frac{(1 - \vc^T \mC^{-1} \vone)^2}{\vone^T \mC^{-1} \vone} + (c_0  -\vc ^T \mC^{-1} \vc) \right].
 \end{multline*}
 This means that $\mu \vert (\vf = \vy )$, properly centered and scaled, has a Student's $t$-distribution with $n-1$ degrees of freedom.   The estimated integral is the same as in the empirical Bayes case, $\hmu_{\textup{full}} = \hmu_{\MLE}$, but the confidence interval is wider:
-\begin{equation}
-\label{eqn_prob_CI_full}
+\begin{equation*}
+%\label{eqn_prob_CI_full_generic_prior}
 \mathbb{P}_f \left[
 |\mu-\hmu_\MLE| \leq \err_{\textup{full}} \right]  = 99\%,
-\end{equation}
+\end{equation*}
 where
-\begin{equation}
-\label{FJH:eq:errFull}
+\begin{equation*}
+%\label{FJH:eq:errFull_generic_prior}
 \err_{\textup{full}} 
 := t_{n_j-1,0.995} \hsigma_{\textup{full}} > \err_\MLE .
-\end{equation}
+\end{equation*}
 
 
 
@@ -905,7 +905,8 @@ The confidence interval based on generalized cross-validation corresponds to \eq
 
 Looking back over the results of Sections  \ref{sec:MLE}--\ref{sec:GCV}, it is noted that if the original covariance function, $C$, is replaced by $b C$ for some positive constant $b$, the cubature, $\hmu$, the estimates of $\vtheta$, and the credible interval widths, $\err$, all remain unchanged.  The estimates of $s^2$ are multiplied by $b^{-1}$, as would be expected. 
 
-\Section{Cone of Functions}
+\Section{Cone of Functions and the credible interval}
+
 We assume the integrand belongs to a cone of functions to make the computations tractable. The concept of cone in general for cubature error analysis can be stated using the error bound definition. Given the data driven error bound $\err_{f,n}$
 \begin{align*}
 \abs{\mu(f) - \hmu_n(f)} \le \err_{f,n}(f(x_1), \dots f(x_n)), \quad \forall f \in \mathcal{C}
@@ -923,8 +924,8 @@ Let $f \sim \mathcal{GP}$, is drawn from  Gaussian process
 |\mu(f)-\hmu_n(f)| \leq \err_{n}(f) \right] \ge 99\%.
 \end{align*}
 This can be interpreted as $|\mu(f)-\hmu_n(f)| \leq \err_{n}(f)$ with 99\% confidence. If $f$ is in the 99\%  of the functions such that $f(x_i) = y_i$ then $af$ is also in the center of 99\%.
-This explained using the following example. We have chosen a smooth and periodic integrand $f_{nice}(\vx) = \exp(\sum_{j=1}^{d} \cos(2\pi x_j))$ and another integrand $f_{real}(\vx) = f_{nice} + f_{noise}$ which satisfies $f_{nice}(\vx_i) = f_{real}(\vx_i) $ at the sampling nodes $\{ \vx_i\}_{i=1}^n$. Where the function $f_{noise}(\vx) = a(1 - \exp(2\pi i \sqrt{-1} \vx^T \vzeta))$ chosen to be zero at the sampling nodes $\{ \vx_i\}_{i=1}^n$, where $a \in \mathbb{R}$ is some constant, $\vzeta \in \mathbb{R}^d$ is some $d$-dimensional vector belonging to the dual space of the lattice nodes $\{ \vx_i\}_{i=1}^n$ chosen to sample the integrand.
 
+We explain the credible interval using the following example. For this purpose, chosen a smooth and periodic integrand $f_{nice}(\vx) = \exp(\sum_{j=1}^{d} \cos(2\pi x_j)) + a_{nice} f_{noise}$ and another integrand $f_{peaky}(\vx) = f_{nice} + a_{peaky} f_{noise}$ where $a_{peaky} >> a_{nice}$. Where the function $f_{noise}(\vx) = (1 - \exp(2\pi i \sqrt{-1} \vx^T \vzeta))$ chosen to be zero at the sampling nodes $\{ \vx_i\}_{i=1}^n$, where $a \in \mathbb{R}$ is some constant, $\vzeta \in \mathbb{R}^d$ is some $d$-dimensional vector belonging to the dual space of the lattice nodes $\{ \vx_i\}_{i=1}^n$ chosen to sample the integrand. This help with to satisfy $f_{nice}(\vx_i) = f_{real}(\vx_i) $ at the sampling nodes $\{ \vx_i\}_{i=1}^n$
 
 
 \begin{figure}
@@ -935,8 +936,6 @@ This explained using the following example. We have chosen a smooth and periodic
 	\caption{Example integrands 1) $f_{true}$ true integrand, 2) $f_{nice}$ a smooth function, and 3) $f_{peaky}$ a peaky function, all have the same values at $\{\vx_i\}_{i=1}^n$.}
 	\label{fig:cone_bayes_functions}
 \end{figure}
-
-
 \begin{figure}
 	\centering
 	%\begin{subfigure}[h]{0.48\linewidth}
@@ -947,13 +946,14 @@ This explained using the following example. We have chosen a smooth and periodic
 \end{figure}
 
 
-As shown in \figref{fig:cone_bayes_functions}, sampled function values $\{f(\vx_i)\}_{i=1}^n$ from a smooth integrand $f_{true}$ are shows as dots. One can imaging these sample $\{f(\vx_i)\}_{i=1}^n$ were obtained from $f_{nice}$, a moderately smoother function or from $f_{peaky}$ a highly oscillating function.
+As shown in \figref{fig:cone_bayes_functions}, sampled function values $\{f(\vx_i)\}_{i=1}^n$ from a smooth integrand $f_{true}$ are shows as dots. One can imagine these samples $\{f(\vx_i)\}_{i=1}^n$ were obtained from $f_{nice}$, a moderately smoother function or from $f_{peaky}$ a highly oscillating function.
 
-When using $n=16$ points and $r=1$ shift-invariant kernel, we get the posterior distribution of $\mu$ as shown in \figref{fig:cone_bayes_posterior}. The true integral value is shown as $\mu_{true}$ which is at the center of the plot. The integral of the peaky function $f_{peaky}$ almost lies outside of the 99\% of the confidence interval given by \eqref{eqn_prob_CI_MLE}, whereas the $\mu_{nice}$ falls within.
+When using $n=16$ rank-1 lattice points and $r=1$ shift-invariant kernel, we get the posterior distribution of $\mu$ as shown in \figref{fig:cone_bayes_posterior}. The true integral value is shown as $\mu_{true}$ which is at the center of the plot. The integral of the peaky function $f_{peaky}$ almost lies outside of the 99\% of the credible interval given by \eqref{eqn_prob_CI_MLE}, whereas the $\mu_{nice}$ falls within.
 
 
 
-\Section{The automatic Bayesian cubature algorithm} \label{sec:bayes_cubature_algo}
+\Section{The automatic Bayesian cubature algorithm} 
+\label{sec:bayes_cubature_algo}
 
 The previous section presents three credible intervals, \eqref{eqn_prob_CI_MLE}, \eqref{eqn_prob_CI_full}, and \eqref{GCVCI}, for the $\mu$, the desired integral.  Each credible interval is based on different assumptions about the hyperparameters $m$, $s$, and $\vtheta$.  We stress that one must estimate these hyperparameters or assume a prior distribution on them because the credible intervals are used as stopping criteria for our cubature rule.  Since a credible intervals makes a statement about a typical function---not an outlier---one must try to ensure that the integrand is a typical draw from the assumed Gaussian process.
 
@@ -1259,7 +1259,7 @@ We use the notation $\bar{\vlambda}_{(j)} = \mV^H \bar{\vC_1}_{(j)}$,  where $\b
 \begin{align*}
 \bar{\vC}_{1{(j)}} = \left(\frac{\partial }{\partial{\theta}_j} C_\vtheta(\vx_1,\vx_i) \right)_{i=1}^n.
 \end{align*}
-The goal is to find derivative of the objective function. First, let's define the objective function from \eqref{eqn_MLE_loss_func_optimized_2},
+The goal is to find derivative of the objective function. First, let's rewrite the objective function from \eqref{eqn_MLE_loss_func_optimized_2},
 \begin{align*}
 \mathcal{L}(\vtheta | \vy) &= 
 \underbrace{\frac{1}{n}  \log(\det\, \mC)}_{\mathcal{L}_{\abs{\mC}}} + \underbrace{\log\left((\vy-m_\MLE\vone)^T\mCInv(\vy-m_\MLE\vone) \right)}_{\mathcal{L}_{\vy}}
@@ -1383,11 +1383,11 @@ Moreover, under further assumption \eqref{addAssump} it follows that
 \hmu_{\textup{GCV}}
 &= \hmu_\MLE = \hmu_{\textup{full}} =
 \frac{\widetilde{y}_1}{n} = \frac 1n \sum_{i=1}^n y_i,\\
-\nonumber
+\label{errGCVSimple}
 \err_{\textup{GCV}} & =
 \frac{2.58}{n}\left\{\sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2}  \left [ \frac 1n \sum_{i=1}^n \frac{1}{\lambda_i} \right]^{-1}  \times
 \left( 1 -  \frac{n}{\lambda_1} \right)  
-\right\}^{1/2}. \label{errGCVSimple}
+\right\}^{1/2}.
 \end{align}
 In this case too, $\hmu$ is simply the sample mean.
 
@@ -1421,8 +1421,13 @@ Using the similar techniques from \secref{deriv_obj_func_MLE}
 \end{align*}
 
 
+
+
+
+
+
+
 \Chapter{Integration Lattices and Shift Invariant Kernels}
-%\Section{Integration Lattices and Shift Invariant Kernels}
 \label{sec:shift_invariant_kernel}
 
 The preceding sections lay out an automatic Bayesian cubature algorithm whose computational cost is only $\Order(n \log(n))$ if $n$ function values are used.  However, this algorithm relies on covariance kernel functions, $C$ and designs, $\{\vx_i\}_{i=1}^n$ that satisfy assumptions \eqref{fastcompAssump}.  We will also satisfy assumption \eqref{addAssump}.  To facilitate the fast transform, it is assumed in this section and the next that $n$ is power of $2$.  
@@ -1478,13 +1483,13 @@ If the coefficients are chosen as
 \alpha_{\vk,\vtheta} := & \prod_{l=1}^d \frac{1}{\max(\frac{|k_l|}{\theta_l},1)^r_{\theta_l\leq 1}}  \;,  \quad \text{with} \; {\alpha}_{\bm{0},\vtheta} = 1,
 \end{align*}
 then there exists a simpler closed form expression without infinite sum
-\begin{align*}
-%\label{the_kernel_eqn_bernoulli}
+\begin{align}
+\label{the_kernel_eqn_bernoulli}
 C_\vtheta(\vt, \vx) =
 \prod_{l=1}^d \biggl[
 1 - (-1)^{r} \gamma B_{2r}( |{x_l-t_l}| ) \biggr], \quad  
 \forall \vt,\vx \in [0,1]^d, \\ \qquad  \vtheta = (r,\gamma), \ r \in \naturals, \ \gamma > 0.
-\end{align*}
+\end{align}
 Symmetric, periodic, positive definite kernels of this form appear in  \cite{DicEtal14a} and \cite{Hic96a}.  The Bernoulli polynomials $B_{r}(x)$ are described in \cite[Chapter 24]{OlvEtal10a}
 \begin{align*}
 %\label{dlmf_bernoulli_24_8_3}
@@ -1906,8 +1911,8 @@ e^{2 \pi\sqrt{-1} lm/N} \\
 \end{align*}
 This shows to compute the $n$ values of $\biggl( C_{\vtheta, N}(\vx_i, \vx_1) \biggr)_{i=1}^n$, we need $N=n$. Here we summarize the steps to compute $g$ using FFT
 \begin{enumerate}
-	\item Analytically compute $\left(\widetilde{\vg}_{\eta,r}(m)\right)_{m=0}^{N-1}$, the discrete Fourier coefficients of $(g(j/N))_{j=0}^{N-1}$ using \eqref{dft_of_g}
-	\item Take inverse FFT of $\widetilde{\vg}_{\eta,r}$ to get $g$
+\item Analytically compute $\left(\widetilde{\vg}_{\eta,r}(m)\right)_{m=0}^{N-1}$, the discrete Fourier coefficients of $(g(j/N))_{j=0}^{N-1}$ using \eqref{dft_of_g}
+\item Take inverse FFT of $\widetilde{\vg}_{\eta,r}$ to get $g$
 \end{enumerate}
 where the computational cost is $\Order(n \log n)$ instead of $\Order(n^2)$. Another major advantage is, the FFT approach is numerically stable than the direct sum approach.
 
@@ -2016,9 +2021,13 @@ We have implemented the fast adaptive Bayesian cubature algorithm in MATLAB as p
 
 
 
-\Chapter{Sobol Nets and Walsh Kernels}\label{sec:sobol_walsh}
+\Chapter{Sobol Nets and Walsh Kernels}
+\label{sec:sobol_walsh}
+
+\Section{Sobol Nets}
+
 The previous section showed an automatic Bayesian cubature algorithm using rank-1 lattice nodes and shift-invariant kernels. 
-We demonstrate an alternate approach to formulate fast transform using matching kernel and point sets in this section. 
+We demonstrate a second approach to formulate fast transform using matching kernel and point sets in this section. 
 Scrambled Sobol nets and Walsh kernels are paired to achieve $\Order(N^{-1 + \epsilon})$  order error convergence. 
 Sobol nets \cite{Sob67} are low discrepancy quasi-random points, used extensively in numerical integration, simulation, and optimization. 
 %Higher order digital nets with matching smoother kernels could be combined to provide higher order error convergence $\Order(N^{-\alpha + \epsilon})$ for $\alpha \ge 1$ and $\epsilon > 0$ but it is not covered in this work.
@@ -2027,10 +2036,12 @@ Nets were developed to provide deterministic sample points for quasi-Monte Carlo
 The $(t,m, d)$-nets in base $b$ introduced by Niederreiter are such point sets consist of $b^m$ points in $[0, 1)^d$, whose quality is governed by $t$, in particular, lower values of $t$ correspond to $(t,m, d)$-nets of higher quality \cite{Bald10a}.
 Digital $(t,m, d)$-nets are a special case of $(t,m, d)$-nets, constructed using matrix-vector multiplications over finite fields.
 
+\begin{defn}
 Let $d \ge 1$, $b\ge 2$ and given two integers $0 \le t \le m$, then a $(t,m,d)$-net in base $b$ is a sequence of $x_i$ of $b^m$ points of $[0,1]^d$  
 with the property that every elementary interval in base $b$ of volume $b^{t-m}$ contains precisely $b^t$ points from $x_i$. Sobol nets are special case of $(t,m, d)$-nets when base $b=2$. Digital sequences are infinite length digital nets.
+\end{defn}
 
-Digital sequences are defined in terms of digitwise addition. Let $b$ be a prime number. Digitwise addition, $\oplus$, negation $\ominus$, are defined in terms of $b$-ary expansions of points in $[0, 1)^d]$,
+Digital sequences are defined using digitwise operations. Let $b$ be a prime number. Digitwise addition, $\oplus$, negation $\ominus$, are defined in terms of $b$-ary expansions of points in $[0, 1)^d]$,
 \begin{align*}
 \vx = \left( \sum_{l=1}^{\infty} x_{jl}b^{-l}\right)_{j=1}^d, \quad
 \vt = \left( \sum_{l=1}^{\infty} t_{jl}b^{-l}\right)_{j=1}^d, \quad
@@ -2047,7 +2058,7 @@ where
 \vx \oplus \vt = \left( \sum_{l=1}^\infty [x_{jl} + t_{jl} \bmod b] b^{-l} \bmod 1 \right)_{j=1}^d
 \end{align*}
 
-An example of $64$ nodes is given in Figure  \ref{latticefig}.  The even coverage of the unit cube is ensured by a well chosen generating vector.  The choice of generating vector is typically done offline by computer search.  See \cite{DicEtal14a} and \cite{HicNie03a} for more on extensible integration lattices.
+An example of $64$ nodes is given in Figure  \ref{latticefig}.  The even coverage of the unit cube is ensured by a well chosen generating matrix.  The choice of generating vector is typically done offline by computer search.  See \cite{KuoNuyens2016} and \cite{NuySoft} for more on generating matrices.
 \begin{figure}[htp]
 	\centering
 	\includegraphics[height=7cm]{SSobolPoints}
@@ -2055,9 +2066,10 @@ An example of $64$ nodes is given in Figure  \ref{latticefig}.  The even coverag
 \end{figure}
 
 
+\Section{Wlash Kernels}
 
 \Subsection{Walsh functions}
-Like Fourier transform naturally occurred with Lattice points (Section \ref{sec:shift_invar_kern}), Walsh transform happens for the nets. Define $\naturals:=\lbrace1,2,\dots \rbrace$ and $\naturals_0 : \lbrace0,1,2,\dots \rbrace$.
+Like Fourier transform naturally occurred with Lattice points (Section \ref{sec:shift_invar_kern}), Hadamard-Walsh transform happens for the nets, which we will call simply Walsh transform. Walsh transform  is defined using Walsh functions. Define $\naturals:=\lbrace1,2,\dots \rbrace$ and $\naturals_0 : \lbrace0,1,2,\dots \rbrace$.
 The one-dimensional Walsh functions in base $b$ are defined as
 \begin{align*}
 \textup{wal}_{b,h}(x) := e^{2\pi i (x_1 h_0 + x_2 h_1 + \dots + x_n h_{n-1})/b} 
@@ -2087,7 +2099,7 @@ where
 \omega_r(x) = \sum_{h=1}^\infty 
 \frac{\textup{wal}_{b,h}(x) }{b^{qr \lfloor \log_b h \rfloor}}
 \end{align*}
-where $r$ is kernel order, $\frac 1p + \frac 1q = 1$ are H\"older inequality coefficients. We have explicit expression for $\omega_{r}$ \cite{Nuyens2013} in case of order $r=1$, $b=2$ and Hilbert space setup $q=2$
+where $r$ is kernel order, $\frac 1p + \frac 1q = 1$ are H\"older inequality coefficients. Explicit expression available for $\omega_{r}$ \cite{Nuyens2013} in case of order $r=1$, $b=2$ and Hilbert space setup $q=2$
 \begin{align}
 \omega_1(\vx) &= \sum_{h=1}^\infty 
 \frac{\textup{wal}_{b,h}(x) }{b^{2 \lfloor \log_b h \rfloor}} = \frac 16 - 2^{\lfloor \log_2 \vx\rfloor -1 }.
@@ -2097,468 +2109,11 @@ We have implemented a fast adaptive Bayesian cubature algorithm using the kernel
 
 
 Higher order digital nets are a modified $(t,m,s)$-nets, introduced in \cite{Dic08a} can be used to numerically integrate smoother functions which are not necessarily periodic, but have square integrable mixed partial derivatives of order $\alpha$, at a rate of $\Order(N^{-\alpha})$ multiplied by a power of a $\log N$ factor using rules corresponding to the modified $(t,m, s)$-nets.
-The qualifier ``higher order" emphasizes that quasi-Monte Carlo rules based on these point sets can achieve convergence rates faster than $\Order(N^{-1})$.
+We want to emphasizes that quasi-Monte Carlo rules based on these point sets can achieve convergence rates faster than $\Order(N^{-1})$.
 
 Higher order digital nets are constructed using matrix-vector multiplications over finite
 fields. Bayesian cubatures using higher order digital nets are out of scope of this research.
 
-
-\iffalse
-\Section{TBD}
-
-Another approach to formulate fast transform using matching kernel and point sets is presented in this section. Interlaced digital nets and smoother kernels are paired. Higher order digital nets with matching smoother kernels are expected to provide higher order error convergence $\Order(N^{-\alpha + \epsilon})$ for $\alpha \ge 1$ and $\epsilon > 0$ .
-
-\Section{Higher order digital nets}
-Nets were developed to provide deterministic sample points for quasi-Monte Carlo rules \cite{Nie05a}.
-The $(t,m, s)$-nets in base $b$ introduced by Niederreiter are such point sets consist of $b^m$ points in $[0, 1)^s$, whose quality is governed by $t$, in particular, lower values of $t$ correspond to $(t,m, s)$-nets of higher quality \cite{Bald10a}.
-Digital $(t,m, s)$-nets are a special case of $(t,m, s)$-nets, constructed using matrix-vector multiplications over finite fields.
-
-Higher order digital nets are a modified $(t,m,s)$-nets, introduced in \cite{Dic08a} can be used to numerically integrate smoother functions which are not necessarily periodic, but have square integrable mixed partial derivatives of order $\alpha$, at a rate of $\Order(N^{-\alpha})$ multiplied by a power of a $\log N$ factor using rules corresponding to the modified $(t,m, s)$-nets.
-The qualifier ``higher order" emphasizes that quasi-Monte Carlo rules based on these point sets can achieve convergence rates faster than $\Order(N^{-1})$.
-
-Higher order digital nets are constructed using matrix-vector multiplications over finite
-fields. We use generating matrices from the magic point shop \cite{NuyMagic}.
-
-\Subsection{Walsh functions}
-Like Fourier transform naturally occurred with Lattice points (Section \ref{sec:shift_invar_kern}), Walsh transform happens for the nets. Define $\naturals:=\lbrace1,2,\dots \rbrace$ and $\naturals_0 : \lbrace0,1,2,\dots \rbrace$.
-The one-dimensional Walsh functions in base $b$ are defined as
-\begin{align*}
-\textup{wal}_{b,h}(x) := e^{2\pi i (x_1 h_0 + x_2 h_1 + \dots + x_n h_{n-1})/b} 
-=
-e^{2\pi i [\vec{h}]_n^T[\vec {x}]_n/b}
-\end{align*}
-for $x \in [0,1)$ and $h \in \naturals_0$ and the unique base $b$ expansions 
-$x = \sum_{i \ge 1} x_i b^{-i} = (0.x_1 x_2 \dots)_b$,
-and
-$h = \sum_{i \ge 1} h_i b^{-i} = (0.h_1 h_2 \dots)_b, [\vec{h}] =  (h_1,\dots h_n)^T$,
-with $n$ at least as large as the number of digits to represent $x$ or $h$.
-Multivariate wlash functions are defined as the product of the one-dimensional walsh functions
-\begin{align*}
-\textup{wal}_{b,\vh} (\vx) := \prod_{j=1}^s \textup{wal}_{b,h_j} (x_j
-)
-\end{align*}
-
-\Section{Higher order Walsh space}
-
-\Section{Walsh kernels}
-
-Consider the kernels of the form
-\begin{align*}
-C(\vx, \vt) = 1 + \theta \omega_{r} (\vx \ominus \vt)
-\end{align*}
-where
-\begin{align*}
-\omega_r(x) = \sum_{h=1}^\infty 
-\frac{\textup{wal}_{b,h}(x) }{b^{qr \lfloor \log_b h \rfloor}}
-\end{align*}
-
-\begin{align*}
-\omega_1(\vx) &= \frac 16 - 2^{\lfloor \log_2 \vx\rfloor -1 },\\
-\omega_2(\vx) &= s_1(\vx) + \tilde{s}_2(\vx),\\
-\omega_3(\vx) &= s_1(\vx) + s_2(\vx) + \tilde{s}_3(\vx)
-\end{align*}
-where
-\begin{align*}
-s_1(\vx) &= 1-2\vx,\\
-s_2(\vx) &= 1/3 - 2(1-\vx) \vx, \\
-\tilde{s}_2(\vx) &= (1- 5 t_1)/2 - (a_1 - 2)\vx, \\
-\tilde{s}_3(\vx) &= (1- 43 t_2)/18 + (5t_1 - 1)\vx +(a_1 - 2)\vx^2.
-\end{align*}
-with, for $0 < \vx < 1$,
-\begin{align*}
-a_1 = -\lfloor \log_2 \vx\rfloor, \quad t_1 = 2^{-a_1}, \quad t_2 = 2^{-2 a_1},
-\end{align*}
-and $a_1=0, t_1=0$ and $t_2=0$ when $\vx=0$.
-
-
-\Subsection{The worst-case error}
-Define the worst-case error of numerical integration using a cubature rule $Q$ for functions in a Hilbert space $\mathcal{F}$ by
-\begin{align*}
-e(Q,\mathcal{F}) := \sup_{f \in \mathcal{F}, \norm[\mathcal{F}]{f} \le 1 } 
-\abs{I(f) - Q(f)}
-\end{align*}
-We now choose cubature rule $Q$ to be a quasi-Monte Carlo using a higher order digital as its node set and denote it by $Q^{\text{net}}$
-\begin{align*}
-\abs{I(f) - Q^{\text{net}}(f)} = \abs{\sum_{\vzero \ne \vk \in \mathcal{D}} \widehat{f_{\vk}}} \le \sum_{\vzero \ne \vk \in \mathcal{D}} \abs{ \widehat{f_{\vk}}}
-\end{align*}
-
-
-Define $\mathcal{W}_{\alpha,d,\vgamma}$, the function space consisting of all functions $f \in L_2([0,1]^d)$ for which $\norm[\mathcal{W}_{\alpha,d,\vgamma}]{f} < \infty$, where 
-\begin{align*}
-\norm[\mathcal{W}_{\alpha,d,\vgamma}]{f}^2 := \sum_{\vk \in \naturals^d} 
-\left( \frac{\abs{\widehat{f_{\vk}}}}{\vr_{\alpha}(\vgamma,\vk)} \right)^2
-\end{align*}
-where $\widehat{f_{\vk}}$ are the walsh coefficients of $f$ which satisfy
-\begin{align*}
-\abs{\widehat{f_{\vk}}}^2 \le \norm[\mathcal{W}_{\alpha,d,\vgamma}]{f}  
-\left( {\vr_{\alpha}(\vgamma,\vk)} \right)^2 \qquad \forall \vk \in \naturals^d_0
-\end{align*}
-Given a fixed integer $\alpha > 1$ and a fixed sequence of positive weights $\vgamma = \{ \gamma_1, \gamma_2, \dots \}$, the decay function $\vr_{\alpha}(\vgamma,\vk)$ is defined as  
-\begin{align*}
-\vr^2_{\alpha}(\vgamma,\vk) = \prod_{j\in u} \gamma^2_j r^2_\alpha(k_j), \qquad r_\alpha(k) := 2^{- \sum_{i=1}^{\min(\#k,\alpha)} (a_i + 1)}
-\end{align*}
-where for $\vk = (k_1, \dots, k_d), k = \sum_{i=1}^{\#k} k_{a_i} b^{a_i}$, we set $u = \{1\le j \le d: k_j \neq 0 \}$ and $\#k$ is the number of non-zero binary digits of integer $k$.
-
-\begin{align*}
-\zeta(\vx) = \sum_{\vk \in \naturals} \vr_{\alpha} (\vgamma,\vk) \wal_{\vk} (\vx)
-\end{align*}
-
-
-
-\Subsection{Calculating the infinite sum}
-For practical usage with a computer, we can not have infinite sum. In this section we show how to calculate in finite terms. If $x$ can be represented using $n$ digits in base $b$, then $\omega_{\alpha}(x)$ can be computed in $\Order(\alpha n)$ operations \cite{Bald12a}. Specifically, we will compute explicit forms for $b=2$ and $x \in [0,1)$.]
-
-\begin{align}
-\label{omega_func_split_1}
-\omega_{\alpha}(\vx) &:= \sum_{\vk \in \naturals} \vr^2_{\alpha} (\vk) \wal_{\vk} (\vx)
-\\
-&= \sum^\infty_{\substack{\vk \in \naturals \\ k= \sum_{i=1}^{\#k}k_{a_i} b^{a_i} }} 
-\prod_{i=1}^{\min(\alpha, \#k)} b^{-2(a_i + 1)} \exp(2\pi i k_{a_i} \xi_{a_i + 1}/b)
-\underbrace{\prod_{i=\alpha + 1}^{\#k}  \exp(2\pi i k_{a_i} \xi_{a_i + 1}/b)}_{\wal_{k'}(x)}
-\end{align}
-We used the definition $k= \sum_{i=1}^{\#k}k_{a_i} b^{a_i}$ with $a_1 > \dots a_{\#k}$, i.e., $k_{a_1}$ is the most significant digit of $k$ in base $b$. The second product in \ref{omega_func_split_1} can be seen as $\wal_{k'}(x)$ where $k' = k-\sum_{i=1}^{\min(\alpha, \#k)} k_{a_i}b^{a_i}$. The key technique used is to interpret the infinite sum in \ref{omega_func_split_1} as multiple sums over all possible digit expansions for all $k$'s with $r$ digits for $r\ge 1$.
-
-\begin{align*}
-\sum^\infty_{\substack{\vk \in \naturals \\ k= \sum_{i=1}^{\#k}k_{a_i} b^{a_i} }} 
-G(k,x) = \sum_{r=1}^\infty 
-\underbrace{ \sum_{a_1 = r-1}^\infty \dots \sum_{a_r=0}^{a_{r-1}-1}}_{r \text{sums s.t.} \infty > a_1 \dots a_r \ge 0}
-\underbrace{ \sum_{k_{a_1} = 1}^{b-1} \dots \sum_{k_{a_r}=1}^{b-1}}_{r \text{independent sums}}
-G(k_{a_i} b^{a_i},x)
-\end{align*}
-
-where $G(k,x) = r_\alpha(k) \wal_k(x)$. to simplify the notation and reveal the structure for further simplification, define the \emph{triangular sum operator}
-\begin{align*}
-T_m^M(r)(g) := \sum_{a_1 = m+r-1}^M \sum_{a_2 = m+r-2}^{a_1 -1} \dots \sum_{a_r=m}^{a_{r-1}-1} g(a_1,\dots a_r),
-\end{align*}
-where $T_m^M(0)(g) := g$, i.e., no sums taken. Next, define the \emph{concatenation} of two such operators as putting the sums next to each other:
-\begin{align*}
-\left( T_m^M(t) T_{m'}^{M'}(r-t)\right) (g) :=
-\sum_{a_1=m+t-1}^M \dots \sum_{a_t=m}^{a_{t-1}-1}
-\sum_{a_{t+1}=m'+(r-t)-1}^{M'} \dots \sum_{a_r=m'}^{a_{r-1}-1}
-g(a_1,\dots,a_r),
-\end{align*}
-
-
-
-
-
-
-
-\Subsection{Closed form expressions}
-\begin{align*}
-\omega_{b,\alpha} := \sum_{\kappa=1}^\infty r_{b,\alpha} \wal_{b,\kappa} (x)
-\end{align*}
-for a given base $b$ and number $x \in [0,1)$. Given an integer $\kappa$, consider its base $b$ expansion 
-\begin{align*}
-\kappa = \sum_{i=0}^\infty \kappa_i b^i, \quad k_i \in \integers_b := \{0,1,\dots,b-1\}
-\end{align*}
-We are interested in the non-zero digits of $\kappa$ in base $b$. Denote the number of non-zero digits of $\kappa$ by $\#\kappa$.
-\begin{align*}
-\kappa = \sum_{i=1}^{\#\kappa} \kappa_{a_i} b^{a_i}, \quad k_{a_i} \in \integers_b \backslash
- \{0\}, \quad a_1 > a_2 \dots a_{\#\kappa} \ge 0
-\end{align*}
-Now, define the function $r_{b,\alpha}(\kappa)$  
-\begin{align*}
-r_{b,\alpha}(\kappa) := b^{-\sum_{i=1}^{\min(\#\kappa,\alpha)} (a_i+1)} = 
-\begin{cases*}
-1, & if $\kappa$ = 0, \\
-b^{-((a_1+1)+\dots + (a_{\min(\#\kappa,\alpha)+1}))}, & for $\kappa$ as given above
-\end{cases*}
-\end{align*}
-Note that the function $r_{b,\alpha}(\kappa)$  only depends on the $\alpha$ most-significant base-$b$ digit locations of $\kappa$, but in a such a way their digit values do not matter
-
-Similarly, assume $x \in [0,1)$ has a base-$b$ expansion
-\begin{align*}
-x = \sum_{i=1}^{\infty} x_i b^{-i} = \sum_{i=1}^{\#x} x_{a_i} b^{-a_i}, 
-\quad 1 \le a_1 < a_2 < \dots < a_{\#x}, 
-\quad x_i \in \integers_b, \quad x_{a_i} \in \integers_b \backslash \{0\}
-\end{align*}
-where $-a_1$ is the most significant power of $b$. For non-zero $x$, we find $a_1 = - \lfloor \log_b(x)\rfloor$
-
-
-\Subsubsection{Consider the case $\alpha=2.$}
-\begin{align}
-\nonumber
-\omega_{b,2} &= 
-\sum_{l=0}^{\infty} \sum_{h_l=1}^{b-1} r_{b,2} (h_l b^l) \wal_{b,h_l b^l} (x) \\
-\nonumber
-& \qquad + 
-\sum_{l=0}^{\infty} \sum_{h_l=1}^{b-1} 
-\sum_{l'=0}^{l-1} \sum_{h_{l'}=1}^{b-1} \sum_{h'=0}^{b^{l'}-1} 
-r_{b,2} (h_l b^l + h_{l'} b^{l'} + h') \wal_{b, h_l b^l + h_{l'} b^{l'} + h'} (x) \\
-&= s_1(x) + \tilde{s}_2(x)
-\end{align}
-For $b=2$ it gets much simpler
-\begin{align*}
-\omega_{b,2} &= 
-\sum_{l=0}^{\infty} r_{b,2} (b^l) \wal_{b, b^l} (x)  + 
-\sum_{l=0}^{\infty}  
-\sum_{l'=0}^{l-1} \sum_{h'=0}^{b^{l'}-1} 
-r_{b,2} (b^l + b^{l'} + h') \wal_{b, b^l + b^{l'} + h'} (x) \\
-&= 
-\sum_{l=0}^{\infty} 2^{-(l+1)} \exp(2\pi i x_{l+1}/2)   + 
-\sum_{l=0}^{\infty}  
-\sum_{l'=0}^{l-1} \sum_{h'=0}^{b^{l'}-1} 
-r_{b,2} (b^l + b^{l'} + h') \wal_{b, b^l + b^{l'} + h'} (x) 
-\end{align*}
-
-Note that
-\begin{align*}
-\sum_{h_l=1}^{b-1} \wal_{b, h_l b^l} (x) = \exp(2\pi i x_{l+1}/2) = (-1)^{x_{l+1}}
-\end{align*}
-
-Let's start with $s_1$,
-\begin{align*}
-s_1(x) &= \sum_{l=0}^{\infty} r_{b,2} (b^l) \wal_{b, b^l} (x) 
-\\
-&= \sum_{l=0}^\infty 2^{-(l + 1)} \exp(2\pi \sqrt{-1} x_{l + 1}/2)
-\\
-&= \sum_{l=1}^\infty 2^{(-l)} \exp(\pi \sqrt{-1} x_{l }), \qquad \text{where} \; x_l \in \{0, 1\}
-\\
-&= \sum_{l=1}^\infty 2^{(-l)} (-1)^{x_{l }}
-\\
-&= \sum_{l=1}^\infty 2^{-l} +  \sum_{l=1}^\infty 2^{-l}( (-1)^{x_{l }} - 1)
-\\
-&= 1 +  \sum_{l=1}^\infty 2^{-l}( (-1)^{x_{l }} - 1)
-\\
-&= 1 +  \sum_{l=1}^\infty 2^{-l} (-2) [x_l = 1]
-\\
-&= 1 - 2  \sum_{l=1}^\infty 2^{-l} [x_l = 1]
-\\
-&= 1 - 2  \sum_{j=1}^{\#x} 2^{-a_j}, \quad \text{using} \; x = \sum_{j=1}^{\#x} 2^{-a_j}
-\\
-&= 1 - 2  x
-\end{align*}
-
-
-Similarly, we can solve $\tilde{s}_2$
-\begin{align*}
-\tilde{s}_2(x) &= \sum_{\substack{k=1; k = 2^{l} + 2^{l'} + k' }}^\infty r_2(k) \wal_k(x)
-\end{align*}
-where $k = 2^{l} + 2^{l'} + k', \; k' \in \{0, \dots 2^{l'}-1 \}$
-\begin{align*}
-\tilde{s}_2(x) &= \sum_{\substack{k=1; k = 2^{l} + 2^{l'} + k'}}^\infty 
-2^{-(l+1)} (-1)^{x_{l+1}} 2^{-(l'+1)} (-1)^{x_{l'+1}} \wal_{k'}(x)
-\\
-&= \sum_{l=1}^\infty 2^{-(l+1)} (-1)^{x_{l+1}} 
-\sum_{l'=0}^{l-1} 2^{-(l'+1)} (-1)^{x_{l'+1}} \sum_{k'=0}^{2^{l'}-1} \wal_{k'}(x)
-\\
-&= \sum_{l'=0}^{\infty} 2^{-(l'+1)} (-1)^{x_{l'+1}} \sum_{k'=0}^{2^{l'}-1} \wal_{k'}(x)
-\sum_{l=l'+1}^\infty  2^{-(l+1)} (-1)^{x_{l+1}} 
-\end{align*}
-
-Using the character property or by the definition of $\wal$ function
-\begin{align*}
-\sum_{k=0}^{b^{l}-1} \wal_{k}(x) &= 
-\sum_{k_0=0}^{b-1} \sum_{k_1=0}^{b-1} \dots \sum_{k_{l-1}=0}^{b-1}
-\exp(2\pi i (x_1 k_0 + x_2 k_1 + \dots + x_{l} k_{l-1})/b) \\
-&= 
-\sum_{k_0=0}^{b-1} \exp(2\pi i (x_1 k_0)/b)
-\sum_{k_1=0}^{b-1} \exp(2\pi i (x_2 k_1)/b)
-\dots 
-\sum_{k_{l-1}=0}^{b-1} \exp(2\pi i (x_{l} k_{l-1})/b)
-\end{align*}
-For $b=2$
-\begin{align*}
-\sum_{k=0}^{b^{l}-1} \wal_{k}(x) 
-&= 
-\sum_{k_0=0}^{1} \exp(\pi i (x_1 k_0))
-\sum_{k_1=0}^{1} \exp(\pi i (x_2 k_1))
-\dots 
-\sum_{k_{l-1}=0}^{1} \exp(\pi i (x_{l} k_{l-1}))
-\\
-&= 
-\sum_{k_0=0}^{1} (-1)^{x_1 k_0}
-\sum_{k_1=0}^{1} (-1)^{x_2 k_1}
-\dots 
-\sum_{k_{l-1}=0}^{1} (-1)^{x_{l} k_{l-1}}
-\\
-&= 2^{l} \times [x < 2^{-l}] 
-\end{align*}
-Continuing with $\tilde{s}_2$
-\begin{align*}
-\tilde{s}_2(x) &= \sum_{l'=0}^{\infty} 2^{-(l'+1)} (-1)^{x_{l'+1}} 2^{l'} [x < 2^{-l'}]
-\sum_{l=l'+1}^\infty  2^{-(l+1)} (-1)^{x_{l+1}} 
-\end{align*}
-Now suppose $x=0$, then
-\begin{align*}
-\tilde{s}_2(0) &= \sum_{l'=0}^{\infty} 2^{-(l'+1)} 2^{l'} \sum_{l=l'+1}^\infty  2^{-(l+1)} 
-\\
-&= \sum_{l'=0}^{\infty} 2^{-(l'+1)}  2^{l'}  2^{-l'}  \sum_{l=1}^\infty  2^{-(l+1)} 
-\\
-&= \sum_{l'=0}^{\infty} 2^{-(l'+1)}   2^{-1} \sum_{l=1}^\infty  2^{-l} 
-\\
-&= \sum_{l'=0}^{\infty} 2^{-(l'+1)}   2^{-1} 
-\\
-&= 2^{-1}   \sum_{l'=1}^{\infty} 2^{-l'}   
-\\
-&= 2^{-1}   
-\end{align*}
-Now suppose $x = x_{a_1}b^{-a_1} \ne 0$
-
-
-\begin{align*}
-{s}_2(x) &= \sum_{\substack{k=1 \\ 
-		k = 2^{a_1} + 2^{a_2}}}^\infty 
-2^{-(a_1+1)} (-1)^{\xi_{a_1+1}} 2^{-(a_2+1)} (-1)^{\xi_{a_2+1}} 
-\\
-&= \sum_{a_1=1}^\infty 2^{-(a_1+1)} (-1)^{\xi_{a_1+1}} 
-\sum_{a_2=0}^{a_1-1} 2^{-(a_2+1)} (-1)^{\xi_{a_2+1}} 
-\\
-&= \sum_{a_1=2}^\infty 2^{-(a_1)} (-1)^{\xi_{a_1}} 
-\sum_{a_2=1}^{a_1-1} 2^{-(a_2)} (-1)^{\xi_{a_2}}, \quad \text{index shifted by 1}
-\\
-&= \sum_{a_2=1}^{\infty} 2^{-(a_2)} (-1)^{\xi_{a_2}} 
-\sum_{a_1=a_2+1}^\infty  2^{-(a_1)} (-1)^{\xi_{a_1}}
-\\
-&= \left( 
-\sum_{a_2=1}^{\infty} 2^{-(a_2)} (-1)^{\xi_{a_2}} [\xi_{a_2}=0] 
-+
-\sum_{a_2=1}^{\infty} 2^{-(a_2)} (-1)^{\xi_{a_2}} [\xi_{a_2}\neq 0] \right)
-\\
-& \qquad
-\left(
-\sum_{a_1=a_2+1}^\infty  2^{-(a_1)} (-1)^{\xi_{a_1}} [\xi_{a_1}=0] 
-+
-\sum_{a_1=a_2+1}^\infty  2^{-(a_1)} (-1)^{\xi_{a_1}} [\xi_{a_1}\neq 0]
-\right)
-\\
-&= 
-\left( 
-\sum_{a_2=1}^{\infty} 2^{-(a_2)} (-1)^{\xi_{a_2}} [\xi_{a_2}=0]	
-\sum_{a_1=a_2+1}^\infty  2^{-(a_1)} (-1)^{\xi_{a_1}} [\xi_{a_1}=0]
-\right)
-\\ & \qquad 
-+ 
-\left(
-\sum_{a_2=1}^{\infty} 2^{-(a_2)} (-1)^{\xi_{a_2}} [\xi_{a_2} = 0]
-\sum_{a_1=a_2+1}^\infty  2^{-(a_1)} (-1)^{\xi_{a_1}} [\xi_{a_1}\neq 0]
-\right)
-\\ & \qquad 
-+ 
-\left(
-\sum_{a_2=1}^{\infty} 2^{-(a_2)} (-1)^{\xi_{a_2}} [\xi_{a_2} \neq 0]
-\sum_{a_1=a_2+1}^\infty  2^{-(a_1)} (-1)^{\xi_{a_1}} [\xi_{a_1} = 0]
-\right)
-\\ & \qquad
-+ 
-\left(
-\sum_{a_2=1}^{\infty} 2^{-(a_2)} (-1)^{\xi_{a_2}} [\xi_{a_2}\neq 0]
-\sum_{a_1=a_2+1}^\infty  2^{-(a_1)} (-1)^{\xi_{a_1}} [\xi_{a_1}\neq 0]
-\right)
-\\
-&= 
-\left( 
-\sum_{a_2=1}^{\infty} 2^{-(a_2)} (-1)^{\xi_{a_2}} [\xi_{a_2}=0]	
-\left(
-\sum_{a_1=a_2+1}^\infty  2^{-(a_1)} (-1)^{\xi_{a_1}} -
-\sum_{a_1=a_2+1}^\infty  2^{-(a_1)} (-1)^{\xi_{a_1}} [\xi_{a_1} \neq 0]
-\right)
-\right)
-\\ & \qquad 
-+ 
-\left(
-\sum_{a_2=1}^{\infty} 2^{-(a_2)} (-1)^{\xi_{a_2}} [\xi_{a_2} = 0]
-\sum_{a_1=a_2+1}^\infty  2^{-(a_1)} (-1)^{\xi_{a_1}} [\xi_{a_1}\neq 0]
-\right)
-\\ & \qquad 
-+ 
-\left(
-\sum_{a_2=1}^{\infty} 2^{-(a_2)} (-1)^{\xi_{a_2}} [\xi_{a_2} \neq 0]
-\sum_{a_1=a_2+1}^\infty  2^{-(a_1)} (-1)^{\xi_{a_1}} [\xi_{a_1} = 0]
-\right)
-\\ & \qquad
-+ 
-\left(
-\sum_{a_2=1}^{\infty} 2^{-(a_2)} (-1)^{\xi_{a_2}} [\xi_{a_2}\neq 0]
-\sum_{a_1=a_2+1}^\infty  2^{-(a_1)} (-1)^{\xi_{a_1}} [\xi_{a_1}\neq 0]
-\right)
-\end{align*}
-
-
-Alternative approach
-\begin{align*}
-&= \sum_{a_2=1}^{\infty} 2^{-(a_2)} (-1)^{\xi_{a_2}} 
-2^{-a_2} \sum_{a_1=1}^\infty  2^{-(a_1)} (-1)^{\xi_{a_1}} 
-\\
-&= \sum_{a_2=1}^{\infty} 2^{-(2a_2)} (-1)^{\xi_{a_2}} 
-(1-2x)
-\\
-&= (1-2x) 
-\left( \sum_{a_2=1}^{\infty} 2^{-(2a_2)} (-1)^{\xi_{a_2}}[\xi_{a_2}= 0] 
-+ 
-\sum_{a_2=1}^{\infty} 2^{-(2a_2)} (-1)^{\xi_{a_2}}[\xi_{a_2}\neq 0] \right)
-\\
-&= (1-2x) 
-\left( \sum_{a_2=1}^{\infty} 2^{-(2a_2)}
-+ 
-2 \sum_{a_2=1}^{\infty} 2^{-(2a_2)} (-1)^{\xi_{a_2}}[\xi_{a_2}\neq 0] \right)
-\\
-&= (1-2x) 
-\left( \frac{1}{3}
-+ 
-2 \sum_{j=1}^{\#x} 2^{-(2a_2)}  \right)
-\end{align*}
-
-\clearpage
-
-Simplify the first part in ${s}_2$
-\begin{align*}
-&
-\sum_{a_2=1}^{\infty} 2^{-(a_2)} (-1)^{\xi_{a_2}} [\xi_{a_2}=0]	
-\sum_{a_1=a_2+1}^\infty  2^{-(a_1)} (-1)^{\xi_{a_1}} [\xi_{a_1}=0]
-\\
-&=
-\sum_{a_2=1}^{\infty} 2^{-(a_2)}  [\xi_{a_2}=0]	
-\sum_{a_1=a_2+1}^\infty  2^{-(a_1)}  [\xi_{a_1}=0]
-\\
-&=
-\sum_{a_2=1}^{\infty} 2^{-(a_2)} [\xi_{a_2}=0]	
-\left(
-\sum_{a_1=a_2+1}^\infty  2^{-(a_1)}  -
-\sum_{a_1=a_2+1}^\infty  2^{-(a_1)} [\xi_{a_1} \neq 0]
-\right)
-\\
-&=
-\sum_{a_2=1}^{\infty} 2^{-(a_2)}  [\xi_{a_2}=0]	
-\sum_{a_1=a_2+1}^\infty  2^{-(a_1)} 
- -
-\sum_{a_2=1}^{\infty} 2^{-(a_2)}  [\xi_{a_2}=0]	
-\sum_{a_1=a_2+1}^\infty  2^{-(a_1)} [\xi_{a_1} \neq 0]
-\\
-&=
-\sum_{a_2=1}^{\infty} \left( 2^{-(a_2)} [\xi_{a_2}=0] \right) 2^{-(a_2)} 
--
-\sum_{a_2=1}^{\infty} 2^{-(a_2)}  [\xi_{a_2}=0]	
-\sum_{a_1=a_2+1}^\infty  2^{-(a_1)} [\xi_{a_1} \neq 0]
-\\
-&=
-\left(
-\sum_{a_2=1}^{\infty} 2^{-(a_2)}  -
-\sum_{a_2=1}^{\infty} 2^{-(a_2)}  [\xi_{a_2} \neq 0]	
-\right)
- 2^{-(a_2)} 
-\\ & \quad -
-\sum_{a_2=1}^{\infty} 2^{-(a_2)}  [\xi_{a_2}=0]	
-\sum_{a_1=a_2+1}^\infty  2^{-(a_1)}  [\xi_{a_1} \neq 0]
-\\
-&=
-\sum_{a_2=1}^{\infty} 2^{-(2a_2)} 
-  -
-\sum_{a_2=1}^{\infty} 2^{-(2a_2)}  [\xi_{a_2} \neq 0]	
-\\ & \quad -
-\sum_{a_2=1}^{\infty} 2^{-(a_2)}  [\xi_{a_2}=0]	
-\sum_{a_1=a_2+1}^\infty  2^{-(a_1)}  [\xi_{a_1} \neq 0]
-\\
-&=
-\frac{1}{3} 
--
-\sum_{a_2=1}^{\infty} 2^{-(2a_2)}  [\xi_{a_2} \neq 0]	
- -
-\sum_{a_2=1}^{\infty} 2^{-(a_2)}  [\xi_{a_2}=0]	
-\sum_{a_1=a_2+1}^\infty  2^{-(a_1)}  [\xi_{a_1} \neq 0]
-\end{align*}
-\fi
 
 \clearpage
 
@@ -2568,15 +2123,17 @@ Simplify the first part in ${s}_2$
 \Chapter{Numerical Implementation} 
 \label{sec:NumExp}
 
+
 \Section{Periodizing Variable Transformations}
 \label{period_var_tx}
 
-The shift-invariant covariance kernels underlying our Bayesian cubature  assume that the integrand has a degree of periodicity, with the smoothness assumed depending on the smoothness of the kernel.  
+The shift-invariant covariance kernels underlying our \code{cubBayesLattice\_g} \\
+Bayesian cubature  assume that the integrand has a degree of periodicity, with the smoothness assumed depending on the smoothness of the kernel.  
 In other-words, non-periodic functions do not live in the space spanned by the shift-invariant covariance kernels.
 While integrands arising in practice may be smooth, they might not be periodic.  
 % Variable transformations can be used to ensure periodicity.
 Variable transformation or periodization transform techniques are typically used to enforce the periodicity in multi-dimensional numerical integrations where boundary conditions needs to be enforced. These transformations could be either polynomial, exponential and also trigonometric nature.
-
+Some of the most popular transformation are listed here for reference. 
 Suppose that the original integral has been expressed as 
 \begin{equation*}
 \mu := \int_{[0,1]^d} g(\vt) \, \dif \vt
@@ -2620,16 +2177,16 @@ Periodizing variable transforms are used for the numerical examples below.  In s
 
 \Chapter{Numerical Results and Observations} 
 Bayesian cubature algorithms developed in this work are demonstrated using widely used integration examples.
-Three integrals were evaluated using our algorithms \code{cubBayesLattice\_g} and \code{cubBayesNet\_g}. The first example shows evaluating a multivariate normal probability given the intervals. The second example shows integrating the Keister's function, and the final example shows computing an Asian arithmetic option pricing.  
+Three integrals were evaluated using both the algorithms \code{cubBayesLattice\_g} and \code{cubBayesNet\_g}. The first example shows evaluating a multivariate normal probability given the intervals. The second example shows integrating the Keister's function, and the final example shows computing an Asian arithmetic option pricing.  
 
-\Section{Test Results and Observations for \code{cubBayesLattice\_g}}
-%\label{sec:numerical_experiments}
+\Section{Test Results and Observations for Algorithm1} % for \code{cubBayesLattice\_g}}
+\label{sec:numerical_experiments_cubBayesLattice}
 
 Four different error tolerances, $\varepsilon$,  were set for each example, with the tolerances chosen depending on the difficulty of the problem.  The nodes were the randomly shifted lattice rules supplied by GAIL.  For each integral,  each tolerance, and each of our stopping criteria---empirical Bayes, full Bayes, and generalized cross-validation---our algorithm is run  $100$ times.  For each test, the execution time is plotted against $\abs{\mu - \hmu}/\varepsilon$.  We expect $\abs{\mu - \hmu}/\varepsilon$ to be no greater than one, but hope that it is not too much smaller than one, which would indicate a stopping criterion that is too conservative.
 
 
 \Subsection{Multivariate Normal Probability}
-This example was already introduced in Section \ref{MVN_example}, where we used the Mat\'ern covariance kernel.  Here we apply Sidi's $C^2$  periodization to $ f_{\textup{Genz}}$ \eqref{fGenzdef}, and chose $d=3$ and $r=2$ The simulation results for this example function are summarized in Figures \ref{fig:mvn-guaranteed-MLE}, \ref{fig:mvn-guaranteed-FB}, and \ref{fig:mvn-guaranteed-GCV}.  In all cases the Bayesian cubature returns an approximation within the prescribed error tolerance. We used the same setting as before with generic slow Bayesian cubature in \secref{MVN_example} for comparision. For error threshold $\varepsilon=10^{-5}$ with empirical stopping criterion, our fast algorithm takes 0.001 seconds as shown in \figref{fig:mvn-guaranteed-MLE} whereas the basic algorithm takes 30 seconds as shown in \figref{fig:MVN_Metern_d2b2}. 
+This example was already introduced in Section \ref{MVN_example}, where we used the Mat\'ern covariance kernel.  Here we apply Sidi's $C^2$  periodization to $ f_{\textup{Genz}}$ \eqref{fGenzdef}, and chose $d=3$ and $r=2$. The simulation results for this example function are summarized in Figures \ref{fig:mvn-guaranteed-MLE}, \ref{fig:mvn-guaranteed-FB}, and \ref{fig:mvn-guaranteed-GCV}.  In all cases the Bayesian cubature returns an approximation within the prescribed error tolerance. We used the same setting as before with generic slow Bayesian cubature in \secref{MVN_example} for comparision. For error threshold $\varepsilon=10^{-5}$ with empirical stopping criterion, our fast algorithm takes 0.001 seconds as shown in \figref{fig:mvn-guaranteed-MLE} whereas the basic algorithm takes 30 seconds as shown in \figref{fig:MVN_Metern_d2b2}. 
 Amongst the three stopping criteria, GCV achieved the results faster than others. 
 One can also observe from the figures, the credible intervals are wider, causing the true error much smaller than requested.
 This could be due to the periodization transformed $f_\textup{Genz}$ is smoother than the $r=2$ kernel could approximate. Using a kernel of matching smoothness could produce right credible intervals.
@@ -2638,25 +2195,27 @@ This could be due to the periodization transformed $f_\textup{Genz}$ is smoother
 	\centering
 	%d=3 problem transformed into d=2
 	\includegraphics[width=0.95\linewidth]{"MVN_guaranteed_time_MLE_C2sin_d2_r2_2018-Sep-6"}
-	\caption[Guaranteed:]{Multivariate normal probability example using the empirical Bayes stopping criterion.}
+	\caption[MVN Guaranteed: MLE]{\code{cubBayesLattice\_g}: Multivariate normal probability example using the empirical Bayes stopping criterion.}
 	\label{fig:mvn-guaranteed-MLE}
 \end{figure}
 \begin{figure}
 	\centering
 	\includegraphics[width=0.95\linewidth]{"MVN_guaranteed_time_full_C2sin_d2_r2_2018-Sep-6"}
-	\caption[MVN guaranteed : FB]{Multivariate normal probability example using the full Bayes stopping criterion.}
+	\caption[MVN guaranteed: FB]{\code{cubBayesLattice\_g}: Multivariate normal probability example using the full Bayes stopping criterion.}
 	\label{fig:mvn-guaranteed-FB}
 \end{figure}
 \begin{figure}
 	\centering
 	\includegraphics[width=0.95\linewidth]{"MVN_guaranteed_time_GCV_C2sin_d2_r2_2018-Sep-6"}
-	\caption[MVN guaranteed : GCV]{Multivariate normal probability example using the GCV stopping criterion.}
+	\caption[MVN guaranteed: GCV]{\code{cubBayesLattice\_g}: Multivariate normal probability example using the GCV stopping criterion.}
 	\label{fig:mvn-guaranteed-GCV}
 \end{figure}
 
 \Subsection{Keister's Example}
+\label{sec:cubBayesLattice_keister_example}
 This multidimensional integral function comes from \cite{Kei96} and is inspired by a physics application:
-\begin{align*}
+\begin{align}
+\label{eqn:keister_integral}
 \mu & =  \int_{\reals^d} \cos(\norm{ \vt}) \exp(-\norm{ \vt }^2) \, \dvt \\
 \nonumber
 %&  = 
@@ -2664,7 +2223,7 @@ This multidimensional integral function comes from \cite{Kei96} and is inspired 
 & = \int_{[0,1]^d} f_{\textup{Keister}}(\vx) \, \dvx,\\
 \intertext{where }
 f_\textup{Keister}(\vx) &= \pi^{d/2} \cos\left(\norm{ \Phi^{-1}(\vx)/2}\right)  ,
-\end{align*}
+\end{align}
 and again $\Phi$ is the standard normal distribution.
 %\begin{figure}
 %	\captionsetup[subfigure]{labelformat=empty}
@@ -2702,19 +2261,19 @@ I_s(j) &= \frac{(j-2)I_s(j-2)-I_c(j-1)}{2},
 \begin{figure}
 	\centering
 	\includegraphics[width=0.95\linewidth]{"Keister_guaranteed_time_MLE_C1sin_d4_r2_2018-Sep-6"}
-	\caption[Keister guaranteed:MLE]{Keister example using the empirical Bayes stopping criterion.}
+	\caption[Keister guaranteed:MLE]{\code{cubBayesLattice\_g}: Keister example using the empirical Bayes stopping criterion.}
 	\label{fig:keister-guaranteed-MLE}
 \end{figure}
 \begin{figure}
 	\centering
 	\includegraphics[width=0.95\linewidth]{"Keister_guaranteed_time_full_C1sin_d4_r2_2018-Sep-6"}
-	\caption[Keister guaranteed:FB]{Keister example using the full Bayes stopping criterion.}
+	\caption[Keister guaranteed:FB]{\code{cubBayesLattice\_g}: Keister example using the full Bayes stopping criterion.}
 	\label{fig:keister-guaranteed-FB}
 \end{figure}
 \begin{figure}
 	\centering
 	\includegraphics[width=0.95\linewidth]{"Keister_guaranteed_time_GCV_C1sin_d4_r2_2018-Sep-6"}
-	\caption[Keister guaranteed:GCV]{Keister example using the GCV stopping criterion.}
+	\caption[Keister guaranteed:GCV]{\code{cubBayesLattice\_g}: Keister example using the GCV stopping criterion.}
 	\label{fig:keister-guaranteed-GCV}
 \end{figure}
 
@@ -2722,6 +2281,7 @@ Figures \ref{fig:keister-guaranteed-MLE}, \ref{fig:keister-guaranteed-FB} and \r
 As we can see the GCV stopping criterion achieved the results faster than the others similar to the multivariate normal case.
 
 \Subsection{Option Pricing}
+\label{sec:cubBayesLattice_option_pricing_example}
 The price of financial derivatives can often be modeled by high dimensional integrals. If the underlying asset is described in terms of a discretized geometric Brownian motion, then the fair price of the option is:
 \begin{equation*}
 \mu = \int_{\reals^d} \text{payoff}(\vz) \frac{\exp(\frac 12 \vz^T\mSigma^{-1}\vz)}{\sqrt{(2\pi)^d \det(\mSigma)}} \, \dvz = \int_{[0,1]^d} f(\vx) \, \dvx,
@@ -2752,60 +2312,143 @@ Because the integrand has a kink caused by the $\max$ function, it does not help
 \begin{figure}
 	\centering
 	\includegraphics[width=0.95\linewidth]{"optPrice_guaranteed_time_MLE_Baker_d12_r1_2018-Sep-6"}
-	\caption[Option pricing Guaranteed: MLE]{Option pricing using the empirical Bayes stopping criterion.}
+	\caption[Option pricing Guaranteed: MLE]{\code{cubBayesLattice\_g}: Option pricing using the empirical Bayes stopping criterion.}
 	\label{fig:optprice-guaranteed-MLE}
 \end{figure}
 \begin{figure}
 	\centering
 	\includegraphics[width=0.95\linewidth]{"optPrice_guaranteed_time_full_Baker_d12_r1_2018-Sep-6"}
-	\caption[OptPrice guaranteed : FB]{Option pricing using the full Bayes stopping criterion.}
+	\caption[OptPrice guaranteed : FB]{\code{cubBayesLattice\_g}: Option pricing using the full Bayes stopping criterion.}
 	\label{fig:optprice-guaranteed-FB}
 \end{figure}
 \begin{figure}
 	\centering
 	\includegraphics[width=0.95\linewidth]{"optPrice_guaranteed_time_GCV_Baker_d12_r1_2018-Sep-6"}
-	\caption[OptPrice guaranteed : GCV]{Option pricing using the  GCV stopping criterion.} \label{fig:optprice-guaranteed-GCV}
+	\caption[OptPrice guaranteed : GCV]{\code{cubBayesLattice\_g}: Option pricing using the  GCV stopping criterion.} \label{fig:optprice-guaranteed-GCV}
 \end{figure}
 
 
-As shown in Figures \ref{fig:mvn-guaranteed-MLE} to \ref{fig:optprice-guaranteed-GCV}, Bayesian cubature algorithm computes the integral within  user specified threshold most of the times except on a few occasions. This is especially the case with option pricing example due to the complexity and high dimension of the integrand. 
+As shown in Figures \ref{fig:mvn-guaranteed-MLE} to \ref{fig:optprice-guaranteed-GCV}, \code{cubBayesLattice\_g} algorithm computes the integral within user specified threshold most of the times except on a few occasions. This is especially the case with option pricing example due to the complexity and high dimension of the integrand. 
 Also notice the algorithm finished within 10seconds of time for Keister and multivariate Normal. For the option pricing it look closer to 70seconds. This is again due to the complexity of the integrand.
 
 Another noticeable aspect from the plots is how much the error bounds differ from the true error. For option pricing example, the error bound is not as conservative as it is for the multivariate normal and Keister examples. A possible reason is that the latter integrands are significantly smoother than is assumed by our covariance kernel.  This is a matter for further investigation.
 
-\Section{Test Results and Observations for \code{cubBayesNet\_g}}
 
-Similar to the previous examples, we used four different error tolerances, $\varepsilon$,  set for each example, with the tolerances chosen depending on the difficulty of the problem.  The nodes were the randomly scrambled Sobol rules supplied by Matlab.  For each integral,  each tolerance, and each of our stopping criteria---empirical Bayes, full Bayes, and generalized cross-validation---our algorithm is run  $100$ times.  For each test, the execution time is plotted against $\abs{\mu - \hmu}/\varepsilon$.  We expect $\abs{\mu - \hmu}/\varepsilon$ to be no greater than one, but hope that it is not too much smaller than one, which would indicate a stopping criterion that is too conservative.
+
+
+
+
+\Section{Test Results and Observations for Algorithm2} % \code{cubBayesNet\_g}}
+\label{sec:numerical_experiments_cubBayesNet}
+
+Similar to the previous examples, we used four different error tolerances, $\varepsilon$,  set for each example, with the tolerances chosen depending on the difficulty of the problem.  The nodes were the randomly scrambled Sobol rules supplied by Matlab's Sobol sequence generator.  For each integral,  each tolerance, and each of our stopping criteria---empirical Bayes, full Bayes, and generalized cross-validation---our algorithm is run  $100$ times.  For each test, the execution time is plotted against $\abs{\mu - \hmu}/\varepsilon$.  We expect $\abs{\mu - \hmu}/\varepsilon$ to be no greater than one, but hope that it is not too much smaller than one, which would indicate a stopping criterion that is too conservative. Unlike the examples in  previous \secref{sec:numerical_experiments_cubBayesLattice}, periodization variable transform is not required.
 
 \Subsection{Multivariate Normal Probability}
-TBD
+We use the example that was already introduced in Section \ref{MVN_example}, where we used the Mat\'ern covariance kernel.  Here we use $ f_{\textup{Genz}}$ \eqref{fGenzdef} without any periodization, and chose $d=3$ and $r=1$. The simulation results for this example function are summarized in Figures \ref{fig:Sobol-mvn-guaranteed-MLE}, \ref{fig:Sobol-mvn-guaranteed-FB}, and \ref{fig:Sobol-mvn-guaranteed-GCV}.  In all cases the {\code{cubBayesNet\_g} returns an approximation within the prescribed error tolerance. We used the same setting as before with generic slow Bayesian cubature in \secref{MVN_example} for comparision. For error threshold $\varepsilon=10^{-5}$ with empirical stopping criterion, our fast algorithm takes about 2 seconds as shown in \figref{fig:mvn-guaranteed-MLE} whereas the basic algorithm takes 30 seconds as shown in \figref{fig:MVN_Metern_d2b2}. 
+{\code{cubBayesNet\_g} uses fast Walsh transform which is slower in Matlab due to the way it was implemented. This is reason it takes more time than than {\code{cubBayesLattice\_g}. 
+But comparing the number of samples, $n$, used for integration provides more insight which directly relates to the alogrithm's computational cost. The {\code{cubBayesLattice\_g} used $n=16384$ samples whereas {\code{cubBayesNet\_g} used $n=32768$ samples.
+
+Amongst the three stopping criteria, GCV achieved the results faster than others. 
+One can also observe from the figures, the credible intervals are narrower than we observed in \figref{fig:mvn-guaranteed-MLE}.
+This shows {\code{cubBayesNet\_g} with $r=1$ kernel more accurately approximates the integrand.
+
 \begin{figure}
 	\centering
 	%d=3 problem transformed into d=2
-	\includegraphics[width=0.95\linewidth]{"Sobol_MVN_guaranteed_time_MLE__d2_r1_2019-May-29"}
-	\caption[Guaranteed:]{\code{cubBayesNet\_g}: Multivariate normal probability example using the empirical Bayes stopping criterion.}
+	\includegraphics[width=0.95\linewidth]{"Sobol_MVN_guaranteed_time_MLE__d2_r1_2019-Jun-8"}
+	\caption[Sobol: MVN guaranteed:MLE]{\code{cubBayesNet\_g}: Multivariate normal probability example with empirical Bayes stopping criterion.}
 	\label{fig:Sobol-mvn-guaranteed-MLE}
 \end{figure}
+\begin{figure}
+	\centering
+	%d=3 problem transformed into d=2
+	\includegraphics[width=0.95\linewidth]{"Sobol_MVN_guaranteed_time_full__d2_r1_2019-Jun-9"}
+	\caption[Sobol: MVN guaranteed:Full Bayes]{\code{cubBayesNet\_g}: Multivariate normal probability example with the full-Bayes stopping criterion.}
+	\label{fig:Sobol-mvn-guaranteed-FB}
+\end{figure}
+\begin{figure}
+	\centering
+	%d=3 problem transformed into d=2
+	\includegraphics[width=0.95\linewidth]{"Sobol_MVN_guaranteed_time_GCV__d2_r1_2019-Jun-9"}
+	\caption[Sobol: MVN guaranteed:GCV]{\code{cubBayesNet\_g}: Multivariate normal probability example with the GCV stopping criterion.}
+	\label{fig:Sobol-mvn-guaranteed-GCV}
+\end{figure}
+
 
 \Subsection{Keister's Example}
-TBD
+Keister integral defined in \eqref{eqn:keister_integral} is reused in this example.
+Figures \ref{fig:Sobol-keister-guaranteed-MLE}, \ref{fig:Sobol-keister-guaranteed-FB} and \ref{fig:Sobol-keister-guaranteed-GCV} summarize the numerical tests for this integral. We used  dimension $d=4$, and $r=1$.  No periodization transform was used as it is not required. 
+In this example, we use $r=1$ order kernel where as in \secref{sec:cubBayesLattice_keister_example}, $r=2$ kernel was used, which necessitates
+the \code{cubBayesNet\_g} to use more samples for integration.
+As we can see the GCV stopping criterion achieved the results faster than the others similar to the multivariate normal case.
 
 \begin{figure}
 	\centering
 	\includegraphics[width=0.95\linewidth]{"Sobol_Keister_guaranteed_time_MLE__d4_r1_2019-May-29"}
-	\caption[Keister guaranteed:MLE]{\code{cubBayesNet\_g}: Keister example using the empirical Bayes stopping criterion.}
+	\caption[Sobol: Keister guaranteed:MLE]{\code{cubBayesNet\_g}: Keister example using the empirical Bayes stopping criterion.}
 	\label{fig:Sobol-keister-guaranteed-MLE}
+\end{figure}
+\begin{figure}
+	\centering
+	\includegraphics[width=0.95\linewidth]{"Sobol_Keister_guaranteed_time_full__d4_r1_2019-Jun-9"}
+	\caption[Sobol: Keister guaranteed:Full Bayes]{\code{cubBayesNet\_g}: Keister example using the full-Bayes stopping criterion.}
+	\label{fig:Sobol-keister-guaranteed-FB}
+\end{figure}
+\begin{figure}
+	\centering
+	\includegraphics[width=0.95\linewidth]{"Sobol_Keister_guaranteed_time_GCV__d4_r1_2019-Jun-9"}
+	\caption[Sobol: Keister guaranteed:GCV]{\code{cubBayesNet\_g}: Keister example using the GCV stopping criterion.}
+	\label{fig:Sobol-keister-guaranteed-GCV}
 \end{figure}
 
 \Subsection{Option Pricing}
-TBD
+The Figures \ref{fig:Sobol-optprice-guaranteed-MLE}, \ref{fig:Sobol-optprice-guaranteed-FB} and 
+\ref{fig:Sobol-optprice-guaranteed-GCV} summarize the numerical results for the option pricing example using the same values as in \secref{sec:cubBayesLattice_option_pricing_example},
+$
+T = 1/4, \ \ d = 13, \ \ S_0 = 100, \ \ r =  0.05, \ \ \sigma = 0.5, \ \ K = 100.
+$
+As mentioned before, this integrand has a kink caused by the $\max$ function, So, \code{cubBayesNet\_g} could be more efficient than \code{cubBayesLattice\_g}, as no periodization transform is required. This can be observed from the number of samples used for intgration to meet the same error threshold. For the error tolerance $\varepsilon=10^{-3}$, the \code{cubBayesLattice\_g} used $n=2^{20}$ samples, whereas the \code{cubBayesNet\_g} used $n=2^{17}$ samples.
+
+
+
+As shown in Figures \ref{fig:Sobol-mvn-guaranteed-MLE} to \ref{fig:Sobol-optprice-guaranteed-GCV}, the \code{cubBayesNet\_g} algorithm also computes the integral within user specified threshold most of the times except on a few occasions. This is especially the case with option pricing example due to the complexity and high dimension of the integrand. 
+
 
 \begin{figure}
 	\centering
-	\includegraphics[width=0.95\linewidth]{"Sobol_optPrice_guaranteed_time_MLE__d12_r1_2019-May-30"}
-	\caption[Option pricing Guaranteed: MLE]{\code{cubBayesNet\_g}: Option pricing using the empirical Bayes stopping criterion .}
+	\includegraphics[width=0.95\linewidth]{"Sobol_optPrice_guaranteed_time_MLE__d12_r1_2019-Jun-10"}
+	\caption[Option pricing Guaranteed: MLE]{\code{cubBayesNet\_g}: Option pricing using the empirical Bayes stopping criterion.}
 	\label{fig:Sobol-optprice-guaranteed-MLE}
 \end{figure}
+\begin{figure}
+	\centering
+	\includegraphics[width=0.95\linewidth]{"Sobol_optPrice_guaranteed_time_full__d12_r1_2019-Jun-10"}
+	\caption[Option pricing Guaranteed: Full Bayes]{\code{cubBayesNet\_g}: Option pricing using the full-Bayes stopping criterion.}
+	\label{fig:Sobol-optprice-guaranteed-FB}
+\end{figure}
+\begin{figure}
+	\centering
+	\includegraphics[width=0.95\linewidth]{"Sobol_optPrice_guaranteed_time_GCV__d12_r1_2019-Jun-10"}
+	\caption[Option pricing Guaranteed: GCV]{\code{cubBayesNet\_g}: Option pricing using the GCV stopping criterion.}
+	\label{fig:Sobol-optprice-guaranteed-GCV}
+\end{figure}
+
+
+Most noticeable aspect from the plots for the \code{cubBayesNet\_g} is how closer the error bounds are to the true error. 
+This shows the estimation of expected error in the stopping criterion of \code{cubBayesNet\_g} is very accurate.
+Another key observation, it missed to meet the given error threshold for $\varepsilon=10^{-4}$. This is because the algorithm reached max allowed number of samples $n=2^{20}$.
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 \iffalse
@@ -3153,13 +2796,12 @@ number & number & number \\
 
 \fi
 
-\Chapter{Future work} 
-\label{sec:futureWork}
 
 \Section{Future work}
+%\label{sec:futureWork}
 
-We demonstrated the capability our new Bayesian cubature algorithm to successfully compute the integrals faster within the user defined error tolerances. But there are few potential improvements and new areas of applications.
-
+We demonstrated the capability our new Bayesian cubature algorithms to successfully compute the integrals faster within the user defined error tolerances. But there are few potential improvements and new areas of applications.
+Some of the improvement ideas are listed here:
 \begin{itemize}
 \item Higher order digital sequences and digital shift and/or scramble invariant kernels \cite{Nuyens2013} \cite{Bald12a}:
 We could improve the computation speed of \code{cubBayesNet\_g} for smoother integrands using higher order digital sequences and matching kernels which have the potential of being another match that satisfies the conditions in Section \ref{sec:fast_BC}.  The fast transform would correspond to a fast Walsh transform similar to the second algorithm we demonstrated.  For such kernels and the first order Walsh kernel we demonstrated, periodicity is not assumed, however, special structure of both the sequences and the kernels are required to take advantage of integrand smoothness.
