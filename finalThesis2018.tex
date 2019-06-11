@@ -42,7 +42,7 @@
 \usepackage[normalem]{ulem}
 %\usepackage{refcheck}  % points out unused labels, refs ...
 
-\setcounter{tocdepth}{1}
+\setcounter{tocdepth}{2}
 
 %\captionsetup{compatibility=false}
 
@@ -266,9 +266,16 @@
 	My special gratitude also goes to my thesis committee members, Professor Jinqiao Duan,
 	Professor Fred J. Hickernell, Professor Shuwang Li, and Professor Geoffrey Williamson. Above all, I want to thank them because they were flexible and willing dedicate time to review my work and attend my comprehensive and defense examinations.
 	
+	I would like to thank Dirk Nuyens for suggestions, valuable tips and notes when we were researching higher order nets and kernels.
+	
+	I would like to thank the organizers of the SAMSI-Lloyds-Turing Workshop on Probabilistic Numerical Methods, where a part of preliminary version of this work was discussed.  I also thank Chris Oates and Sou-Cheng Choi for valuable comments.
+	
 	I would like to specifically thank my friend Samuel Davidson for reviewing and suggesting the improvements on the text.
 	
 	Last but not least, I would not be able to make it without the support of my family. I would like to thank my wife for her continuous support and sacrifice. I also would like to thank my parents for their endless support.
+
+%This research was supported in part by the National Science Foundation grants DMS-1522687 and DMS-1638521 (SAMSI).
+
 	
 \end{acknowledgement}
 
@@ -2179,7 +2186,7 @@ Periodizing variable transforms are used for the numerical examples below.  In s
 Bayesian cubature algorithms developed in this work are demonstrated using widely used integration examples.
 Three integrals were evaluated using both the algorithms \code{cubBayesLattice\_g} and \code{cubBayesNet\_g}. The first example shows evaluating a multivariate normal probability given the intervals. The second example shows integrating the Keister's function, and the final example shows computing an Asian arithmetic option pricing.  
 
-\Section{Test Results and Observations for Algorithm1} % for \code{cubBayesLattice\_g}}
+\Section{Test Results and Observations for \code{cubBayesLattice\_g}}
 \label{sec:numerical_experiments_cubBayesLattice}
 
 Four different error tolerances, $\varepsilon$,  were set for each example, with the tolerances chosen depending on the difficulty of the problem.  The nodes were the randomly shifted lattice rules supplied by GAIL.  For each integral,  each tolerance, and each of our stopping criteria---empirical Bayes, full Bayes, and generalized cross-validation---our algorithm is run  $100$ times.  For each test, the execution time is plotted against $\abs{\mu - \hmu}/\varepsilon$.  We expect $\abs{\mu - \hmu}/\varepsilon$ to be no greater than one, but hope that it is not too much smaller than one, which would indicate a stopping criterion that is too conservative.
@@ -2338,7 +2345,7 @@ Another noticeable aspect from the plots is how much the error bounds differ fro
 
 
 
-\Section{Test Results and Observations for Algorithm2} % \code{cubBayesNet\_g}}
+\Section{Test Results and Observations for \code{cubBayesNet\_g}}
 \label{sec:numerical_experiments_cubBayesNet}
 
 Similar to the previous examples, we used four different error tolerances, $\varepsilon$,  set for each example, with the tolerances chosen depending on the difficulty of the problem.  The nodes were the randomly scrambled Sobol rules supplied by Matlab's Sobol sequence generator.  For each integral,  each tolerance, and each of our stopping criteria---empirical Bayes, full Bayes, and generalized cross-validation---our algorithm is run  $100$ times.  For each test, the execution time is plotted against $\abs{\mu - \hmu}/\varepsilon$.  We expect $\abs{\mu - \hmu}/\varepsilon$ to be no greater than one, but hope that it is not too much smaller than one, which would indicate a stopping criterion that is too conservative. Unlike the examples in  previous \secref{sec:numerical_experiments_cubBayesLattice}, periodization variable transform is not required.
@@ -2417,19 +2424,19 @@ As shown in Figures \ref{fig:Sobol-mvn-guaranteed-MLE} to \ref{fig:Sobol-optpric
 \begin{figure}
 	\centering
 	\includegraphics[width=0.95\linewidth]{"Sobol_optPrice_guaranteed_time_MLE__d12_r1_2019-Jun-10"}
-	\caption[Option pricing Guaranteed: MLE]{\code{cubBayesNet\_g}: Option pricing using the empirical Bayes stopping criterion.}
+	\caption[Sobol: Option pricing Guaranteed: MLE]{\code{cubBayesNet\_g}: Option pricing using the empirical Bayes stopping criterion.}
 	\label{fig:Sobol-optprice-guaranteed-MLE}
 \end{figure}
 \begin{figure}
 	\centering
 	\includegraphics[width=0.95\linewidth]{"Sobol_optPrice_guaranteed_time_full__d12_r1_2019-Jun-10"}
-	\caption[Option pricing Guaranteed: Full Bayes]{\code{cubBayesNet\_g}: Option pricing using the full-Bayes stopping criterion.}
+	\caption[Sobol: Option pricing Guaranteed: Full Bayes]{\code{cubBayesNet\_g}: Option pricing using the full-Bayes stopping criterion.}
 	\label{fig:Sobol-optprice-guaranteed-FB}
 \end{figure}
 \begin{figure}
 	\centering
 	\includegraphics[width=0.95\linewidth]{"Sobol_optPrice_guaranteed_time_GCV__d12_r1_2019-Jun-10"}
-	\caption[Option pricing Guaranteed: GCV]{\code{cubBayesNet\_g}: Option pricing using the GCV stopping criterion.}
+	\caption[Sobol: Option pricing Guaranteed: GCV]{\code{cubBayesNet\_g}: Option pricing using the GCV stopping criterion.}
 	\label{fig:Sobol-optprice-guaranteed-GCV}
 \end{figure}
 
@@ -2822,12 +2829,15 @@ The kernels's optimal shape parameter searched using steepest descent with kerne
 
 \end{itemize}
 
-\Section*{Acknowledgments}
+\iffalse
+\Section{Acknowledgments}
+
 This research was supported in part by the National Science Foundation grants DMS-1522687 and DMS-1638521 (SAMSI).
 The authors would like to thank the organizers of the SAMSI-Lloyds-Turing Workshop on Probabilistic Numerical Methods, where a preliminary version of this work was discussed.  The authors also thank Chris Oates and Sou-Cheng Choi for valuable comments.
 
 
 \addcontentsline{toc}{section}{Acknowledgments}  % If you want to insert this section on the table of contents
+\fi
 
 \clearpage
 
