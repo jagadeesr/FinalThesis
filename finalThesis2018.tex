@@ -1428,6 +1428,153 @@ Using the similar techniques from \secref{deriv_obj_func_MLE}
 \end{align*}
 
 
+\Section{Product kernel}
+
+In this research, Product kernels are used extensively. They got some nice properties which are helpful to obtain analytical results easily. Product kernels are of the form in $d$ dimensions
+\begin{align*}
+C_\vtheta(\vt, \vx) = 
+\prod_{l=1}^d \biggl[
+1 - \eta \; \mathfrak{C}(x_l,t_l) \biggr]
+\end{align*}
+where $\eta$ is called shape parameter and $\mathfrak{C}$ is some positive definite function. The derivative of the product kernel can be obtained easily.
+
+\Subsection{Derivative of the product kernel}
+\label{sec:deriv_of_kernel}
+We discussed using gradient descent to find optimal shape parameter in  \secref{grad_descent_MLE} which requires the derivative of kernel w.r.t. $\eta$
+\begin{align*}
+\frac{\partial}{\partial \eta} C_\vtheta(\vt, \vx) 
+& =
+\frac{\partial}{\partial \eta} 
+\prod_{l=1}^d \biggl[
+1 - \eta g_r(x_l,t_l) \biggr], % \quad  g_r(x,t) := (-1)^{r} B_{2r}( |{x-t}| \bmod 1 ) 
+\\
+& = 
+\sum_{j=1}^d  
+\prod_{l=1, l \neq j}^d \biggl[
+1 - \eta g_r(x_l,t_l) \biggr]
+\biggl( - g_r(x_j,t_j) \biggr)
+\\
+& =
+\prod_{l=1}^d \biggl[
+1 - \eta g_r(x_l,t_l) \biggr]
+\sum_{j=1}^d 
+\frac{
+	\biggl( - g_r(x_j,t_j) \biggr)
+}{
+	1 - \eta g_r(x_j,t_j) 
+}
+\\
+& =
+C_\vtheta(\vt, \vx) 
+\frac{1}{\eta}
+\sum_{j=1}^d 
+\frac{
+	\biggl(1 - \eta g_r({x_j,t_j})  - 1 \biggr)
+}{
+	1 - \eta g_r(x_j,t_j) 
+}
+\\
+& =
+C_\vtheta(\vt, \vx) 
+\frac{1}{\eta}
+\sum_{j=1}^d 
+\biggl(
+1 - 
+\frac{1
+}{
+	1 - \eta g_r(x_j,t_j) 
+}
+\biggr)
+\\
+& =
+\frac{d}{\eta} 
+\underbrace{
+	\left(
+	\prod_{l=1}^d \biggl[
+	1 - \eta g_r(x_l,t_l) \biggr]
+	\right) }_
+{ C_\vtheta(\vt, \vx) }
+\biggl(
+1 - 
+\frac{1}{d} \sum_{j=1}^d
+\frac{1}
+{ 1 - \eta g_r(x_j,t_j) }
+\biggr)
+\end{align*}
+
+\Subsubsection{When $\eta_j$ fixed per dimension $j$}
+In this case, we will have a vector of length $d$ shape parameters. For the dimension $j$,
+\begin{align*}
+\frac{\partial}{\partial \eta_j} C_\vtheta(\vt, \vx) 
+& =
+\frac{\partial}{\partial \eta_j} 
+\prod_{l=1}^d \biggl[
+1 - \eta_l g_r(x_l,t_l) \biggr]
+\\
+& = 
+\prod_{l=1, l \neq j}^d \biggl[
+1 - \eta_l g_r(x_l,t_l) \biggr]
+\biggl( - g_r(x_j,t_j) \biggr)
+\\
+& =
+\prod_{l=1}^d \biggl[
+1 - \eta_l g_r(x_l,t_l) \biggr]
+\frac{
+	\biggl( - g_r(x_j,t_j) \biggr)
+}{
+	1 - \eta_j g_r(x_j,t_j) 
+}
+\\
+& =
+C_\vtheta(\vt, \vx) 
+\frac{1}{\eta_j}
+\frac{
+	\biggl(1 - \eta_j g_r(x_j,t_j)  - 1 \biggr)
+}{
+	1 - \eta_j g_r(x_j,t_j) 
+}
+\\
+& =
+C_\vtheta(\vt, \vx) 
+\frac{1}{\eta_j}
+\biggl(
+1 - 
+\frac{1
+}{
+	1 - \eta_j g_r(x_j,t_j) 
+}
+\biggr)
+\\
+& =
+\frac{1}{\eta_j} 
+\underbrace{
+	\left(
+	\prod_{l=1}^d \biggl[
+	1 - \eta g_r(x_l,t_l) \biggr]
+	\right) }_
+{ C_\vtheta(\vt, \vx) }
+\biggl(
+1 - 
+\frac{1}
+{ 1 - \eta_j g_r(x_j,t_j) }
+\biggr)
+\end{align*}
+Please note the above derivatives do not depend on $g_r(x,t)$ and most importantly these computations are applicable to any product kernel of the form $ C_\vtheta(\vt, \vx) =
+\prod_{l=1}^d [ 1 - \eta_l g_r(x_l,t_l) ]$.
+
+\Subsection{Shape parameter search using steepest descent}
+Having obtained the derivative, we can easily implement the steepest descent search introduced in \secref{grad_descent_MLE} 
+%\eqref{Dong2017a}
+\begin{align*}
+\eta^{(j+1)} = \eta^{(j)} - \nu \frac{\partial}{\partial \eta} \mathcal{L}(\vtheta | \vy)
+\end{align*}
+
+
+
+
+
+
+
 
 
 
@@ -1437,7 +1584,7 @@ Using the similar techniques from \secref{deriv_obj_func_MLE}
 \Chapter{Integration Lattices and Shift Invariant Kernels}
 \label{sec:shift_invariant_kernel}
 
-The preceding sections lay out an automatic Bayesian cubature algorithm whose computational cost is only $\Order(n \log(n))$ if $n$ function values are used.  However, this algorithm relies on covariance kernel functions, $C$ and designs, $\{\vx_i\}_{i=1}^n$ that satisfy assumptions \eqref{fastcompAssump}.  We will also satisfy assumption \eqref{addAssump}.  To facilitate the fast transform, it is assumed in this section and the next that $n$ is power of $2$.  
+The preceding sections lay out an automatic Bayesian cubature algorithm whose computational cost is only $\Order(n \log(n))$ if $n$ function values are used.  However, this algorithm relies on covariance kernel functions, $C_{\vtheta}$ and designs, $\{\vx_i\}_{i=1}^n$ that satisfy assumptions \eqref{fastcompAssump}.  We will also satisfy assumption \eqref{addAssump}.  To facilitate the fast transform, it is assumed in this section and the next that $n$ is power of $2$.  
 
 
 \Section{Extensible Integration Lattice Node Sets}
@@ -1473,9 +1620,9 @@ An example of $64$ nodes is given in Figure  \ref{latticefig}.  The even coverag
 
 The covariance functions $C$ that match integration lattice node sets have the form
 \begin{equation} \label{eq:shInv}
-C(\vt,\vx) = K(\vt - \vx \bmod \vone).
+C_{\vtheta}(\vt,\vx) = K_{\vtheta}(\vt - \vx \bmod \vone).
 \end{equation}
-This is called a \emph{shift invariant kernel} because shifting both arguments of the covariance function by the same amount leaves the value unchanged.   By a proper scaling of the kernel $K$ it follows that assumption \eqref{addAssump} is satisfied. Of course, $K$ must also be of the form that ensures that $C$ is symmetric and positive definite, as assumed in \eqref{FJH:eq:CondPosDef}. 
+This is called a \emph{shift invariant kernel} because shifting both arguments of the covariance function by the same amount leaves the value unchanged.   By a proper scaling of the kernel $K_{\vtheta}$ it follows that assumption \eqref{addAssump} is satisfied. Of course, $K_{\vtheta}$ must also be of the form that ensures that $C_{\vtheta}$ is symmetric and positive definite, as assumed in \eqref{FJH:eq:CondPosDef}. 
 
 A family of shift invariant kernels is constructed via even degree Bernoulli polynomials:
 \begin{align*}
@@ -1518,136 +1665,6 @@ Larger `$r$' implies a greater degree of smoothness of the kernel.  Larger $\gam
 	\label{fig:fourierkernel-dim1}
 \end{figure}
 
-\Subsection{Derivative of the kernel}
-\label{sec:deriv_of_kernel}
-We discussed using gradient descent to find optimal shape parameter in  \secref{grad_descent_MLE} which requires the derivative of kernel w.r.t. $\gamma$
-\begin{align*}
-\frac{\partial}{\partial \gamma} C_\vtheta(\vt, \vx) 
-& =
-\frac{\partial}{\partial \gamma} 
-\prod_{l=1}^d \biggl[
-1 - \gamma g_r(x_l,t_l) \biggr], \quad  g_r(x,t) := (-1)^{r} B_{2r}( |{x-t}| \bmod 1 ) 
-\\
-& = 
-\sum_{j=1}^d  
-\prod_{l=1, l \neq j}^d \biggl[
-1 - \gamma g_r(x_l,t_l) \biggr]
-\biggl( - g_r(x_j,t_j) \biggr)
-\\
-& =
-\prod_{l=1}^d \biggl[
-1 - \gamma g_r(x_l,t_l) \biggr]
-\sum_{j=1}^d 
-\frac{
-	\biggl( - g_r(x_j,t_j) \biggr)
-}{
-	1 - \gamma g_r(x_j,t_j) 
-}
-\\
-& =
-C_\vtheta(\vt, \vx) 
-\frac{1}{\gamma}
-\sum_{j=1}^d 
-\frac{
-	\biggl(1 - \gamma g_r({x_j,t_j})  - 1 \biggr)
-}{
-	1 - \gamma g_r(x_j,t_j) 
-}
-\\
-& =
-C_\vtheta(\vt, \vx) 
-\frac{1}{\gamma}
-\sum_{j=1}^d 
-\biggl(
-1 - 
-\frac{1
-}{
-	1 - \gamma g_r(x_j,t_j) 
-}
-\biggr)
-\\
-& =
-\frac{d}{\gamma} 
-\underbrace{
-	\left(
-	\prod_{l=1}^d \biggl[
-	1 - \gamma g_r(x_l,t_l) \biggr]
-	\right) }_
-{ C_\vtheta(\vt, \vx) }
-\biggl(
-1 - 
-\frac{1}{d} \sum_{j=1}^d
-\frac{1}
-{ 1 - \gamma g_r(x_j,t_j) }
-\biggr)
-\end{align*}
-
-\Subsubsection{When $\gamma_j$ fixed per dimension $j$}
-In this case, we will have a vector of length $d$ shape parameters. For the dimension $j$,
-\begin{align*}
-\frac{\partial}{\partial \gamma_j} C_\vtheta(\vt, \vx) 
-& =
-\frac{\partial}{\partial \gamma_j} 
-\prod_{l=1}^d \biggl[
-1 - \gamma_l g_r(x_l,t_l) \biggr]
-\\
-& = 
-\prod_{l=1, l \neq j}^d \biggl[
-1 - \gamma_l g_r(x_l,t_l) \biggr]
-\biggl( - g_r(x_j,t_j) \biggr)
-\\
-& =
-\prod_{l=1}^d \biggl[
-1 - \gamma_l g_r(x_l,t_l) \biggr]
-\frac{
-	\biggl( - g_r(x_j,t_j) \biggr)
-}{
-	1 - \gamma_j g_r(x_j,t_j) 
-}
-\\
-& =
-C_\vtheta(\vt, \vx) 
-\frac{1}{\gamma_j}
-\frac{
-	\biggl(1 - \gamma_j g_r(x_j,t_j)  - 1 \biggr)
-}{
-	1 - \gamma_j g_r(x_j,t_j) 
-}
-\\
-& =
-C_\vtheta(\vt, \vx) 
-\frac{1}{\gamma_j}
-\biggl(
-1 - 
-\frac{1
-}{
-	1 - \gamma_j g_r(x_j,t_j) 
-}
-\biggr)
-\\
-& =
-\frac{1}{\gamma_j} 
-\underbrace{
-	\left(
-	\prod_{l=1}^d \biggl[
-	1 - \gamma g_r(x_l,t_l) \biggr]
-	\right) }_
-{ C_\vtheta(\vt, \vx) }
-\biggl(
-1 - 
-\frac{1}
-{ 1 - \gamma_j g_r(x_j,t_j) }
-\biggr)
-\end{align*}
-Please note the above derivatives do not depend on $g_r(x,t)$ and most importantly these computations are applicable to any product kernel of the form $ C_\vtheta(\vt, \vx) =
-\prod_{l=1}^d [ 1 - \gamma_l g_r(x_l,t_l) ]$.
-
-\Subsection{Shape parameter search using steepest descent}
-Now we can implement the steepest descent search introduced in \secref{grad_descent_MLE} 
-%\eqref{Dong2017a}
-\begin{align*}
-\gamma^{(j+1)} = \gamma^{(j)} - \nu \frac{\partial}{\partial \gamma} \mathcal{L}(\vtheta | \vy)
-\end{align*}
 
 
 \Subsection{Eigenvectors}
@@ -2073,7 +2090,7 @@ An example of $64$ nodes is given in Figure  \ref{latticefig}.  The even coverag
 \end{figure}
 
 
-\Section{Wlash Kernels}
+\Section{Walsh Kernels}
 
 \Subsection{Walsh functions}
 Like Fourier transform naturally occurred with Lattice points (Section \ref{sec:shift_invar_kern}), Hadamard-Walsh transform happens for the nets, which we will call simply Walsh transform. Walsh transform  is defined using Walsh functions. Define $\naturals:=\lbrace1,2,\dots \rbrace$ and $\naturals_0 : \lbrace0,1,2,\dots \rbrace$.
@@ -2202,19 +2219,19 @@ This could be due to the periodization transformed $f_\textup{Genz}$ is smoother
 	\centering
 	%d=3 problem transformed into d=2
 	\includegraphics[width=0.95\linewidth]{"MVN_guaranteed_time_MLE_C2sin_d2_r2_2018-Sep-6"}
-	\caption[MVN Guaranteed: MLE]{\code{cubBayesLattice\_g}: Multivariate normal probability example using the empirical Bayes stopping criterion.}
+	\caption[Lattice: MVN Guaranteed: MLE]{\code{cubBayesLattice\_g}: Multivariate normal probability example using the empirical Bayes stopping criterion.}
 	\label{fig:mvn-guaranteed-MLE}
 \end{figure}
 \begin{figure}
 	\centering
 	\includegraphics[width=0.95\linewidth]{"MVN_guaranteed_time_full_C2sin_d2_r2_2018-Sep-6"}
-	\caption[MVN guaranteed: FB]{\code{cubBayesLattice\_g}: Multivariate normal probability example using the full Bayes stopping criterion.}
+	\caption[Lattice: MVN guaranteed: FB]{\code{cubBayesLattice\_g}: Multivariate normal probability example using the full Bayes stopping criterion.}
 	\label{fig:mvn-guaranteed-FB}
 \end{figure}
 \begin{figure}
 	\centering
 	\includegraphics[width=0.95\linewidth]{"MVN_guaranteed_time_GCV_C2sin_d2_r2_2018-Sep-6"}
-	\caption[MVN guaranteed: GCV]{\code{cubBayesLattice\_g}: Multivariate normal probability example using the GCV stopping criterion.}
+	\caption[Lattice: MVN guaranteed: GCV]{\code{cubBayesLattice\_g}: Multivariate normal probability example using the GCV stopping criterion.}
 	\label{fig:mvn-guaranteed-GCV}
 \end{figure}
 
@@ -2268,19 +2285,19 @@ I_s(j) &= \frac{(j-2)I_s(j-2)-I_c(j-1)}{2},
 \begin{figure}
 	\centering
 	\includegraphics[width=0.95\linewidth]{"Keister_guaranteed_time_MLE_C1sin_d4_r2_2018-Sep-6"}
-	\caption[Keister guaranteed:MLE]{\code{cubBayesLattice\_g}: Keister example using the empirical Bayes stopping criterion.}
+	\caption[Lattice: Keister guaranteed:MLE]{\code{cubBayesLattice\_g}: Keister example using the empirical Bayes stopping criterion.}
 	\label{fig:keister-guaranteed-MLE}
 \end{figure}
 \begin{figure}
 	\centering
 	\includegraphics[width=0.95\linewidth]{"Keister_guaranteed_time_full_C1sin_d4_r2_2018-Sep-6"}
-	\caption[Keister guaranteed:FB]{\code{cubBayesLattice\_g}: Keister example using the full Bayes stopping criterion.}
+	\caption[Lattice: Keister guaranteed:FB]{\code{cubBayesLattice\_g}: Keister example using the full Bayes stopping criterion.}
 	\label{fig:keister-guaranteed-FB}
 \end{figure}
 \begin{figure}
 	\centering
 	\includegraphics[width=0.95\linewidth]{"Keister_guaranteed_time_GCV_C1sin_d4_r2_2018-Sep-6"}
-	\caption[Keister guaranteed:GCV]{\code{cubBayesLattice\_g}: Keister example using the GCV stopping criterion.}
+	\caption[Lattice: Keister guaranteed:GCV]{\code{cubBayesLattice\_g}: Keister example using the GCV stopping criterion.}
 	\label{fig:keister-guaranteed-GCV}
 \end{figure}
 
@@ -2319,19 +2336,19 @@ Because the integrand has a kink caused by the $\max$ function, it does not help
 \begin{figure}
 	\centering
 	\includegraphics[width=0.95\linewidth]{"optPrice_guaranteed_time_MLE_Baker_d12_r1_2018-Sep-6"}
-	\caption[Option pricing Guaranteed: MLE]{\code{cubBayesLattice\_g}: Option pricing using the empirical Bayes stopping criterion.}
+	\caption[Lattice: Option pricing Guaranteed: MLE]{\code{cubBayesLattice\_g}: Option pricing using the empirical Bayes stopping criterion.}
 	\label{fig:optprice-guaranteed-MLE}
 \end{figure}
 \begin{figure}
 	\centering
 	\includegraphics[width=0.95\linewidth]{"optPrice_guaranteed_time_full_Baker_d12_r1_2018-Sep-6"}
-	\caption[OptPrice guaranteed : FB]{\code{cubBayesLattice\_g}: Option pricing using the full Bayes stopping criterion.}
+	\caption[Lattice: OptPrice guaranteed : FB]{\code{cubBayesLattice\_g}: Option pricing using the full Bayes stopping criterion.}
 	\label{fig:optprice-guaranteed-FB}
 \end{figure}
 \begin{figure}
 	\centering
 	\includegraphics[width=0.95\linewidth]{"optPrice_guaranteed_time_GCV_Baker_d12_r1_2018-Sep-6"}
-	\caption[OptPrice guaranteed : GCV]{\code{cubBayesLattice\_g}: Option pricing using the  GCV stopping criterion.} \label{fig:optprice-guaranteed-GCV}
+	\caption[Lattice: OptPrice guaranteed : GCV]{\code{cubBayesLattice\_g}: Option pricing using the  GCV stopping criterion.} \label{fig:optprice-guaranteed-GCV}
 \end{figure}
 
 
