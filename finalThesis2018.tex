@@ -1431,11 +1431,12 @@ Using the similar techniques from \secref{deriv_obj_func_MLE}
 \Section{Product kernel}
 
 In this research, Product kernels are used extensively. They got some nice properties which are helpful to obtain analytical results easily. Product kernels are of the form in $d$ dimensions
-\begin{align*}
+\begin{align}
+\label{eqn:prod_kernel}
 C_\vtheta(\vt, \vx) = 
-\prod_{l=1}^d \biggl[
-1 - \eta \; \mathfrak{C}(x_l,t_l) \biggr]
-\end{align*}
+\prod_{l=1}^d \biggl[ 1 - \eta \; \mathfrak{C}(x_l,t_l) \biggr]
+\end{align}
+% $ C_\vtheta(\vt, \vx) = \prod_{l=1}^d [ 1 - \eta_l \mathfrak{C}(x_l,t_l) ]$
 where $\eta$ is called shape parameter and $\mathfrak{C}$ is some positive definite function. The derivative of the product kernel can be obtained easily.
 
 \Subsection{Derivative of the product kernel}
@@ -1446,22 +1447,22 @@ We discussed using gradient descent to find optimal shape parameter in  \secref{
 & =
 \frac{\partial}{\partial \eta} 
 \prod_{l=1}^d \biggl[
-1 - \eta g_r(x_l,t_l) \biggr], % \quad  g_r(x,t) := (-1)^{r} B_{2r}( |{x-t}| \bmod 1 ) 
+1 - \eta \mathfrak{C}(x_l,t_l) \biggr], % \quad  \mathfrak{C}(x,t) := (-1)^{r} B_{2r}( |{x-t}| \bmod 1 ) 
 \\
 & = 
 \sum_{j=1}^d  
 \prod_{l=1, l \neq j}^d \biggl[
-1 - \eta g_r(x_l,t_l) \biggr]
-\biggl( - g_r(x_j,t_j) \biggr)
+1 - \eta \mathfrak{C}(x_l,t_l) \biggr]
+\biggl( - \mathfrak{C}(x_j,t_j) \biggr)
 \\
 & =
 \prod_{l=1}^d \biggl[
-1 - \eta g_r(x_l,t_l) \biggr]
+1 - \eta \mathfrak{C}(x_l,t_l) \biggr]
 \sum_{j=1}^d 
 \frac{
-	\biggl( - g_r(x_j,t_j) \biggr)
+	\biggl( - \mathfrak{C}(x_j,t_j) \biggr)
 }{
-	1 - \eta g_r(x_j,t_j) 
+	1 - \eta \mathfrak{C}(x_j,t_j) 
 }
 \\
 & =
@@ -1469,9 +1470,9 @@ C_\vtheta(\vt, \vx)
 \frac{1}{\eta}
 \sum_{j=1}^d 
 \frac{
-	\biggl(1 - \eta g_r({x_j,t_j})  - 1 \biggr)
+	\biggl(1 - \eta \mathfrak{C}({x_j,t_j})  - 1 \biggr)
 }{
-	1 - \eta g_r(x_j,t_j) 
+	1 - \eta \mathfrak{C}(x_j,t_j) 
 }
 \\
 & =
@@ -1482,7 +1483,7 @@ C_\vtheta(\vt, \vx)
 1 - 
 \frac{1
 }{
-	1 - \eta g_r(x_j,t_j) 
+	1 - \eta \mathfrak{C}(x_j,t_j) 
 }
 \biggr)
 \\
@@ -1491,14 +1492,14 @@ C_\vtheta(\vt, \vx)
 \underbrace{
 	\left(
 	\prod_{l=1}^d \biggl[
-	1 - \eta g_r(x_l,t_l) \biggr]
+	1 - \eta \mathfrak{C}(x_l,t_l) \biggr]
 	\right) }_
 { C_\vtheta(\vt, \vx) }
 \biggl(
 1 - 
 \frac{1}{d} \sum_{j=1}^d
 \frac{1}
-{ 1 - \eta g_r(x_j,t_j) }
+{ 1 - \eta \mathfrak{C}(x_j,t_j) }
 \biggr)
 \end{align*}
 
@@ -1509,29 +1510,29 @@ In this case, we will have a vector of length $d$ shape parameters. For the dime
 & =
 \frac{\partial}{\partial \eta_j} 
 \prod_{l=1}^d \biggl[
-1 - \eta_l g_r(x_l,t_l) \biggr]
+1 - \eta_l \mathfrak{C}(x_l,t_l) \biggr]
 \\
 & = 
 \prod_{l=1, l \neq j}^d \biggl[
-1 - \eta_l g_r(x_l,t_l) \biggr]
-\biggl( - g_r(x_j,t_j) \biggr)
+1 - \eta_l \mathfrak{C}(x_l,t_l) \biggr]
+\biggl( - \mathfrak{C}(x_j,t_j) \biggr)
 \\
 & =
 \prod_{l=1}^d \biggl[
-1 - \eta_l g_r(x_l,t_l) \biggr]
+1 - \eta_l \mathfrak{C}(x_l,t_l) \biggr]
 \frac{
-	\biggl( - g_r(x_j,t_j) \biggr)
+	\biggl( - \mathfrak{C}(x_j,t_j) \biggr)
 }{
-	1 - \eta_j g_r(x_j,t_j) 
+	1 - \eta_j \mathfrak{C}(x_j,t_j) 
 }
 \\
 & =
 C_\vtheta(\vt, \vx) 
 \frac{1}{\eta_j}
 \frac{
-	\biggl(1 - \eta_j g_r(x_j,t_j)  - 1 \biggr)
+	\biggl(1 - \eta_j \mathfrak{C}(x_j,t_j)  - 1 \biggr)
 }{
-	1 - \eta_j g_r(x_j,t_j) 
+	1 - \eta_j \mathfrak{C}(x_j,t_j) 
 }
 \\
 & =
@@ -1541,7 +1542,7 @@ C_\vtheta(\vt, \vx)
 1 - 
 \frac{1
 }{
-	1 - \eta_j g_r(x_j,t_j) 
+	1 - \eta_j \mathfrak{C}(x_j,t_j) 
 }
 \biggr)
 \\
@@ -1550,17 +1551,17 @@ C_\vtheta(\vt, \vx)
 \underbrace{
 	\left(
 	\prod_{l=1}^d \biggl[
-	1 - \eta g_r(x_l,t_l) \biggr]
+	1 - \eta \mathfrak{C}(x_l,t_l) \biggr]
 	\right) }_
 { C_\vtheta(\vt, \vx) }
 \biggl(
 1 - 
 \frac{1}
-{ 1 - \eta_j g_r(x_j,t_j) }
+{ 1 - \eta_j \mathfrak{C}(x_j,t_j) }
 \biggr)
 \end{align*}
-Please note the above derivatives do not depend on $g_r(x,t)$ and most importantly these computations are applicable to any product kernel of the form $ C_\vtheta(\vt, \vx) =
-\prod_{l=1}^d [ 1 - \eta_l g_r(x_l,t_l) ]$.
+Please note the above derivatives do not depend on $\mathfrak{C}(x,t)$ and most importantly these computations are applicable to any product kernel of the form \eqref{eqn:prod_kernel}.
+%$ C_\vtheta(\vt, \vx) = \prod_{l=1}^d [ 1 - \eta_l \mathfrak{C}(x_l,t_l) ]$.
 
 \Subsection{Shape parameter search using steepest descent}
 Having obtained the derivative, we can easily implement the steepest descent search introduced in \secref{grad_descent_MLE} 
@@ -1760,6 +1761,7 @@ The computational cost to compute $\mV^{(2n)H}\vb$ is then twice the cost of com
 
 \Section{Continuous valued kernel order}
 \label{sec:non_integer_kernel_order}
+
 So far we assumed the order of the shift-invariant kernel is an even valued integer and also fixed. This constraint limits the ability to vary the kernel smoothness to match the integrand like the shape parameter is chosen to match. Here we explore an alternative form of the kernel which allows the kernel order to be a positive continuous greater than one. Let us recollect the kernel used so far,
 \begin{align*}
 C_\vtheta(\vx, \vt) := &  \sum_{\vk \in \mathbb{Z}^d} \alpha_{\vk,\vtheta}  e^{2 \pi\sqrt{-1} \vk^T\vx}
@@ -1773,7 +1775,6 @@ e^{-2 \pi\sqrt{-1} k t}
 \end{align*}
 
 \Subsection{Exponentially decaying kernel}
-
 We propose the following alternative form of which can provide exponential decay
 \begin{align*}
 C_\vtheta(x, t) = & 1 + \theta \sum_{k \in \mathbb{Z}, k \neq 0 } b^{\abs{k}}  
