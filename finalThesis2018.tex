@@ -1585,7 +1585,10 @@ Having obtained the derivative, we can easily implement the steepest descent sea
 \Chapter{Integration Lattices and Shift Invariant Kernels}
 \label{sec:shift_invariant_kernel}
 
-The preceding sections lay out an automatic Bayesian cubature algorithm whose computational cost is only $\Order(n \log(n))$ if $n$ function values are used.  However, this algorithm relies on covariance kernel functions, $C_{\vtheta}$ and designs, $\{\vx_i\}_{i=1}^n$ that satisfy assumptions \eqref{fastcompAssump}.  We will also satisfy assumption \eqref{addAssump}.  To facilitate the fast transform, it is assumed in this section and the next that $n$ is power of $2$.  
+The preceding sections lay out an automatic Bayesian cubature algorithm whose computational cost is only $\Order(n \log(n))$ if $n$ function values are used.  However, this algorithm relies on covariance kernel functions, $C_{\vtheta}$ and designs, $\{\vx_i\}_{i=1}^n$ that satisfy assumptions \eqref{fastcompAssump}.  
+In this chapter, we demonstrate such a covariance kernel and matching design.
+When periodic shift-invariant kernels are combined with rank-1 Lattice nodes as design, we get circulant Gram matrix. 
+We will also satisfy assumption \eqref{addAssump}.  To make the computations simpler and facilitate the fast transform, it is assumed in this section and the next that $n$ is power of $2$.  
 
 
 \Section{Extensible Integration Lattice Node Sets}
@@ -1635,15 +1638,15 @@ The \textit{shape parameter} $\vtheta$ changes the kernel's shape, so that the f
 This form of the kernel is very convenient to use in any analytical derivations, but not suitable for use with finite precision computers as this involves infinite sum. 
 If the coefficients are chosen as 
 \begin{align*}
-\alpha_{\vk,\vtheta} := & \prod_{l=1}^d \frac{1}{\max(\frac{|k_l|}{\theta_l},1)^r_{\theta_l\leq 1}}  \;,  \quad \text{with} \; {\alpha}_{\bm{0},\vtheta} = 1,
+\alpha_{\vk,\vtheta} := & \prod_{l=1}^d \frac{1}{\max(\frac{|k_l|}{\eta_l},1)^r_{\eta_l\leq 1}}  \;,  \quad \text{with} \; {\alpha}_{\bm{0},\vtheta} = 1,
 \end{align*}
 then there exists a simpler closed form expression without infinite sum
 \begin{align}
 \label{the_kernel_eqn_bernoulli}
 C_\vtheta(\vt, \vx) =
 \prod_{l=1}^d \biggl[
-1 - (-1)^{r} \gamma B_{2r}( |{x_l-t_l}| ) \biggr], \quad  
-\forall \vt,\vx \in [0,1]^d, \\ \qquad  \vtheta = (r,\gamma), \ r \in \naturals, \ \gamma > 0.
+1 - (-1)^{r} \eta B_{2r}( |{x_l-t_l}| ) \biggr], \quad  
+\forall \vt,\vx \in [0,1]^d, \\ \qquad  \vtheta = (r,\eta), \ r \in \naturals, \ \eta > 0.
 \end{align}
 Symmetric, periodic, positive definite kernels of this form appear in  \cite{DicEtal14a} and \cite{Hic96a}.  The Bernoulli polynomials $B_{r}(x)$ are described in \cite[Chapter 24]{OlvEtal10a}
 \begin{align*}
@@ -1657,12 +1660,12 @@ B_{r}(x) = \frac{-r!}{(2 \pi \sqrt{-1})^{r}}
 \text{for} \;\; r=2,3,\hdots \;\; 0 \leq x \leq 1
 \end{cases}
 \end{align*}
-Larger `$r$' implies a greater degree of smoothness of the kernel.  Larger $\gamma$ implies greater fluctuations of the output with respect to the input.  Plots of $C(\cdot, 0.3)$ are given in \figref{fig:fourierkernel-dim1} for various $r$ and $\gamma$ values.
+Larger `$r$' implies a greater degree of smoothness of the kernel.  Larger $\eta$ implies greater fluctuations of the output with respect to the input.  Plots of $C(\cdot, 0.3)$ are given in \figref{fig:fourierkernel-dim1} for various $r$ and $\eta$ values.
 
 \begin{figure}
 	\centering
 	\includegraphics[height=7cm]{"figures/fourier_kernel dim_1"}
-	\caption[Fourier kernel]{Shift invariant kernel in dim=1 shifted by 0.3 to show the discontinuity }
+	\caption[Fourier kernel]{Shift invariant kernel in dim=1 shifted by 0.3 to show the discontinuity \JRNote{Update plot with $\gamma$ to $\eta$}}
 	\label{fig:fourierkernel-dim1}
 \end{figure}
 
@@ -1762,44 +1765,55 @@ The computational cost to compute $\mV^{(2n)H}\vb$ is then twice the cost of com
 \Section{Continuous valued kernel order}
 \label{sec:non_integer_kernel_order}
 
-So far we assumed the order of the shift-invariant kernel is an even valued integer and also fixed. This constraint limits the ability to vary the kernel smoothness to match the integrand like the shape parameter is chosen to match. Here we explore an alternative form of the kernel which allows the kernel order to be a positive continuous greater than one. Let us recollect the kernel used so far,
+\JRNote{Need better and more convincing motivation}
+
+So far we assumed the order of the shift-invariant kernel is an even valued integer and also fixed. 
+It requires the practitioner to be aware the smoothness of the integrand to precisely hand pick the kernel order to match the smoothness of the integrand.
+However, It is not possible to know the smoothness of the integrand in most of practical applications. 
+This constraint limits the ability to vary the kernel smoothness to match the integrand like the shape parameter is chosen to match. 
+
+Integer kernel order is not suitable to optimally search by an optimization algorithm.
+As a consequence, we usually end up choosing a higher kernel order when the integrand is not  smooth or lower kernel order when the integrand is very smooth.
+Often it leads to longer computation time or poor accuracy in the numerical integration.
+Here we explore an alternative form of the kernel which allows the kernel order to be a positive continuous greater than one. Let us recollect the kernel used so far,
 \begin{align*}
 C_\vtheta(\vx, \vt) := &  \sum_{\vk \in \mathbb{Z}^d} \alpha_{\vk,\vtheta}  e^{2 \pi\sqrt{-1} \vk^T\vx}
-e^{-2 \pi\sqrt{-1} \vk^T\vt}, \quad \alpha_{\vk,\vtheta} = \prod_{l=1}^d \frac{1}{\max(\frac{|k_l|}{\theta_l},1)^r_{\theta_l\leq 1}} 
+e^{-2 \pi\sqrt{-1} \vk^T\vt}, \quad \alpha_{\vk,\vtheta} = \prod_{l=1}^d \frac{1}{\max(\frac{|k_l|}{\eta_l},1)^r_{\eta_l\leq 1}} 
 \end{align*}
-To make the derivations easier to follow, let us start with the case dimension $d=1$
+where $\theta = (\eta, r)$.  
+To make the derivations easier to follow, let us start with the dimension $d=1$ case,
 \begin{align*}
-C_\vtheta(x, t) = & 1 + \theta \sum_{k \in \mathbb{Z}, k \neq 0 } \frac{1}{\abs{k}^r} 
+C_\vtheta(x, t) = & 1 + \eta \sum_{k \in \mathbb{Z}, k \neq 0 } \frac{1}{\abs{k}^r} 
 e^{ 2 \pi\sqrt{-1} k x}
 e^{-2 \pi\sqrt{-1} k t}
 \end{align*}
 
 \Subsection{Exponentially decaying kernel}
-We propose the following alternative form of which can provide exponential decay
+We propose the following alternative form of which can also provide exponential decay
 \begin{align*}
-C_\vtheta(x, t) = & 1 + \theta \sum_{k \in \mathbb{Z}, k \neq 0 } b^{\abs{k}}  
+C_\vtheta(x, t) = & 1 + \eta \sum_{k \in \mathbb{Z}, k \neq 0 } b^{\abs{k}}  
 e^{ 2 \pi\sqrt{-1} k (x-t)}, \quad \text{with} \quad 0 < b < 1
 \end{align*}
 which can be rewritten as
 \begin{align*}
-C_\vtheta(x, t) = & 1 + \theta \sum_{k \in \mathbb{Z}, k \neq 0 } 
+C_\vtheta(x, t) = & 1 + \eta \sum_{k \in \mathbb{Z}, k \neq 0 } 
 e^{ 2 \pi\sqrt{-1} k (x-t) + \abs{k} \log(b)}
 \\
-=& 1 + \theta 
+=& 1 + \eta 
 \left(
 \sum_{k=1}^\infty e^{ 2 \pi\sqrt{-1} k (x-t) + \abs{k} \log(b)} 
 +
 \sum_{k=\infty}^{-1} e^{ 2 \pi\sqrt{-1} k (x-t) + \abs{k} \log(b)}
 \right), 
 \\
-=& 1 + \theta 
+=& 1 + \eta 
 \left(
 \sum_{k=1}^\infty e^{ 2 \pi\sqrt{-1} k (x-t) + \abs{k} \log(b)} 
 +
 \sum_{k=-\infty}^{-1} e^{ 2 \pi\sqrt{-1} k (x-t) + \abs{k} \log(b)}
 \right), 
 \\
-=& 1 + \theta 
+=& 1 + \eta 
 \left(
 \underbrace{
 	\sum_{k=1}^\infty e^{ 2 \pi\sqrt{-1} k (x-t) + \abs{k} \log(b)} }_{*}
@@ -1820,7 +1834,7 @@ Let us focus on the term $(*)$,
 Using this result
 \begin{align*}
 C_\vtheta(x, t) &= 
-1 + \theta 
+1 + \eta 
 \left(
 \frac{1}{ b^{-1} e^{- 2 \pi\sqrt{-1} (x-t)} -1 }
 +
@@ -1828,21 +1842,21 @@ C_\vtheta(x, t) &=
 \right),
 \\
 &= 
-1 + \theta 
+1 + \eta 
 \left(
 \frac{b^{-1} \left(e^{2 \pi\sqrt{-1} (x-t) }+ e^{ -2 \pi\sqrt{-1} (x-t)}\right) -2 }
 {b^{-2} - b^{-1} \left(e^{ 2 \pi\sqrt{-1} (x-t)} + e^{ -2 \pi\sqrt{-1} (x-t)}\right) + 1 }
 \right),
 \\
 &= 
-1 + \theta 
+1 + \eta 
 \left(
 \frac{2 b^{-1} \cos({2 \pi\sqrt{-1} (x-t) }) -2 }
 {b^{-2} - 2 b^{-1} \cos({ 2 \pi\sqrt{-1} (x-t)})  + 1 }
 \right),
 \\
 &= 
-1 + 2 \theta b
+1 + 2 \eta b
 \left(
 \frac{ \cos({2 \pi\sqrt{-1} (x-t) }) - b }
 {b^{2} - 2 b \cos({ 2 \pi\sqrt{-1} (x-t)})  + 1 }
@@ -1851,13 +1865,13 @@ C_\vtheta(x, t) &=
 Using the fact $\cos^2(t) + \sin^2(t) = 1$
 \begin{align*}
 C_\vtheta(x, t) &= 
-1 + 2 \theta b
+1 + 2 \eta b
 \left(
 \frac{ \cos({2 \pi\sqrt{-1} (x-t) }) - b }
 { \left[\cos({ 2 \pi\sqrt{-1} (x-t)})-b\right]^2 + \sin^2({ 2 \pi\sqrt{-1} (x-t)}) }
 \right),
 \end{align*}
-We need to have $\vtheta > 0$ and $ 0 < b < 1$ while searching for the optimum value, so we use the following transformations
+We need to have $\eta > 0$ and $ 0 < b < 1$ while searching for the optimum value, so we use the following transformations
 \begin{align*}
 b: & \quad g(t) = \frac{1}{1 + e^{-t}}, & g:(-\infty, \infty) \to (0, 1)
 \\
@@ -1885,30 +1899,30 @@ The first column of the Gram matrix is
 \begin{align*}
 \vC_{\vtheta, N} &= \biggl( C_{\vtheta, N}(\vx_i, \vx_1) \biggr)_{i=1}^n
 \\
-&= \left( \prod_{l=1}^d \left[ 1 + \eta_l \sum_{k = - N/2 }^{N/2} \frac{1}{\abs{k_l}^r} 
+&= \left( \prod_{l=1}^d \left[ 1 + \eta_l \sum_{k = - N/2, k \neq 0 }^{N/2} \frac{1}{\abs{k_l}^r} 
 e^{ 2 \pi\sqrt{-1} k_l (x_{il}-x_{1l})}\right] \right)_{i=1}^n
 \end{align*}
 where $d$ is number of dimensions and $n$ is the number of points. 
-But the direct computation of involves $nN$ computations. If $N \approx n$ than $n^2$ computations. We can reduce the computations to $\Order(n\log n)$ using the FFT.
+But the direct computation of involves $nN$ computations, or $n^2$ computations if $N \approx n$. We can reduce the computations to $\Order(n\log n)$ using the FFT.
 Let us define
 \begin{align*}
-g_{\eta, r}(x_l-t_l) &= \sum_{k = - N/2 }^{N/2} \frac{1}{\abs{k}^r} 
-e^{ 2 \pi\sqrt{-1} k (x_l - t_l)}
+\mathfrak{C}(t, r) &= \sum_{k = - N/2 }^{N/2} \frac{1}{\abs{k}^r} 
+e^{ 2 \pi\sqrt{-1} k\, t}
 \end{align*}
-Using the notation $g_{\eta, r}$, rewrite
+Using the notation $\mathfrak{C}$, rewrite
 \begin{align*}
 \vC_{\vtheta, N}
-&= \left( \prod_{l=1}^d \left[ 1 + \eta g(x_{il}, x_{1l})\right] \right)_{i=1}^n
+&= \left( \prod_{l=1}^d \left[ 1 + \eta \mathfrak{C}( \abs{x_{il} - x_{1l}})\right] \right)_{i=1}^n
 \end{align*}
 By the definition of lattice points from \eqref{eqn:lattice_gen}, we can observe
 $x_{il}-x_{1l} \in \lbrace 0, \frac 1n, \frac 2n, \dots \frac{n-1}{n}  \rbrace$. This can be used to rewrite in a much simpler form,
 \begin{align*}
-g_{\eta, r} \left(\frac jN \right) &= \sum_{k = - N/2 }^{N/2} \frac{1}{\abs{k}^r} 
+\mathfrak{C} \left(\frac jN, r \right) &= \sum_{k = - N/2 }^{N/2} \frac{1}{\abs{k}^r} 
 e^{ 2 \pi\sqrt{-1} k (\frac jN)}, \quad \text{where} \;  j=0,1,\dots N-1
 \end{align*}
 These notations were introduced to help us compute the discrete Fourier transform of $g$ easily. 
 \begin{align*}
-\widetilde{\vg}_{\eta,r}(m) &:= \sum_{j=0}^{N-1} g_{\eta,r} (j/n) e^{- 2 \pi\sqrt{-1} jm/N} \\
+\widetilde{\mathfrak{C}}(m, r) &:= \sum_{j=0}^{N-1} \mathfrak{C} (j/n, r) e^{- 2 \pi\sqrt{-1} jm/N} \\
 &= \sum_{k = - N/2, k \neq 0 }^{N/2} 
 \sum_{j=0}^{N-1} \frac{1}{\abs{k}^r} 
 e^{ 2 \pi\sqrt{-1} k  j/N} e^{- 2 \pi\sqrt{-1} jm/N} \\
@@ -1916,119 +1930,30 @@ e^{ 2 \pi\sqrt{-1} k  j/N} e^{- 2 \pi\sqrt{-1} jm/N} \\
 \end{align*}
 By simply observing the above result, we can analytically compute the values
 \begin{align} \label{dft_of_g}
-\widetilde{\vg}_{\eta,r}(m) &= 
+\widetilde{\mathfrak{C}}(m, r) &= 
 \begin{cases}
 0, & \text{for} \quad m=0,\\
 \frac{N}{\abs{m}^r}, & \text{for} \quad m=1,\dots,N/2-1, \\
 \frac{N}{\abs{N-m}^r}, & \text{for} \quad m=N/2,\dots,N-1
 \end{cases}
 \end{align}
-Having these values, We can easily back-compute $g$ using inverse discrete Fourier transform . It can be easily shown that inverse DFT of $\widetilde{g}_{\eta,r}$ returns $g$ indeed,
+Having these values, We can easily back-compute $\mathfrak{C}$ using inverse discrete Fourier transform. It can be easily shown that inverse DFT of $\widetilde{\mathfrak{C}}_{r}$ returns $\mathfrak{C}$ indeed,
 \begin{align*}
-\frac{1}{N} &\sum_{m=0}^{N-1} \widetilde{g}_{\eta,r} (m) e^{2 \pi\sqrt{-1} lm/N} \\
+\frac{1}{N} &\sum_{m=0}^{N-1} \widetilde{\mathfrak{C}}_{r} (m) e^{2 \pi\sqrt{-1} lm/N} \\
 & = \frac{1}{N} \sum_{m=0}^{N-1} 
-\sum_{j=0}^{N-1} g_{\eta,r} (j/n) e^{- 2 \pi\sqrt{-1} jm/N}
+\sum_{j=0}^{N-1} \mathfrak{C}_{r} (j/n) e^{- 2 \pi\sqrt{-1} jm/N}
 e^{2 \pi\sqrt{-1} lm/N} \\
 & = \frac{1}{N}  
-\sum_{j=0}^{N-1} g_{\eta,r} (j/n) \sum_{m=0}^{N-1} e^{2 \pi\sqrt{-1} (l-j)m/N} \\
-& = \frac{1}{N}  \sum_{j=0}^{N-1} g_{\eta,r} (j/n) N \delta_{(l-j) \bmod N, 0} \\
-& = g_{\eta,r} (l/n), \quad \text{for} \quad l=0,\dots,N-1
+\sum_{j=0}^{N-1} \mathfrak{C}_{r} (j/n) \sum_{m=0}^{N-1} e^{2 \pi\sqrt{-1} (l-j)m/N} \\
+& = \frac{1}{N}  \sum_{j=0}^{N-1} \mathfrak{C}_{r} (j/n) N \delta_{(l-j) \bmod N, 0} \\
+& = \mathfrak{C}_{r} (l/n), \quad \text{for} \quad l=0,\dots,N-1
 \end{align*}
-This shows to compute the $n$ values of $\biggl( C_{\vtheta, N}(\vx_i, \vx_1) \biggr)_{i=1}^n$, we need $N=n$. Here we summarize the steps to compute $g$ using FFT
+This shows to compute the $n$ values of $\biggl( C_{\vtheta, N}(\vx_i, \vx_1) \biggr)_{i=1}^n$, we need $N=n$. Here we summarize the steps to compute $\mathfrak{C}$ using FFT
 \begin{enumerate}
-\item Analytically compute $\left(\widetilde{\vg}_{\eta,r}(m)\right)_{m=0}^{N-1}$, the discrete Fourier coefficients of $(g(j/N))_{j=0}^{N-1}$ using \eqref{dft_of_g}
-\item Take inverse FFT of $\widetilde{\vg}_{\eta,r}$ to get $g$
+\item Analytically compute $\left(\widetilde{\mathfrak{C}}_{r}(m)\right)_{m=0}^{N-1}$, the discrete Fourier coefficients of $(\mathfrak{C}(j/N))_{j=0}^{N-1}$ using \eqref{dft_of_g}
+\item Take inverse FFT of $\widetilde{\mathfrak{C}}_{r}$ to get $\mathfrak{C}$
 \end{enumerate}
 where the computational cost is $\Order(n \log n)$ instead of $\Order(n^2)$. Another major advantage is, the FFT approach is numerically stable than the direct sum approach.
-
-\Section{Overcoming the Cancellation Error}
-\label{sec:overcome_cancel_error}
-For the kernels used in our computation it may happen that $n/\lambda_1$ is close to $1$.  Thus, the term $1-n/\lambda_1$, which appears in the credible interval widths, $\err_{\MLE}$, $\err_{\textup{full}}$, and $\err_{\textup{GCV}}$, may suffer from cancellation error.  We can avoid this cancellation error by modifying how we compute the Gram matrix and its eigenvalues.
-
-Define a new function $\rC : = C -1$, and its associated Gram matrix $\rmC = \mC - \vone \vone^T$.   Note that $\rC$ inherits the shift-invariant properties of $C$.  Since $\vone$ is the first eigenvector of $\mC$ it follows that the eigenvalues of $\rmC$ are $\rlambda_1 = \lambda_1 - n, \lambda_2, \ldots, \lambda_n$.  Moreover,
-\begin{equation*}
-1 - \frac{n}{\lambda_1}  = \frac{\lambda_1 - n}{\lambda_1} = \frac{\rlambda_1}{\rlambda_1 +n},
-\end{equation*}
-where now the right hand side is free of cancellation error.
-
-We show how to compute $\rC$ without introducing round-off error.  The covariance functions that we use are of product form, namely,
-\begin{equation*}
-C(\vt, \vx) = \prod_{\ell=1}^d \left[1 + \rC_\ell(t_\ell,x_\ell) \right], \qquad  \rC_\ell:[0,1]^2 \to \reals.
-\end{equation*}
-Direct computation of $\rC (\vt,\vx) = C(\vt,\vx) -1$ introduces cancellation error if the $ \rC_\ell$ are small.  So, we employ the iteration
-\begin{align*}
-\rC^{(1)} &= \rC_1(t_1,x_1),  \\
-\rC^{(\ell)} &  = \rC^{(\ell-1)}[1 + \rC_\ell(t_\ell,x_\ell)] + \rC_\ell(t_\ell,x_\ell),  \hspace{1cm} \ell = 2, \ldots, d, \\
-\rC(\vt,\vx)  & = \rC^{(d)}.
-\end{align*}
-In this way, the Gram matrix $\rmC$, whose $i,j$-element is $\rC(\vx_i,\vx_j)$ can be constructed with minimal round-off error.
-
-Computing the eigenvalues of $\rmC$ via the procedure given in \eqref{eqn:fast_transform_to_eigvalues} yields $\rlambda_1 = \lambda_1 - n, \lambda_2, \ldots, \lambda_n$. The estimates of $\vtheta$ are computed in terms of the eigenvalues of $\rmC$, so \eqref{eqn_MLE_loss_func_optimized_2} and \eqref{thetaGCV} become
-\begin{subequations}
-\label{thetaSimple}
-\begin{align}
-\vtheta_\MLE
-&= 
-\argmin_{\vtheta}
-\left[
-\log\left(
-\sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i}
-\right) 
-%\label{thetaMLEsimple}
- + 
- \frac{1}{n}\sum_{i=1}^n \log(\lambda_i)
-\right], \\
-\vtheta_{\GCV} 
-&= \argmin_\vtheta \left[ \log \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2} 
-\right)  -2\log\left( \sum_{i=1}^n \frac{1}{\lambda_i} \right)
-\right],
-\end{align}
-\end{subequations}
-where $\lambda_1 = n + \rlambda_1$.  The widths of the credible intervals in \eqref{eq:errMLEAllAsump}, \eqref{FJH:eq:errFullSimple}, and   \eqref{errGCVSimple} become
-\begin{subequations}
-\label{fastStoppingCriterions}
-	\begin{align}
-\err_\MLE  &
-=
-\frac{2.58}{n}\sqrt{
-	\frac{\rlambda_1}{\lambda_1}
-	\sum_{i=2}^{n} \frac{\abs{\widetilde{y}_i}^2}{\lambda_i}  
-}, 
-\\
-\err_{\textup{full}} 
-& = \frac{t_{n_j-1,0.995}}{n} \sqrt{
-	\frac{\rlambda_1}{n-1} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i}
-}, \\
-\err_{\textup{GCV}} & =
-\frac{2.58}{n}\sqrt{	\frac{\rlambda_1}{\lambda_1} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2}  \left [ \frac 1n \sum_{i=1}^n \frac{1}{\lambda_i} \right]^{-1}} .
-	\end{align}
-\end{subequations}
-Since $\rlambda_1 = \lambda_1 - n$ and $\lambda_1 \sim n$ it follows $\rlambda_1/\lambda_1 \approx \rlambda_1/(n-1)$ and is small for  large $n$.  Moreover, the credible intervals via empirical Bayes and full Bayes are similar, since $t_{n_j-1,0.995}$ is approximately $2.58$. 
-
-\iffalse 
-Whereas to compare $\err_\GCV$, need little more insight due to the term $\lambda_i^2$ in the denominator. Rewriting it:
-\begin{align*}
-\err_\GCV^2 & =
-\frac{2.58^2}{n^2}	\frac{\rlambda_1}{n + \rlambda_1} \frac{ \sum_{i=2}^n \left( \frac{\abs{\widetilde{y}_i}^2}{\lambda_i} \frac{1}{\lambda_i} \right)}{ \frac 1n \sum_{i=1}^n \frac{1}{\lambda_i} } 
-\end{align*}
-If the eigenvalues are ordered with $n$ then,
-\[
-\frac{1}{\lambda_n} \geq \frac{1}{\lambda_{n-1}} ... \geq \frac{1}{\lambda_1} 
-\]
-Note that we assumed the kernel Gram matrix is positive definite, so all the eigen values are positive
-\begin{align*}
-\frac{ \sum_{i=2}^n \left( \frac{\abs{\widetilde{y}_i}^2}{\lambda_i} \frac{1}{\lambda_i} \right)}{ \frac 1n \sum_{i=1}^n \frac{1}{\lambda_i} } 
-\leq 
-\frac{ \frac{1}{\lambda_n} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i}  }{ \frac 1n n \frac{1}{\lambda_1} } 
-\leq 
- \frac{\lambda_1}{\lambda_n} \sum_{i=2}^n  \frac{\abs{\widetilde{y}_i}^2}{\lambda_i}  
-\end{align*}
-Thus we can write
-\begin{align*}
-\err^2_\GCV \leq \frac{\lambda_1}{\lambda_n} \err^2_\MLE
-\end{align*}
-This shows the $\err_\GCV$ is more aggressive stopping criterion than $\err_\MLE$. If the chosen kernel is very smooth then eigen values decay very quickly with increasing $n$. 
-\fi
 
 \Section{Summary}
 
@@ -2038,6 +1963,90 @@ Any periodic, symmetric, positive definite, shift-invariant covariance kernel of
 \end{prop}
 
 We have implemented the fast adaptive Bayesian cubature algorithm in MATLAB as part of the Guaranteed Adaptive Integration Library (GAIL) \cite{ChoEtal17b} as \allowbreak \code{cubBayesLattice\_g}. This algorithm uses the kernel defined in  \eqref{the_kernel_eqn_bernoulli} with  $r=1,2$ and the periodizing variable transforms in \secref{period_var_tx}. The rank-1 lattice node generator is taken from \cite{NuyMagic} (\code{exod2\_base2\_m20}).
+
+
+
+
+
+
+
+
+
+
+
+
+\Section{Periodizing Variable Transformations}
+\label{period_var_tx}
+
+The shift-invariant covariance kernels underlying our \code{cubBayesLattice\_g} \\
+Bayesian cubature  assume that the integrand has a degree of periodicity, with the smoothness assumed depending on the smoothness of the kernel.  
+In other-words, non-periodic functions do not live in the space spanned by the shift-invariant covariance kernels.
+While integrands arising in practice may be smooth, they might not be periodic.  
+% Variable transformations can be used to ensure periodicity.
+Variable transformation or periodization transform techniques are typically used to enforce the periodicity in multi-dimensional numerical integrations where boundary conditions needs to be enforced. These transformations could be either polynomial, exponential and also trigonometric nature.
+Some of the most popular transformation are listed here for reference. 
+Suppose that the original integral has been expressed as 
+\begin{equation*}
+\mu := \int_{[0,1]^d} g(\vt) \, \dif \vt
+\end{equation*}
+where $g$ has sufficient smoothness, but lacks periodicity.  The Baker's transform,
+\begin{align} \label{eq:bakerTrans}
+\vPsi: \vx \mapsto (\Psi(x_1),  \ldots, \Psi(x_d)),  \quad \Psi(x)  =1 - 2 \abs{x - 1/2},
+\end{align}
+allows us to write $\mu$ in the form of \eqref{eqn:defn_mu}, where $f(\vx) = g(\vPsi(\vx))$.  We must emphasize, $\Psi(x)$ for the Baker's transform does not have any derivative, so we presented it separately.
+
+A family of smoother variable transforms, i.e., with derivatives take the form
+\begin{subequations} %\label{eq:varTrans}
+	\begin{equation*}
+	\vPsi: \vx \mapsto (\Psi(x_1),  \ldots, \Psi(x_d)), \quad \Psi:[0,1] \mapsto [0,1],
+	\end{equation*}
+	which allows us to write $\mu$ in the form of \eqref{eqn:defn_mu} with
+	\begin{equation*}
+	f(\vx) = g(\vPsi(\vx)) \prod_{\ell = 1}^d \Psi'(x_l).
+	\end{equation*}
+\end{subequations}
+If $\Psi$ is sufficiently smooth, $\lim_{x \downarrow 0}x^{-r}\Psi'(x) = \lim_{x \uparrow 1} (x-1)^{-r}\Psi'(x) = 0$ for $ r \in \natzero$, and $g \in C^{(r, \ldots, r)}[0,1]^d$, then $f$ has continuous, periodic derivatives up to order $r$ in each direction.  
+Examples of this kind of transform include \cite{Sid08a}:
+\begin{align*}
+C^0 &: \Psi(x) =  3 x^2 - 2 x^3, \quad   \Psi'(x) = 6x(1-x), \\
+C^1 & : \Psi(x) = x^3(10-15x+6x^2),  \\
+&\qquad \qquad \qquad   \Psi'(x) = 30x^2(1-x)^2 \\
+\text{Sidi's } C^1 & : \Psi(x) = x - \frac{\sin(2\pi x)}{2 \pi}, \\
+&\qquad \qquad \qquad   \Psi'(x) = 1 - \cos(2\pi x), \\
+\text{Sidi's } C^2 & : \Psi(x) = \frac {8 - 9 \cos(\pi x) + \cos(3 \pi x)}{16} ,  \\
+&\qquad \qquad \Psi'(x) = \frac {3 \pi[3 \sin(\pi x) - \sin(3 \pi x)]}{16}.
+\end{align*}
+
+These transforms vary in terms of computational complexity and accuracy, shall be chosen on a need basis. Baker's transform or called tent map in each coordinate. It preserves only continuity but it is easier to compute and it does not product term up to the length dimension of the integrand, making it more numerically stable. $C^0$ is a polynomial transformation only and ensures periodicity of function. $C^1$ is a polynomial transformation and preserving the first derivative.
+Sidi's $C^1$, a transform which uses trigonometric Sine, preserves the first derivative and is, in general, a better option than $C^1$.
+Sidi's $C^2$, also a transform which uses trigonometric Sine, preserves upto second derivative. We use this when smoothness of Sidi's $C^1$ is not sufficient and need to preserve upto second derivative.
+
+Periodizing variable transforms are used for the numerical examples below.  In some cases they can speed the convergence of the Bayesian cubature. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -2145,62 +2154,115 @@ fields. Bayesian cubatures using higher order digital nets are out of scope of t
 
 
 
+
+
+
 \Chapter{Numerical Implementation} 
 \label{sec:NumExp}
 
+\Section{Overcoming the Cancellation Error}
+\label{sec:overcome_cancel_error}
+For the kernels used in our computation it may happen that $n/\lambda_1$ is close to $1$.  Thus, the term $1-n/\lambda_1$, which appears in the credible interval widths, $\err_{\MLE}$, $\err_{\textup{full}}$, and $\err_{\textup{GCV}}$, may suffer from cancellation error.  We can avoid this cancellation error by modifying how we compute the Gram matrix and its eigenvalues.
 
-\Section{Periodizing Variable Transformations}
-\label{period_var_tx}
+Define a new function $\rC : = C -1$, and its associated Gram matrix $\rmC = \mC - \vone \vone^T$.   Note that $\rC$ inherits the shift-invariant properties of $C$.  Since $\vone$ is the first eigenvector of $\mC$ it follows that the eigenvalues of $\rmC$ are $\rlambda_1 = \lambda_1 - n, \lambda_2, \ldots, \lambda_n$.  Moreover,
+\begin{equation*}
+1 - \frac{n}{\lambda_1}  = \frac{\lambda_1 - n}{\lambda_1} = \frac{\rlambda_1}{\rlambda_1 +n},
+\end{equation*}
+where now the right hand side is free of cancellation error.
 
-The shift-invariant covariance kernels underlying our \code{cubBayesLattice\_g} \\
-Bayesian cubature  assume that the integrand has a degree of periodicity, with the smoothness assumed depending on the smoothness of the kernel.  
-In other-words, non-periodic functions do not live in the space spanned by the shift-invariant covariance kernels.
-While integrands arising in practice may be smooth, they might not be periodic.  
-% Variable transformations can be used to ensure periodicity.
-Variable transformation or periodization transform techniques are typically used to enforce the periodicity in multi-dimensional numerical integrations where boundary conditions needs to be enforced. These transformations could be either polynomial, exponential and also trigonometric nature.
-Some of the most popular transformation are listed here for reference. 
-Suppose that the original integral has been expressed as 
+We show how to compute $\rC$ without introducing round-off error.  The covariance functions that we use are of product form, namely,
 \begin{equation*}
-\mu := \int_{[0,1]^d} g(\vt) \, \dif \vt
+C(\vt, \vx) = \prod_{\ell=1}^d \left[1 + \rC_\ell(t_\ell,x_\ell) \right], \qquad  \rC_\ell:[0,1]^2 \to \reals.
 \end{equation*}
-where $g$ has sufficient smoothness, but lacks periodicity.  The Baker's transform,
-\begin{align} \label{eq:bakerTrans}
-\vPsi: \vx \mapsto (\Psi(x_1),  \ldots, \Psi(x_d)),  \quad \Psi(x)  =1 - 2 \abs{x - 1/2},
-\end{align}
-allows us to write $\mu$ in the form of \eqref{eqn:defn_mu}, where $f(\vx) = g(\vPsi(\vx))$.  We must emphasize, $\Psi(x)$ for the Baker's transform does not have any derivative, so we presented it separately.
-
-A family of smoother variable transforms, i.e., with derivatives take the form
-\begin{subequations} %\label{eq:varTrans}
-\begin{equation*}
-\vPsi: \vx \mapsto (\Psi(x_1),  \ldots, \Psi(x_d)), \quad \Psi:[0,1] \mapsto [0,1],
-\end{equation*}
-which allows us to write $\mu$ in the form of \eqref{eqn:defn_mu} with
-\begin{equation*}
-f(\vx) = g(\vPsi(\vx)) \prod_{\ell = 1}^d \Psi'(x_l).
-\end{equation*}
-\end{subequations}
-If $\Psi$ is sufficiently smooth, $\lim_{x \downarrow 0}x^{-r}\Psi'(x) = \lim_{x \uparrow 1} (x-1)^{-r}\Psi'(x) = 0$ for $ r \in \natzero$, and $g \in C^{(r, \ldots, r)}[0,1]^d$, then $f$ has continuous, periodic derivatives up to order $r$ in each direction.  
-Examples of this kind of transform include \cite{Sid08a}:
+Direct computation of $\rC (\vt,\vx) = C(\vt,\vx) -1$ introduces cancellation error if the $ \rC_\ell$ are small.  So, we employ the iteration
 \begin{align*}
-C^0 &: \Psi(x) =  3 x^2 - 2 x^3, \quad   \Psi'(x) = 6x(1-x), \\
-C^1 & : \Psi(x) = x^3(10-15x+6x^2),  \\
-&\qquad \qquad \qquad   \Psi'(x) = 30x^2(1-x)^2 \\
-\text{Sidi's } C^1 & : \Psi(x) = x - \frac{\sin(2\pi x)}{2 \pi}, \\
-&\qquad \qquad \qquad   \Psi'(x) = 1 - \cos(2\pi x), \\
-\text{Sidi's } C^2 & : \Psi(x) = \frac {8 - 9 \cos(\pi x) + \cos(3 \pi x)}{16} ,  \\
-&\qquad \qquad \Psi'(x) = \frac {3 \pi[3 \sin(\pi x) - \sin(3 \pi x)]}{16}.
+\rC^{(1)} &= \rC_1(t_1,x_1),  \\
+\rC^{(\ell)} &  = \rC^{(\ell-1)}[1 + \rC_\ell(t_\ell,x_\ell)] + \rC_\ell(t_\ell,x_\ell),  \hspace{1cm} \ell = 2, \ldots, d, \\
+\rC(\vt,\vx)  & = \rC^{(d)}.
 \end{align*}
+In this way, the Gram matrix $\rmC$, whose $i,j$-element is $\rC(\vx_i,\vx_j)$ can be constructed with minimal round-off error.
 
-These transforms vary in terms of computational complexity and accuracy, shall be chosen on a need basis. Baker's transform or called tent map in each coordinate. It preserves only continuity but it is easier to compute and it does not product term up to the length dimension of the integrand, making it more numerically stable. $C^0$ is a polynomial transformation only and ensures periodicity of function. $C^1$ is a polynomial transformation and preserving the first derivative.
-Sidi's $C^1$, a transform which uses trigonometric Sine, preserves the first derivative and is, in general, a better option than $C^1$.
-Sidi's $C^2$, also a transform which uses trigonometric Sine, preserves upto second derivative. We use this when smoothness of Sidi's $C^1$ is not sufficient and need to preserve upto second derivative.
+Computing the eigenvalues of $\rmC$ via the procedure given in \eqref{eqn:fast_transform_to_eigvalues} yields $\rlambda_1 = \lambda_1 - n, \lambda_2, \ldots, \lambda_n$. The estimates of $\vtheta$ are computed in terms of the eigenvalues of $\rmC$, so \eqref{eqn_MLE_loss_func_optimized_2} and \eqref{thetaGCV} become
+\begin{subequations}
+	\label{thetaSimple}
+	\begin{align}
+	\vtheta_\MLE
+	&= 
+	\argmin_{\vtheta}
+	\left[
+	\log\left(
+	\sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i}
+	\right) 
+	%\label{thetaMLEsimple}
+	+ 
+	\frac{1}{n}\sum_{i=1}^n \log(\lambda_i)
+	\right], \\
+	\vtheta_{\GCV} 
+	&= \argmin_\vtheta \left[ \log \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2} 
+	\right)  -2\log\left( \sum_{i=1}^n \frac{1}{\lambda_i} \right)
+	\right],
+	\end{align}
+\end{subequations}
+where $\lambda_1 = n + \rlambda_1$.  The widths of the credible intervals in \eqref{eq:errMLEAllAsump}, \eqref{FJH:eq:errFullSimple}, and   \eqref{errGCVSimple} become
+\begin{subequations}
+	\label{fastStoppingCriterions}
+	\begin{align}
+	\err_\MLE  &
+	=
+	\frac{2.58}{n}\sqrt{
+		\frac{\rlambda_1}{\lambda_1}
+		\sum_{i=2}^{n} \frac{\abs{\widetilde{y}_i}^2}{\lambda_i}  
+	}, 
+	\\
+	\err_{\textup{full}} 
+	& = \frac{t_{n_j-1,0.995}}{n} \sqrt{
+		\frac{\rlambda_1}{n-1} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i}
+	}, \\
+	\err_{\textup{GCV}} & =
+	\frac{2.58}{n}\sqrt{	\frac{\rlambda_1}{\lambda_1} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2}  \left [ \frac 1n \sum_{i=1}^n \frac{1}{\lambda_i} \right]^{-1}} .
+	\end{align}
+\end{subequations}
+Since $\rlambda_1 = \lambda_1 - n$ and $\lambda_1 \sim n$ it follows $\rlambda_1/\lambda_1 \approx \rlambda_1/(n-1)$ and is small for  large $n$.  Moreover, the credible intervals via empirical Bayes and full Bayes are similar, since $t_{n_j-1,0.995}$ is approximately $2.58$. 
 
-Periodizing variable transforms are used for the numerical examples below.  In some cases they can speed the convergence of the Bayesian cubature. 
+\iffalse 
+Whereas to compare $\err_\GCV$, need little more insight due to the term $\lambda_i^2$ in the denominator. Rewriting it:
+\begin{align*}
+\err_\GCV^2 & =
+\frac{2.58^2}{n^2}	\frac{\rlambda_1}{n + \rlambda_1} \frac{ \sum_{i=2}^n \left( \frac{\abs{\widetilde{y}_i}^2}{\lambda_i} \frac{1}{\lambda_i} \right)}{ \frac 1n \sum_{i=1}^n \frac{1}{\lambda_i} } 
+\end{align*}
+If the eigenvalues are ordered with $n$ then,
+\[
+\frac{1}{\lambda_n} \geq \frac{1}{\lambda_{n-1}} ... \geq \frac{1}{\lambda_1} 
+\]
+Note that we assumed the kernel Gram matrix is positive definite, so all the eigen values are positive
+\begin{align*}
+\frac{ \sum_{i=2}^n \left( \frac{\abs{\widetilde{y}_i}^2}{\lambda_i} \frac{1}{\lambda_i} \right)}{ \frac 1n \sum_{i=1}^n \frac{1}{\lambda_i} } 
+\leq 
+\frac{ \frac{1}{\lambda_n} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i}  }{ \frac 1n n \frac{1}{\lambda_1} } 
+\leq 
+\frac{\lambda_1}{\lambda_n} \sum_{i=2}^n  \frac{\abs{\widetilde{y}_i}^2}{\lambda_i}  
+\end{align*}
+Thus we can write
+\begin{align*}
+\err^2_\GCV \leq \frac{\lambda_1}{\lambda_n} \err^2_\MLE
+\end{align*}
+This shows the $\err_\GCV$ is more aggressive stopping criterion than $\err_\MLE$. If the chosen kernel is very smooth then eigen values decay very quickly with increasing $n$. 
+\fi
+
+
+
+
+
+
+
+
 
 
 
 
 \Chapter{Numerical Results and Observations} 
+\JRNote{Groups figures by integrand}
+
 Bayesian cubature algorithms developed in this work are demonstrated using widely used integration examples.
 Three integrals were evaluated using both the algorithms \code{cubBayesLattice\_g} and \code{cubBayesNet\_g}. The first example shows evaluating a multivariate normal probability given the intervals. The second example shows integrating the Keister's function, and the final example shows computing an Asian arithmetic option pricing.  
 
@@ -2441,19 +2503,19 @@ As shown in Figures \ref{fig:Sobol-mvn-guaranteed-MLE} to \ref{fig:Sobol-optpric
 
 \begin{figure}
 	\centering
-	\includegraphics[width=0.95\linewidth]{"Sobol_optPrice_guaranteed_time_MLE__d12_r1_2019-Jun-10"}
+	\includegraphics[width=0.95\linewidth]{"Sobol_optPrice_guaranteed_time_MLE__d12_r1_2019-Jun-13"}
 	\caption[Sobol: Option pricing Guaranteed: MLE]{\code{cubBayesNet\_g}: Option pricing using the empirical Bayes stopping criterion.}
 	\label{fig:Sobol-optprice-guaranteed-MLE}
 \end{figure}
 \begin{figure}
 	\centering
-	\includegraphics[width=0.95\linewidth]{"Sobol_optPrice_guaranteed_time_full__d12_r1_2019-Jun-10"}
+	\includegraphics[width=0.95\linewidth]{"Sobol_optPrice_guaranteed_time_full__d12_r1_2019-Jun-13"}
 	\caption[Sobol: Option pricing Guaranteed: Full Bayes]{\code{cubBayesNet\_g}: Option pricing using the full-Bayes stopping criterion.}
 	\label{fig:Sobol-optprice-guaranteed-FB}
 \end{figure}
 \begin{figure}
 	\centering
-	\includegraphics[width=0.95\linewidth]{"Sobol_optPrice_guaranteed_time_GCV__d12_r1_2019-Jun-10"}
+	\includegraphics[width=0.95\linewidth]{"Sobol_optPrice_guaranteed_time_GCV__d12_r1_2019-Jun-13"}
 	\caption[Sobol: Option pricing Guaranteed: GCV]{\code{cubBayesNet\_g}: Option pricing using the GCV stopping criterion.}
 	\label{fig:Sobol-optprice-guaranteed-GCV}
 \end{figure}
