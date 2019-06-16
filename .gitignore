@@ -12,3 +12,15 @@
 *.bak
 
 *.toc
+
+figures/backup/cone_bayes_f_real\.png
+
+figures/backup/cone_bayes_mu_pdf\.png
+
+del/
+
+figures/backup/
+
+finalThesis2018 - backup Jun11\.tex
+
+*.bbl
