@@ -1,0 +1,13 @@
+& \multicolumn{6}{c}{\Sigma = \bf{I}_d, \ \bf{b}=-\bf{a}=(3.5,\dots,3.5) } \\ \hline 
+ \text{Method} & \text{MC} & \text{Lattice} & \text{Sobol} & \text{BayesLat} & \text{BayesSobol}  \\
+ \text{Absolute Error} & \num{2.20e-16} & \num{2.70e-14} & \num{2.70e-14}  & \num{2.20e-16}  & \num{2.20e-16}  \\
+ \text{Tolerance Met} & \num{  100} \% & \num{  100} \% & \num{  100} \% & \num{  100} \% & \num{  100} \%  \\
+ n & \num{   10000} & \num{    1000} & \num{    1000} & \num{    1000} & \num{     260} \\
+ \text{Time (seconds)} & \num{ 0.0410} & \num{ 0.0820} & \num{ 0.0710} & \num{ 0.0650} & \num{ 0.0790}  
+ \\ \\
+& \multicolumn{6}{c}{\Sigma = 0.4 \bf{I}_d + 0.6\bf{1}\bf{1}^T , \ \bf{a}=(-\infty,\dots,-\infty), \ \bf{b}=\sqrt{d}(U_1,\dots,U_d) } \\ \hline 
+ \text{Method} & \text{MC} & \text{Lattice} & \text{Sobol} & \text{BayesLat} & \text{BayesSobol}  \\
+ \text{Absolute Error} & \num{2.30e-04} & \num{2.10e-04} & \num{4.40e-04}  & \num{1.00e-04}  & \num{4.80e-05}  \\
+ \text{Tolerance Met} & \num{  100} \% & \num{  100} \% & \num{  100} \% & \num{  100} \% & \num{  100} \%  \\
+ n & \num{   10000} & \num{    1000} & \num{    1000} & \num{    1000} & \num{     260} \\
+ \text{Time (seconds)} & \num{ 0.0350} & \num{ 0.0120} & \num{ 0.0140} & \num{ 0.0150} & \num{ 0.0300}  

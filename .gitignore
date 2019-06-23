@@ -24,3 +24,5 @@ figures/backup/
 finalThesis2018 - backup Jun11\.tex
 
 *.bbl
+
+*.lot

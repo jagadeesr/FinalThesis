@@ -41,6 +41,8 @@
 \usepackage{url}
 \usepackage[normalem]{ulem}
 %\usepackage{refcheck}  % points out unused labels, refs ...
+% \usepackage[scientific-notation=true]{siunitx}
+\usepackage{siunitx}
 
 \setcounter{tocdepth}{2}
 
@@ -1037,7 +1039,7 @@ b_j - \sum_{k=1}^{j-1} l_{jk} \Phi^{-1}(\alpha_k + x_k(\beta_k-\alpha_k))
 \right), \quad j=2,...,d,
 \end{align*}
 \begin{align}
-\label{fGenzdef}
+\label{eqn:fGenzdef}
 f_{\text{Genz}}(\vx) = \prod_{j=1}^d [\beta_j(\vx) - \alpha_j(\vx)].
 \end{align}
 where $\Phi$ is the cumulative standard normal distribution function.  Then, $\mu = \int_{[0,1]^{d-1}} f_{\text{Genz}}(\vx) \, \dvx$.
@@ -1194,6 +1196,7 @@ which implies that $c_0 = 1$ and $\vc = \vone$.  Under \eqref{addAssump}, the ex
 
 
 \Section{Empirical Bayes}
+
 Under assumptions \eqref{fastcompAssump}, the empirical Bayes parameters in \eqref{eqn_m_MLE}, \eqref{eqn_s2_MLE}, \eqref{eqn:thetaMLE} \eqref{eqn:cubMLE}, and \eqref{eqn:errMLE} can be expressed in terms of the fast transforms of the function data, the first column of the Gram matrix, and $\vc$ as follows:
 \begin{align}
 \nonumber
@@ -1430,7 +1433,7 @@ Using the similar techniques from \secref{deriv_obj_func_MLE}
 
 \Section{Product kernel}
 
-In this research, Product kernels are used extensively. They got some nice properties which are helpful to obtain analytical results easily. Product kernels are of the form in $d$ dimensions
+In this research, We use product kernels in the demonstrations and numerical implementations. They got nice properties which are helpful to obtain analytical results easily. Product kernels are of the form in $d$ dimensions
 \begin{align}
 \label{eqn:prod_kernel}
 C_\vtheta(\vt, \vx) = 
@@ -2293,7 +2296,7 @@ Periodization variable transforms are used in the examples with \code{cubBayesLa
 This example was already introduced in Section \ref{MVN_example}, where we used the Mat\'ern covariance kernel.  
 
 \Subsection{Using \code{cubBayesLattice\_g}}
-Here we apply Sidi's $C^2$  periodization to $ f_{\textup{Genz}}$ \eqref{fGenzdef}, and chose $d=3$ and $r=2$. The simulation results for this example function are summarized in Figures \ref{fig:mvn-guaranteed-MLE}, \ref{fig:mvn-guaranteed-FB}, and \ref{fig:mvn-guaranteed-GCV}.  In all cases the Bayesian cubature returns an approximation within the prescribed error tolerance. We used the same setting as before with generic slow Bayesian cubature in \secref{MVN_example} for comparision. For error threshold $\varepsilon=10^{-5}$ with empirical stopping criterion, our fast algorithm takes 0.001 seconds as shown in \figref{fig:mvn-guaranteed-MLE} whereas the basic algorithm takes 30 seconds as shown in \figref{fig:MVN_Metern_d2b2}. 
+Here we apply Sidi's $C^2$  periodization to $ f_{\textup{Genz}}$ \eqref{eqn:fGenzdef}, and chose $d=3$ and $r=2$. The simulation results for this example function are summarized in Figures \ref{fig:mvn-guaranteed-MLE}, \ref{fig:mvn-guaranteed-FB}, and \ref{fig:mvn-guaranteed-GCV}.  In all cases the Bayesian cubature returns an approximation within the prescribed error tolerance. We used the same setting as before with generic slow Bayesian cubature in \secref{MVN_example} for comparision. For error threshold $\varepsilon=10^{-5}$ with empirical stopping criterion, our fast algorithm takes 0.001 seconds as shown in \figref{fig:mvn-guaranteed-MLE} whereas the basic algorithm takes 30 seconds as shown in \figref{fig:MVN_Metern_d2b2}. 
 Amongst the three stopping criteria, GCV achieved the results faster than others. 
 One can also observe from the figures, the credible intervals are wider, causing the true error much smaller than requested.
 This could be due to the periodization transformed $f_\textup{Genz}$ is smoother than the $r=2$ kernel could approximate. Using a kernel of matching smoothness could produce right credible intervals.
@@ -2323,7 +2326,7 @@ This could be due to the periodization transformed $f_\textup{Genz}$ is smoother
 
 
 \Subsection{Using \code{cubBayesNet\_g}}
-Here we use $ f_{\textup{Genz}}$ \eqref{fGenzdef} without any periodization, and chose $d=3$ and $r=1$. The simulation results for this example function are summarized in Figures \ref{fig:Sobol-mvn-guaranteed-MLE}, \ref{fig:Sobol-mvn-guaranteed-FB}, and \ref{fig:Sobol-mvn-guaranteed-GCV}.  In all cases the {\code{cubBayesNet\_g} returns an approximation within the prescribed error tolerance. We used the same setting as before with generic slow Bayesian cubature in \secref{MVN_example} for comparision. For error threshold $\varepsilon=10^{-5}$ with empirical stopping criterion, our fast algorithm takes about 2 seconds as shown in \figref{fig:mvn-guaranteed-MLE} whereas the basic algorithm takes 30 seconds as shown in \figref{fig:MVN_Metern_d2b2}. 
+Here we use $ f_{\textup{Genz}}$ \eqref{eqn:fGenzdef} without any periodization, and chose $d=3$ and $r=1$. The simulation results for this example function are summarized in Figures \ref{fig:Sobol-mvn-guaranteed-MLE}, \ref{fig:Sobol-mvn-guaranteed-FB}, and \ref{fig:Sobol-mvn-guaranteed-GCV}.  In all cases the {\code{cubBayesNet\_g} returns an approximation within the prescribed error tolerance. We used the same setting as before with generic slow Bayesian cubature in \secref{MVN_example} for comparision. For error threshold $\varepsilon=10^{-5}$ with empirical stopping criterion, our fast algorithm takes about 2 seconds as shown in \figref{fig:mvn-guaranteed-MLE} whereas the basic algorithm takes 30 seconds as shown in \figref{fig:MVN_Metern_d2b2}. 
 {\code{cubBayesNet\_g} uses fast Walsh transform which is slower in Matlab due to the way it was implemented. This is reason it takes more time than the {\code{cubBayesLattice\_g}. 
 But comparing the number of samples, $n$, used for integration provides more insight which directly relates to the alogrithm's computational cost. The {\code{cubBayesLattice\_g} used $n=16384$ samples whereas {\code{cubBayesNet\_g} used $n=32768$ samples even with $r=1$ order kernel.
 
@@ -2334,21 +2337,21 @@ This shows {\code{cubBayesNet\_g} with $r=1$ kernel more accurately approximates
 \begin{figure}
 \centering
 %d=3 problem transformed into d=2
-\includegraphics[width=0.95\linewidth]{"Sobol/Sobol_MVN_guaranteed_time_MLE__d2_r1_2019-Jun-8"}
+\includegraphics[width=0.95\linewidth]{"Sobol/Sobol_MVN_guaranteed_time_MLE__d2_r1_2019-Jun-17"}
 \caption[Sobol: MVN guaranteed:MLE]{\code{cubBayesNet\_g}: Multivariate normal probability example with empirical Bayes stopping criterion.}
 \label{fig:Sobol-mvn-guaranteed-MLE}
 \end{figure}
 \begin{figure}
 \centering
 %d=3 problem transformed into d=2
-\includegraphics[width=0.95\linewidth]{"Sobol/Sobol_MVN_guaranteed_time_full__d2_r1_2019-Jun-9"}
+\includegraphics[width=0.95\linewidth]{"Sobol/Sobol_MVN_guaranteed_time_full__d2_r1_2019-Jun-17"}
 \caption[Sobol: MVN guaranteed:Full Bayes]{\code{cubBayesNet\_g}: Multivariate normal probability example with the full-Bayes stopping criterion.}
 \label{fig:Sobol-mvn-guaranteed-FB}
 \end{figure}
 \begin{figure}
 \centering
 %d=3 problem transformed into d=2
-\includegraphics[width=0.95\linewidth]{"Sobol/Sobol_MVN_guaranteed_time_GCV__d2_r1_2019-Jun-9"}
+\includegraphics[width=0.95\linewidth]{"Sobol/Sobol_MVN_guaranteed_time_GCV__d2_r1_2019-Jun-17"}
 \caption[Sobol: MVN guaranteed:GCV]{\code{cubBayesNet\_g}: Multivariate normal probability example with the GCV stopping criterion.}
 \label{fig:Sobol-mvn-guaranteed-GCV}
 \end{figure}
@@ -2369,6 +2372,7 @@ This multidimensional integral function comes from \cite{Kei96} and is inspired 
 %\int_{\reals^d} \cos(a\norm{ \vt}) \exp(-a^2\norm{ \vt }^2)  a^d \, \dvt \\
 & = \int_{[0,1]^d} f_{\textup{Keister}}(\vx) \, \dvx,\\
 \intertext{where }
+\nonumber
 f_\textup{Keister}(\vx) &= \pi^{d/2} \cos\left(\norm{ \Phi^{-1}(\vx)/2}\right)  ,
 \end{align}
 and again $\Phi$ is the standard normal distribution.
@@ -2408,6 +2412,7 @@ I_s(j) &= \frac{(j-2)I_s(j-2)-I_c(j-1)}{2},
 
 \Subsection{Using \code{cubBayesLattice\_g}}
 \label{sec:cubBayesLattice_keister_example}
+\JRNote{Discuss the big gap between 1e-5 and 1e-4}
 \begin{figure}
 	\centering
 	\includegraphics[width=0.95\linewidth]{"Lattice/Lattice_Keister_guaranteed_time_MLE_C1sin_d4_r2_2019-Jun-16"}
@@ -2437,19 +2442,19 @@ As we can see the GCV stopping criterion achieved the results faster than the ot
 
 \begin{figure}
 	\centering
-	\includegraphics[width=0.95\linewidth]{"Sobol/Sobol_Keister_guaranteed_time_MLE__d4_r1_2019-May-29"}
+	\includegraphics[width=0.95\linewidth]{"Sobol/Sobol_Keister_guaranteed_time_MLE__d4_r1_2019-Jun-17"}
 	\caption[Sobol: Keister guaranteed:MLE]{\code{cubBayesNet\_g}: Keister example using the empirical Bayes stopping criterion.}
 	\label{fig:Sobol-keister-guaranteed-MLE}
 \end{figure}
 \begin{figure}
 	\centering
-	\includegraphics[width=0.95\linewidth]{"Sobol/Sobol_Keister_guaranteed_time_full__d4_r1_2019-Jun-9"}
+	\includegraphics[width=0.95\linewidth]{"Sobol/Sobol_Keister_guaranteed_time_full__d4_r1_2019-Jun-17"}
 	\caption[Sobol: Keister guaranteed:Full Bayes]{\code{cubBayesNet\_g}: Keister example using the full-Bayes stopping criterion.}
 	\label{fig:Sobol-keister-guaranteed-FB}
 \end{figure}
 \begin{figure}
 	\centering
-	\includegraphics[width=0.95\linewidth]{"Sobol/Sobol_Keister_guaranteed_time_GCV__d4_r1_2019-Jun-9"}
+	\includegraphics[width=0.95\linewidth]{"Sobol/Sobol_Keister_guaranteed_time_GCV__d4_r1_2019-Jun-17"}
 	\caption[Sobol: Keister guaranteed:GCV]{\code{cubBayesNet\_g}: Keister example using the GCV stopping criterion.}
 	\label{fig:Sobol-keister-guaranteed-GCV}
 \end{figure}
@@ -2558,6 +2563,89 @@ Another noticeable aspect from the plots of \code{cubBayesLattice\_g} is how muc
 Most noticeable aspect from the plots of \code{cubBayesNet\_g} is how closer the error bounds are to the true error. 
 This shows the \code{cubBayesNet\_g}'s estimation of expected error in the stopping criterion is very accurate. 
 Similar to \code{cubBayesLattice\_g}, it missed to meet the given error threshold for the option pricing example, as marked by the hollow stars, for $\varepsilon=10^{-4}$. This is because the complexity of the integrand and the algorithm reached max allowed number of samples $n=2^{20}$.
+
+
+
+
+
+\Section{Comparison with \code{cubMC\_g}, \code{cubLattice\_g} and \code{cubSobol\_g}}
+
+GAIL library provides variety of numerical integration algorithms based on different theoretical foundation, We would like to compare how our algorithms perform relatively. We consider three GAIL algorithms 1) \code{cubMC\_g} a simple Monte-Carlo method for multi-dimensional integration, 2) \code{cubLattice\_g} a quasi-Monte-Carlo method using Lattice points, and 3)\code{cubSobol\_g} a quasi-Monte-Carlo method using Sobol points.
+
+\subsection{Keister integral}
+
+The Table~\ref{tab2} summarizes the performance of the methods MC, Lattice, Sobol,
+BayesLat, and BayesSob---they refer to the GAIL cubatures, \texttt{cubMC\_g},
+\code{cubLattice\_g}, \code{cubSobol\_g},  \code{cubBayesLattice\_g},  \code{cubBayesNet\_g},
+respectively for estimating Keister integral defined in \eqref{eqn:keister_integral}.
+We conducted two simulations with $d=3,8$. In the case of $d=3$, all five methods succeeded completely meaning the
+absolute error is less than given tolerance, i.e., $|\mu - \hat{\mu}| \le
+\varepsilon$, where $\hat{\mu}$ is a cubature's approximated value. The
+fastest method was \code{cubBayesLattice\_g}.
+In the case of $d=8$,   \code{cubSobol\_g} achieved 100\% success rate
+and was the fastest. But \code{cubBayesLattice\_g}  was competitive and
+had the smallest average absolute error. \code{cubBayesNet\_g} used lowest number of samples in case of $d=8$ but slower than \code{cubSobol\_g}.
+
+\begin{table} % MATLAB Driver: KeisterCubatureExampleBayes.m
+\centering
+\caption{Average performance of cubatures with automatic stopping 
+		criteria for estimating the integrals in \eqref{eqn:keister_integral}
+		for $1000$ independent runs. These results can be conditionally reproduced with the
+		script, \code{KeisterCubatureExampleBayes.m}, in GAIL. 
+\label{tab2}}	   
+\vspace{-2ex}
+	$
+	%\arraycolsep=1.4pt\def\arraystretch{0.9}
+	\begin{array}{l@{\quad}r@{\quad}r@{\quad}r@{\quad}r@{\quad}r@{\quad}r}
+	\input{KeisterBayesOut.txt} 
+	\end{array}
+	$
+\end{table}
+
+
+\subsection{Multi-variate Normal}
+The Table~\ref{tab3} summarizes the performance of the methods MC, Lattice, Sobol,
+BayesLat, and BayesSob for estimating the multi-dimensional Normal probability $\bf{X}\sim N(\bf{\mu},\Sigma)$. This experiment demonstrates our algorithm's ability to handle very high-dimensional integral.
+
+We conducted two simulations with different $\Sigma$ and estimation intervals $(\bf{a}, \bf{b})$ but fixed $\mu=0$ and required error threshold $\varepsilon=10^{-3}$. In the first case, all five methods succeeded completely. 
+The fastest method was \code{cubBayesLattice\_g} but code{cubBayesNet\_g} used the lowest number of samples.
+In the second case also all five methods succeeded,  but \code{cubLattice\_g} was the fastest. 
+The \code{cubBayesNet\_g}  was competitive and had the smallest average absolute error using lowest number of samples. The \code{cubBayesLattice\_g} achieved the next lowest average error but slower than \code{cubSobol\_g}.
+%\label{eqn:GaussDef}fGenzdef
+
+\begin{table} % MATLAB Driver: MVNCubatureExampleBayes.m
+	\centering
+	\caption{Average performance of cubatures with automatic stopping 
+		criteria for estimating the $d=20$ Multi-variate Normal in \eqref{eqn:fGenzdef}
+		for $1000$ independent runs with $\varepsilon=10^{-3}$. These results can be conditionally reproduced with the
+		script, \texttt{MVNCubatureExampleBayes.m}, in GAIL. 
+		\label{tab3}}	   
+	\vspace{-2ex}
+	$
+	%\arraycolsep=1.4pt\def\arraystretch{0.9}
+	\begin{array}{l@{\quad}r@{\quad}r@{\quad}r@{\quad}r@{\quad}r@{\quad}r}
+	\input{MVNBayesOut.txt} 
+	\end{array}
+	$
+\end{table}
+
+
+\clearpage
+
+
+
+
+
+
+\Section{Shape Parameter Fine-tuning}
+
+\JRNote{ Numerical examples for the case of shape parameter per dimension }
+
+TBD
+
+
+
+
 
 
 
