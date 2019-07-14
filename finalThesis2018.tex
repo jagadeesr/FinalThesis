@@ -51,6 +51,7 @@
 %\usepackage{apacite}
 \usepackage[htt]{hyphenat}
 \usepackage{hhline}
+\usepackage{mathrsfs}
 
 \setcounter{tocdepth}{2}
 
@@ -350,7 +351,7 @@ However, the process just outlined typically requires vector-matrix operations  
 
 Cubature is the problem of inferring a numerical value for an integral, 
 $ \mu := \int_{\reals^d} g(\vx) \, \dif \vx$, where $\mu$ has no closed form analytic expression. Typically, $g$ is accessible through a black-box function routine. 
-Cubature is a key component of many problems in scientific computing, finance, statistical modeling, Imaging, and machine learning \JRNote{add references}.  
+Multivariate numerical integration, shortly, Cubature is a key component of many problems in scientific computing, finance, statistical modeling, Imaging, uncertainty quantification, and machine learning \JRNote{add references}.  
 
 The integral may often be expressed as
 \begin{equation}
@@ -363,6 +364,9 @@ where $f:[0,1]^d \to \reals$ is the integrand, and $\boldsymbol{X} \sim \mathcal
 \hmu: = \hmu(f) := w_0 + \sum_{i=1}^{n} f(\vx_i) w_i,
 \end{equation}
 where the weights, $w_0$, and  $\vw = (w_i)_{i=1}^n \in \reals^n$, and the nodes, $\{\vx_i\}_{i=1}^n \subset [0,1]^d$, are chosen to make the error, $\abs{\mu - \hmu}$, small. The integration domain $[0,1]^d$ is convenient for the low discrepancy node sets that we use.  The nodes are assumed to be deterministic.
+The integral of function $f$ is the same over $[0, 1]^d$ or $(0, 1)^d$ or $[0, 1)^d$, So use $[0, 1]^d$ or $[0, 1)^d$ depending on the application. Sometimes $[0, 1)^d$ is preferred especially extensible with node-sets $0$ it partitions easily into congruent subhypercubes.
+This research focuses on expensive multivariate numerical integrals 
+where the computational cost of evaluating the integrand is a  bottleneck.
 
 \Section{Stopping Criterion}
 
@@ -372,6 +376,7 @@ We construct a reliable stopping criterion that determines the number of integra
 \abs{\mu - \hmu} \leq \errtol .
 \end{equation}
 Rather than relying on strong assumptions about the integrand, such as an upper bound on its variance or total variation, we construct a stopping criterion that is based on a credible interval arising from a Bayesian approach to the problem.  We build upon the work of Briol et al.~\cite{BriEtal18a}, Diaconis~\cite{Dia88a}, O'Hagan~\cite{OHa91a}, Ritter~\cite{Rit00a}, Rasmussen and Ghahramani~\cite{RasGha03a}, and others.  Our algorithm is an example of \emph{probabilistic numerics}.
+To study numerical algorithms from a statistical point of view, where uncertainty is formally due to the presence of an unknown numerical error is the goal of probabilistic numerics.
 
 \JRNote{Briefly explain Probabilistic numeric ..}
 
@@ -406,6 +411,15 @@ Numerical examples are provided in Chapter \ref{sec:NumExp} to demonstrate our n
 \Chapter{Bayesian Cubature}
 \label{sec:BC} 
 \JRNote{Briefly explain Bayesian approach using the words of diaconis, poincare work ..}
+
+
+The Bayesian approach for numerical analysis was popularized by Diaconis \cite{Dia88a}. Diaconis motivates the reader by interpolating the most well known numerical problem from the statistical point of view with prior information. The earliest reference for such kind of approach dates back to Poincar\'e, where, the theory of interpolation was discussed.
+
+This research is focused on Bayesian approach for integration that is known as Bayesian Cubature as introduced by O'Hagan \cite{OHagen1991}. 
+The Bayesian Cubature returns a probability distribution $\mathbb{P}_f$, that expresses belief about the true value of integral, $\mu(f)$.
+The probability distribution $\mathbb{P}_f$ will be based on a prior that depends on $f$, in our case simply the function values. 
+The $\mathbb{P}_f$ is computed via Bayes' rule using  the ``data" contained in the function evaluations. 
+The maximum likelihood estimate of $\mathbb{P}_f$ can be interpreted as a point estimate of the integral. The distribution in general captures numerical uncertainty due to the fact that we have only used a finite number of function values to evaluate the integral.
 
 \Section{Bayesian posterior error}
 \label{sec:BayesPostErr}
@@ -930,13 +944,13 @@ Looking back over the results of Sections  \ref{sec:MLE}--\ref{sec:GCV}, it is n
 
 We assume the integrand belongs to a cone of functions to make the computations tractable. The concept of cone in general for cubature error analysis can be stated using the error bound definition. Given the data driven error bound $\err_{f,n}$
 \begin{align*}
-\abs{\mu(f) - \hmu_n(f)} \le \err_{f,n}(f(x_1), \dots f(x_n)), \quad \forall f \in \mathcal{C}
+\abs{\mu(f) - \hmu_n(f)} \le \err_{f,n}(f(x_1), \dots f(x_n)), \quad \forall f \in \mathscr{C}
 \end{align*}  
-where the cone of functions is defined as $\mathcal{C} = \{f : f \in \mathcal{C} \Rightarrow a f \in \mathcal{C} \}$. More specifically, if a function $f$ belongs to $\mathcal{C}$, then the obtained by constant multiplication $af$ also belongs to the cone. This property is very useful, since
+where the cone of functions is defined as $\mathscr{C} = \{f : f \in \mathscr{C} \Rightarrow a f \in \mathscr{C} \}$. More specifically, if a function $f$ belongs to $\mathscr{C}$, then the obtained by constant multiplication $af$ also belongs to the cone. This property is very useful, since
 \begin{align*}
 \abs{\mu(a f) - \hmu_n(a f)} &\le \abs{a} \abs{\mu(f) - \hmu_n(f)} \\
 & \le \abs{a} \err_{f,n}(f(x_1), \dots f(x_n)) \\
-& = \err_{f,n}(a f(x_1), \dots a f(x_n)) \\
+& = \err_{f,n}(a f(x_1), \dots a f(x_n)) 
 \end{align*}
 In the context of Bayesian cubature, we can explain the cone concept beginning with the definition of credible interval \eqref{eqn_prob_confidence_interval}. 
 Let $f \sim \mathcal{GP}$, is drawn from  Gaussian process
@@ -1628,7 +1642,7 @@ A random shift  $\vDelta$ is added to $\vx_{i}$ to avoid the origin zero in our 
 rank-1 lattices with the module one addition have a very desirable group structure that helps to satisfy fast transform kernel assumptions.
 
 
-An example of $64$ nodes is given in Figure  \ref{latticefig}.  The even coverage of the unit cube is ensured by a well chosen generating vector.  The choice of generating vector is typically done offline by computer search.  See \cite{DicEtal14a} and \cite{HicNie03a} for more on extensible integration lattices.
+An example of $64$ nodes is given in Figure  \ref{latticefig}.  The even coverage of the unit cube is ensured by a well chosen generating vector.  The choice of generating vector is typically done offline by computer search.  See \cite{DicEtal14a} and \cite{HicNie03a} for more on extensible integration lattices. Lattice rules are designed to integrate the class of sinusoidal functions without error.
 \begin{figure}[htp]
 	\centering
 	\includegraphics[width=0.7\linewidth]{ShiftedLatticePoints}
@@ -2171,6 +2185,8 @@ As we can see in \eqref{eqn:walsh_func}, the Walsh functions only take the value
 \int_{[0,1]}
 \textup{wal}_{b,\vk} (\vx) \textup{wal}_{b,\vm}(\vx) \dx = \delta_{\vk,\vm}
 \end{align*}
+Digital nets are designed to integrate the Walsh functions without error.
+Thus our Bayesian cubature algorithm could integrate linear combinations of its ideal integrands without error. Functions that are well approximated by such linear combinations are then integrated with small errors.
 
 \Subsection{Walsh kernels}
 Consider the kernels of the form \cite{Nuyens2013}
@@ -3197,12 +3213,37 @@ Some of the improvement ideas are listed here:
 We could improve the computation speed of \code{cubBayesNet\_g} for smoother integrands using higher order digital sequences and matching kernels which have the potential of being another match that satisfies the conditions in Section \ref{sec:fast_BC}.  The fast transform would correspond to a fast Walsh transform similar to the second algorithm we demonstrated.  For such kernels and the first order Walsh kernel we demonstrated, periodicity is not assumed, however, special structure of both the sequences and the kernels are required to take advantage of integrand smoothness.
 
 \item Control variates:
+Hickernell et.al \cite{HicEtal17a} \cite{Li16a} adapted control variates for Quasi-Montro. 
+Control variates are commonly used to improve the efficiency of IID Monte Carlo integration.
 One should be able to adapt our Bayesian cubature to control variates, i.e., assuming  
 \begin{equation*}
-f = \mathcal{GP} \left( \beta_0 + \beta_1 g_1 + \cdots + \beta_p g_p, s^2 C \right),
+f = \mathcal{GP} \left( \beta_0 + \beta_1 \, g_1 + \dots + \beta_p \, g_p, \;s^2 C \right),
 \end{equation*}
-for some choice of $g_1, \ldots, g_p$ whose integrals are known, and some parameters $\beta_0, \ldots, \beta_p$ in addition to the $s$ and $C$.  The efficacy of this approach has not yet been explored.
-\JRNote{add details from Da Li's paper}
+for some choice of vector of functions $\vg = \{g_1, \ldots, g_p\}$, where $\vg : [0,1)^d \to \reals^p$ whose integrals are known $\mu_{\vg} := \int_{[0,1)^d} \vg(\vx)\dvx$, and some parameters $\beta_0, \ldots, \beta_p$ in addition to the $s$ and $C$, then
+\begin{align*}
+\mu :=
+\int_{[0,1)^d} f(\vx) \dx =
+\int_{[0,1)^d} h_{\beta} (\vx) \dvx,  \; \text{where} \;
+h_{\beta}(\vx) := f(\vx) + \vbeta^T
+(\mu_{\vg} - \vg(\vx)).
+\end{align*}
+Here $\vg$ are function on which the QMC method does a good job, integrating it without error. 
+The goal is to choose an optimal $\vbeta$ to make
+\begin{align*}
+\widehat{\mu}_{\vbeta,n} :=
+\frac 1n \sum_{i=0}^{n-1} h_{\vbeta} (\vx_i)
+\end{align*}
+sufficiently close to $\mu$ with the least expense, $n$, possible.
+The efficacy of this approach has not yet been explored.
+
+
+
+
+
+
+
+
+
 
 \item Steepest descent: 
 The kernels's optimal shape parameter searched using steepest descent with kernels gradient could sometime get into local minima. This needs more understanding and enhancements.
