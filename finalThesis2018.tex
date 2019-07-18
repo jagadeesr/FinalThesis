@@ -52,6 +52,7 @@
 \usepackage[htt]{hyphenat}
 \usepackage{hhline}
 \usepackage{mathrsfs}
+\usepackage{colortbl}
 
 \setcounter{tocdepth}{2}
 
@@ -413,7 +414,9 @@ Numerical examples are provided in Chapter \ref{sec:NumExp} to demonstrate our n
 \JRNote{Briefly explain Bayesian approach using the words of diaconis, poincare work ..}
 
 
-The Bayesian approach for numerical analysis was popularized by Diaconis \cite{Dia88a}. Diaconis motivates the reader by interpolating the most well known numerical problem from the statistical point of view with prior information. The earliest reference for such kind of approach dates back to Poincar\'e, where, the theory of interpolation was discussed.
+The Bayesian approach for numerical analysis was popularized by Diaconis \cite{Dia88a}. The earliest reference for such kind of approach dates back to Poincar\'e, where, the theory of interpolation was discussed.
+Diaconis motivates the reader by interpreting the most well known numerical methods, 1) Trapezoidal-rule and 2) Splines from the statistical point of view with whatever is known about the integrand as prior information. 
+For Example, the trapezoidal-rule can be interpreted as a Bayesian method with prior information being modeled as Brownian motion in $\mathcal{C}[0,1]$ with normal prior.
 
 This research is focused on Bayesian approach for integration that is known as Bayesian Cubature as introduced by O'Hagan \cite{OHagen1991}. 
 The Bayesian Cubature returns a probability distribution $\mathbb{P}_f$, that expresses belief about the true value of integral, $\mu(f)$.
@@ -503,6 +506,7 @@ Natually, $2.58$ and $99\%$ can be replaced by other quantiles and credible leve
 
 \Section{Parameter estimation}
 \label{sec:stopping_criteria}
+
 The credible interval in \eqref{eqn_prob_confidence_interval} suggests how our automatic Bayesian cubature proceeds.  Integrand data is accumulated until the width of the credible interval is no greater than the error tolerance.  However, the credible interval still depends on the parameters $m, s$, and $\vtheta$.  These should not be assumed a priori but be inferred from the data.  This section describes three approaches.
 
 \Subsection{Empirical Bayes}  \label{sec:MLE}
@@ -788,7 +792,7 @@ If $\displaystyle g(\lambda) = \frac{1}{\lambda}$, then
 \\
 & \propto \left(\alpha \gamma - \beta^2\right)^{-n/2}.
 \end{align*}
-Laplace transform of $g(1/t)$ is $1/t^2$, taking $\frac n2 -2$th derivative gives us 
+Laplace transform of $g(1/t)$ is $1/t^2$, taking $(\frac n2 -2)$th derivative gives us 
 
 Finally, we simplify the key term $\eta$:
 \begin{align*}
@@ -963,7 +967,7 @@ This can be interpreted as $|\mu(f)-\hmu_n(f)| \leq \err_{n}(f)$ with 99\% confi
 We explain the credible interval using the following example. For this purpose, chosen a smooth and periodic integrand $f_{nice}(\vx) = \exp(\sum_{j=1}^{d} \cos(2\pi x_j)) + a_{nice} f_{noise}$ and another integrand $f_{peaky}(\vx) = f_{nice} + a_{peaky} f_{noise}$ where $a_{peaky} >> a_{nice}$. Where the function $f_{noise}(\vx) = (1 - \exp(2\pi i \sqrt{-1} \vx^T \vzeta))$ chosen to be zero at the sampling nodes $\{ \vx_i\}_{i=1}^n$, where $a \in \mathbb{R}$ is some constant, $\vzeta \in \mathbb{R}^d$ is some $d$-dimensional vector belonging to the dual space of the lattice nodes $\{ \vx_i\}_{i=1}^n$ chosen to sample the integrand. This help with to satisfy $f_{nice}(\vx_i) = f_{real}(\vx_i) $ at the sampling nodes $\{ \vx_i\}_{i=1}^n$
 
 
-\begin{figure}
+\begin{figure}[ht]
 	\centering
 	%\begin{subfigure}[h]{0.48\linewidth}
 	\includegraphics[width=0.9\linewidth]{cone_bayes_f_real}
@@ -971,12 +975,12 @@ We explain the credible interval using the following example. For this purpose, 
 	\caption{Example integrands 1) $f_{true}$ true integrand, 2) $f_{nice}$ a smooth function, and 3) $f_{peaky}$ a peaky function, all have the same values at $\{\vx_i\}_{i=1}^n$.}
 	\label{fig:cone_bayes_functions}
 \end{figure}
-\begin{figure}
+\begin{figure}[ht]
 	\centering
 	%\begin{subfigure}[h]{0.48\linewidth}
 	\includegraphics[width=0.9\linewidth]{cone_bayes_mu_pdf}
 	%\end{subfigure}
-	\caption{Probablity distributions showing the relative position integral of a smooth and a peaky function. $f_{nice}$ lies within the center 99\% of the confidence interval, and $f_{peaky}$ lies on the outside of 99\% of  the confidence interval.\JRNote{$f_{nice}$ using kernel approximation} }
+	\caption{Probablity distributions showing the relative position integral of a smooth and a peaky function. $f_{nice}$ lies within the center 99\% of the confidence interval, and $f_{peaky}$ lies on the outside of 99\% of  the confidence interval.\JRNote{Use standard deviation $\sigma$ in x-axis.  $f_{nice}$ using kernel approximation} }
 	\label{fig:cone_bayes_posterior}
 \end{figure}
 
@@ -2762,7 +2766,7 @@ Similar to \code{cubBayesLattice\_g}, it missed to meet the given error threshol
 
 \Section{Comparison with \code{cubMC\_g}, \code{cubLattice\_g} and \code{cubSobol\_g}}
 
-GAIL library provides variety of numerical integration algorithms based on different theoretical foundation, We would like to compare how our algorithms perform relatively. We consider three GAIL algorithms 1) \code{cubMC\_g} a simple Monte-Carlo method for multi-dimensional integration, 2) \code{cubLattice\_g} a quasi-Monte-Carlo method using Lattice points, and 3)\code{cubSobol\_g} a quasi-Monte-Carlo method using Sobol points.
+GAIL library provides variety of numerical integration algorithms based on different theoretical foundation, We would like to compare how our algorithms perform relatively. We consider three GAIL algorithms 1) \code{cubMC\_g} a simple Monte-Carlo method for multi-dimensional integration, 2) \code{cubLattice\_g} a quasi-Monte-Carlo method using Lattice points, and 3) \code{cubSobol\_g} a quasi-Monte-Carlo method using Sobol points.
 
 \Subsection{Keister integral}
 The Table~\ref{tab2} summarizes the performance of the methods MC, Lattice, Sobol,
@@ -2778,7 +2782,8 @@ and was the fastest. But \code{cubBayesLattice\_g}  was competitive and
 had the smallest average absolute error. \code{cubBayesNet\_g} used lowest number of samples in case of $d=8$ but slower than \code{cubSobol\_g}.
 
 \JRNote{avoid Exp notation for 2 decimals}
-\begin{table} % MATLAB Driver: KeisterCubatureExampleBayes.m
+\begin{table}[ht] % MATLAB Driver: KeisterCubatureExampleBayes.m
+	\arrayrulecolor[HTML]{DB5800}
 \centering
 \caption{Comparison of average performance of cubatures for estimating the integral \eqref{eqn:keister_integral}
 for $1000$ independent runs. These results can be conditionally reproduced with the
@@ -2787,7 +2792,7 @@ script, \code{KeisterCubatureExampleBayes.m}, in GAIL.
 %\vspace{-2ex}
 \begin{tabular}{c}
 $
-%\arraycolsep=1.4pt\def\arraystretch{0.9}
+\arraycolsep=1.4pt\def\arraystretch{0.9}
 \begin{array}{l@{\quad}r@{\quad}r@{\quad}r@{\quad}r@{\quad}r@{\quad}r}
 \hhline{======}
 \input{KeisterBayesOut.txt} 
@@ -2810,13 +2815,14 @@ In the second case also all five methods succeeded,  but \code{cubLattice\_g} wa
 The \code{cubBayesNet\_g}  was competitive and had the smallest average absolute error using lowest number of samples. The \code{cubBayesLattice\_g} achieved the next lowest average error but slower than \code{cubSobol\_g}.
 %\label{eqn:GaussDef}fGenzdef
 
-\begin{table} % MATLAB Driver: MVNCubatureExampleBayes.m
+\begin{table}[ht] % MATLAB Driver: MVNCubatureExampleBayes.m
+	\arrayrulecolor[HTML]{DB5800}
 \centering
 \caption{Comparison of average performance of cubatures for estimating the $d=20$ Multi-variate Normal \eqref{eqn:fGenzdef} for $1000$ independent runs with $\varepsilon=10^{-3}$. These results can be conditionally reproduced with the script, \code{MVNCubatureExampleBayes.m}, in GAIL. 
 \label{tab3}}	   
 %\vspace{-2ex}
 $
-%\arraycolsep=1.4pt\def\arraystretch{0.9}
+\arraycolsep=1.4pt\def\arraystretch{0.9}
 \begin{array}{l@{\quad}r@{\quad}r@{\quad}r@{\quad}r@{\quad}r@{\quad}r}
 \hhline{======}
 \input{MVNBayesOut.txt} 
@@ -2836,23 +2842,40 @@ $
 
 \JRNote{ Numerical examples for the case of shape parameter per dimension }
 
-TBD
+Having custom shape parameter for each dimension improves the accuracy of numerical integration. We demonstrate this advantage by integrating a function that is not symmetric across dimensions,
+\begin{align}
+\label{eqn:fresnels}
+f(\vx) = \sum_{j=1}^d \upsilon_j \sin(2 \pi x_j^2)
+\end{align} 
+which has known integral
+\begin{align*}
+\int_{[0,1)^d} f(\vx)  = \frac{1}{2} \; \code{fresnels}(d) \sum_{j=1}^{d} \upsilon_j
+\end{align*}
+where \code{fresnels} is the Fresnel Sine integral,
+\begin{align*}
+\code{fresnels}(z) = \int_{0}^{z} \sin \left( \frac{\pi t^2}{2} \right) \dt.
+\end{align*}
 
 
+\begin{table}[ht] % MATLAB Driver: MVNCubatureExampleBayes.m
+\arrayrulecolor[HTML]{DB5800}
+	\centering
+	\caption{Comparison of average performance of Bayesian Cubature with common shape parameter vs dimension specific shape parameter
+		 for estimating the $d=3$ Fresnel Sine integral. These results can be conditionally reproduced with the script, \code{demoMultiTheta.m}, in GAIL. 
+		\label{tabMultiTheta}}	   
+	%\vspace{-2ex}
+	$
+	\arraycolsep=1.4pt\def\arraystretch{0.9}
+\begin{array}{l@{\quad}r@{\quad}r@{\quad}r@{\quad}r@{\quad}r@{\quad}r}
+\hhline{======}
+\input{MultiThetaOut.txt} 
+\end{array}	
+	$
+\end{table}
 
+The results are summarized from the two different approaches in Table \ref{tabMultiTheta}. The first method, called \code{OneTheta}, uses common shape parameter across all the dimensions, whereas the second method, called \code{MultiTheta}, allows the shape parameters to vary across the dimensions. In the \code{MultiTheta} method, the shape parameter search is multi-variate so the magnitude of shape parameter depends on the integrand's magnitude in each dimensions. we have chosen a integrand particularly to demonstrate this aspect \eqref{eqn:fresnels} where we used $d=3$ and the constants $\bm{\upsilon}= (10^{-4}, 1, 10^4)$. The choice of magnitude variations in constants $\bm{\upsilon}$ allows to make the integrand vary significantly across dimensions.
 
-
-
-
-
-
-
-
-
-
-
-
-
+We ran this test for 1000 times. In comparison, both the methods successfully computed integral all the times but the \code{MultiTheta} is slightly faster. The \code{MultiTheta} method used less number of samples $n$ but the integration error is bigger than the \code{OneTheta}. For the same size of $n$ number of samples, \code{OneTheta} method will be much faster since the shape parameter search is easier. The \code{MultiTheta} method is useful in scenarios when we want to use smaller size $n$ and the integrand varies significantly across dimensions.
 
 
 \iffalse
