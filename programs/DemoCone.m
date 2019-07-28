@@ -86,14 +86,14 @@ mu_true = exactInteg;
 gauss = @(x) (1/sqrt(2*pi*s2_MLE))*exp(-((x-m_MLE).^2)/(2*s2_MLE));
 
 % xa = 0:0.001:3;
-xa = -3:0.001:3;
+xa = -4:0.001:4;
 
 figH4 = figure;
-plot(xa, gauss((xa*sqrt(s2_MLE)+m_MLE)), 'k--')
+plot(xa, gauss((xa*sqrt(s2_MLE)+m_MLE)), 'k')
 hold on
-plot(mu_peak, 0, 'r.')
-plot(mu_nice, 0, 'b.')
-plot(mu_true, 0, 'g.')
+plot( (mu_peak-m_MLE)/sqrt(s2_MLE), 0, 'r.')
+plot( (mu_nice-m_MLE)/sqrt(s2_MLE), 0, 'b.')
+plot( 0, 0, 'g.')
 
 xlabel('$\sigma$','Interpreter','latex')
 % ylabel('$\rho_\mu|_{(\boldmath{f}=\boldmath{y})}$', 'Interpreter','latex')
@@ -104,8 +104,9 @@ axis tight
 % annotation('textarrow',[xa_norm(mu_peak) xa_norm(mu_peak)],[0 0.25],'String','$\mu_{real}$')
 % annotation('textarrow',[xa_norm(mu_nice) xa_norm(mu_nice)],[0 0.25],'String','$\mu_{nice}$')
 % annotation('textarrow',[xa_norm(mu_true) xa_norm(mu_true)],[0 0.5],'String','$\mu_{true}$')
-legend({'$\rho_\mu|_{(\boldmath{f}=\boldmath{y})}$', '$\mu_{peaky}$', ...
-  '$\mu_{nice}$', '$\mu_{true}$'},'location','best','Interpreter','latex')
+legend({'$\rho_\mu|_{(\boldmath{f}=\boldmath{y})}$', ...
+  '$\mu_{peaky}$', '$\mu_{nice}$', '$\mu_{true}$'}, ...
+  'location','best','Interpreter','latex')
 % temp = [{'${\vert\mu-\widehat{\mu} \vert}/{\varepsilon}=1$'}, temp'];
 % legend(temp,'location','best','Interpreter','latex'); axis tight
 

@@ -35,7 +35,7 @@ figSobolS = figure();
 plot(xSSobol(:,1),xSSobol(:,2),'.','color',MATLABPurple)
 xlabel('\(x_1\)')
 ylabel('\(x_2\)')
-title('Scrambled Sobol'' Points')
+% title('Scrambled Sobol'' Points')
 axis square
 set(gca,'xtick',tick,'ytick',tick)
 % print -depsc SSobolPoints.eps
