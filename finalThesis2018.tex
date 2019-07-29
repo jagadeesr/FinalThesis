@@ -424,6 +424,17 @@ Numerical examples are provided in Chapter \ref{sec:NumExp} to demonstrate the p
 We use the terms integrand or function interchangeably to denote the function $f$ being considered for the numerical integration. Also we use the terms, nodes, points, node-sets, design, and data-sites interchangeably to denote the points $\{\vx_i\}_{i=1}^n \subset [0,1]^d$ used in the cubature.
 
 
+
+
+
+
+
+
+
+
+
+
+
 \Chapter{Bayesian Cubature}
 \label{sec:BC} 
 \JRNote{Briefly explain Bayesian approach using the words of diaconis, poincare work ..}
@@ -1119,6 +1130,7 @@ f_{\text{Genz}}(\vx) = \prod_{j=1}^d [\beta_j(\vx) - \alpha_j(\vx)].
 \end{align}
 where $\Phi$ is the cumulative standard normal distribution function.
 Then, $$\mu = \int_{[0,1]^{d-1}} f_{\text{Genz}}(\vx) \, \dvx.$$
+This approach transforms a $d'$ dimensional integral into a $d=d'-1$ dimensional integral.
 
 \begin{figure}
 	% \captionsetup[subfigure]{labelformat=empty}
@@ -1129,7 +1141,7 @@ Then, $$\mu = \int_{[0,1]^{d-1}} f_{\text{Genz}}(\vx) \, \dvx.$$
 	%\begin{subfigure}[h]{0.48\linewidth}
 		\includegraphics[width=0.9\linewidth]{GenzFunc_varTx_none}
 	%\end{subfigure}
-	\caption{The $d=3$ multivarivate normal probability transformed to an integral of $f_{\text{Genz}}$ with  $d=2$.}
+	\caption{The $d=3$ multivarivate normal probability transformed to an integral of $f_{\text{Genz}}$ with  $d=2$. This plot can be reproduced using \code{IntegrandPlots.m} in GAIL.}
 	\label{fig:MVN_Genz}
 \end{figure}
 
@@ -1151,35 +1163,44 @@ d = 3, \quad \va = \begin{pmatrix}
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=0.9\linewidth]{MVN_guaranteed_time_Matern_d2_2019-Jun-29}
-	\caption{Multivariate Gaussian probability: Guaranteed integration using Mat\'ern kernel in $d=2$ using empirical stopping criterion within error tolerance $\varepsilon$.}
+	\caption{Multivariate Gaussian probability: Guaranteed integration using Mat\'ern kernel in $d=2$ using empirical Bayes stopping criterion within error tolerance $\varepsilon$. This figure can be conditionally reproduced using \code{matern\_guaranteed\_plots.m} in GAIL.}
 	\label{fig:MVN_Metern_d2b2}
 \end{figure}
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=0.9\linewidth]{MVN_rapid_n_vs_time_Matern_d2_2019-Jun-29}
-	\caption{Multivariate Gaussian probability estimated using Mat\'ern kernel in $d=2$ using empirical stopping criterion. Computation time rapidly increases with increase of $n$}
+	\caption{Multivariate Gaussian probability estimated using Mat\'ern kernel in $d=2$ using empirical Bayes stopping criterion. Computation time rapidly increases with increase of $n$. This figure can be conditionally reproduced using \code{matern\_guaranteed\_plots.m} in GAIL.}
 	\label{fig:MVN_Metern_d2b2_time_growth}
 \end{figure}
 The node sets are randomly scrambled Sobol points \cite{DicEtal14a,DicPil10a}.  The results are for 400 randomly chosen $\varepsilon$ in the interval $[10^{-5}, 10^{-2}]$ as shown in \figref{fig:MVN_Metern_d2b2}. In each run, the nodes are randomly scrambled.  We  observe the algorithm meets the error criterion 95\% of the time even-though we used 99\% credible intervals.
 One possible explanation is that the matrix inversions in the algorithm are ill-conditioned leading to numerical inaccuracies.  Another possible explanation is that this Mat\'ern covariance kernel is not a good match for the integrand.
 
 %with Intel i7 3630QM and 16GB RAM memory
-On our test computer, it took more than an hour to compute $\hmu_n$ with $n=2^{14}$. As shown in Figure \ref{fig:MVN_Metern_d2b2}, computation time increases rapidly with $n$. 
-Especially, maximum likelihood estimation of $\vtheta$, which needs the objective function, is the most time consuming of all. 
-Because the objective function needs to be computed multiple times in every iteration to find its minimum. 
-Not only the computational cost increases, also the $\mC$ becomes highly ill-conditioned with increasing $n$.
-So, our algorithm in the current form is not straightaway usable for any practical applications.
+On our test computer, it took more than an hour to compute $\hmu_n$ with $n=2^{14}$. 
+As shown in \figref{fig:MVN_Metern_d2b2_time_growth}, the computation time increases rapidly with $n$. 
+The empirical Bayes estimation of $\vtheta$, which requires repeated evaluation of the objective function, is the most time consuming of all. Because the objective function needs to be computed multiple times in every iteration to find its minimum. It takes tens of seconds to compute $\hmu_n$ with $\varepsilon = 10^{-5}$.   In contrast, this example in Chapter \ref{sec:NumExp} take less than a hundredth of a second to compute $\hmu_n$ with the same $\varepsilon$ using our new algorithm. Not only is the Bayesian cubature with the Mat\'ern kernel slow, but also $\mC_\vtheta$ becomes highly ill-conditioned as $n$ increases.
+So, Algorithm \ref{algorithm1} in its current form is impractical when $n$ must be large.
+
+
+
+
+
+
+
+
+
 
 
 \Chapter{Fast Automatic Bayesian Cubature}
-%\Section{Fast Automatic Bayesian Cubature}
 \label{sec:fast_BC}
 
-The generic automatic Bayesian cubature algorithm described in the previous section requires $\Order(n^3)$ operations to estimate $\vtheta$, compute the credible interval width, and compute the cubature.  This section explains how to speed up the calculations. A key is to choose kernels that match the design, $\{\vx_i\}_{i=1}^n$, so that the vector-matrix operations required by Bayesian cubature can be accomplished using fast transforms at a cost of $\Order(n \log n)$.
+The generic automatic Bayesian cubature algorithm described in the previous section requires $\Order(n^3)$ operations to estimate $\vtheta$, compute the credible interval width, and compute the cubature.  This chapter explains how to speed up the calculations. A key is to choose kernels that match the design, $\{\vx_i\}_{i=1}^n$, so that the vector-matrix operations required by Bayesian cubature can be accomplished using fast transforms at a cost of $\Order(n \log n)$.
 
 \Section{Fast Transform Kernel}
 
-We make some assumptions about the relationship between the covariance kernel and the design, which will be shown to hold in Section \ref{sec:shift_invariant_kernel} for rank-1 lattices and shift-invariant kernels.  First we introduce the notation
+We make some assumptions about the relationship between the covariance kernel and the design, which will be shown to hold in Chapter \ref{sec:shift_invariant_kernel} for rank-1 lattices and shift-invariant kernels.  Although the integrands and covariance kernels are real, it is convenient to allow related vectors and matrices to be complex.  A relevant example is the fast Fourier transform (FFT) of a real-valued vector, which is a complex-valued vector.
+
+We introduce some further notation
 \begin{align}
 \nonumber
 \mC &= \Big(C_\vtheta(\vx_i,\vx_j)\Big)_{i,j=1}^n  = (\vC_1,...,\vC_n) 
@@ -1192,8 +1213,9 @@ We make some assumptions about the relationship between the covariance kernel an
 \nonumber
 \mC^p  &= \frac 1n \mV \mLambda^{p} \mV^H, \qquad \forall p \in \integers,
 \end{align}
-where $\mV^H$ is the Hermitian of $\mV$.  The columns of matrix $\mV$ are eigenvectors of $\mC$, and $\mLambda$ is a diagonal matrix of eigenvalues of $\mC$.
-For any $n \times n$ vector $\vb$, define the notation  $\widetilde{\vb} := \mV^H \vb$.
+where $\mV^H$ is the Hermitian of $\mV$, $\vC_1,\dots,\vC_n$ are columns of $\mC$,  $\vV_1,\dots,\vV_n$ are columns of $\mV$, and $\vv_1,\dots,\vv_n$ are rows of $\mV$.
+In this and later sections, we drop the $\vtheta$ dependence of various quantities for simplicity of notation.  The normalization of $\mV$ assumed in \eqref{eqn:ftk_factor} conveniently allows the first eigenvector, $\vV_1$, to be the vector of ones in \eqref{fastcompAssumpB} below.  The columns of matrix $\mV$ are eigenvectors of $\mC$, and $\mLambda$ is a diagonal matrix of eigenvalues of $\mC$.
+For any $n \times 1$ vector $\vb$, define the notation  $\widetilde{\vb} := \mV^H \vb$.
 
 We make three assumptions that allow the fast computation:
 \begin{subequations} \label{fastcompAssump}
@@ -1213,8 +1235,8 @@ Under assumptions \eqref{fastcompAssump} the eigenvalues may be identified as th
 \nonumber
 \vlambda 
 & = \begin{pmatrix}
-\lambda_1, &\dots, &\lambda_n
-\end{pmatrix}^T = \mLambda \vone = \mLambda \vv_1^* 
+\lambda_1 \\ \vdots \\ \lambda_n
+\end{pmatrix} = \mLambda \vone = \mLambda \vv_1^* 
 = \underbrace{\left( \frac 1n \mV^H  \mV \right) }_{\mathsf{I}} \mLambda \vv_1^* \\
 &= \mV^H \left( \frac 1n \mV \mLambda \vv_1^* \right)
 = \mV^H \vC_1 =  \widetilde{\vC}_1.
@@ -1223,7 +1245,7 @@ Under assumptions \eqref{fastcompAssump} the eigenvalues may be identified as th
 Also note that the fast transform of $\vone$ has a simple form
 \begin{align*} 
 \widetilde{\vone}
-& = \mV^H \vone = \mV^H \vV_1 = \begin{pmatrix}n, & 0, & \dots, & 0 \end{pmatrix}^T.
+& = \mV^H \vone = \mV^H \vV_1 = \begin{pmatrix}n, \\ 0, \\ \vdots, \\ 0 \end{pmatrix}.
 \label{eqn:fast_transform_one}
 \end{align*}
 
@@ -1233,7 +1255,7 @@ Many of the terms that arise in the calculations in  Algorithm \ref{algorithm1} 
 = \frac 1n \widetilde{\va}^H\mLambda^p \widetilde{\vb}
 = \frac 1n \sum_{i=1}^n \lambda_i^p \widetilde{a}_i^* \widetilde{b}_i, 
 \end{equation*}
-In particular,
+Note that $\widetilde{\va}^*$ appears on the right side of this equation because $\va^T \mV = (\mV^H \va)^* = \widetilde{\va}^*$. In particular,
 \begin{align*}
 \vone^T\mC^{-p}\vone & = \frac{n}{\lambda_1^p},
 &
@@ -1316,6 +1338,7 @@ Thus, in this  case $\hmu$ is simply the sample mean.
 
 
 \Subsection{Gradient of the objective function using fast transform} \label{deriv_obj_func_MLE} 
+In the previous chapter, we discussed about using gradient descent for hyperparameter search but the computational cost is of $\Order(n^3)$.
 If $\mV$ does not depend on $\vtheta$ then one can fast compute the derivative of matrix $\mC$. Starting from the definition \eqref{eqn:ftk_factor} and taking derivative w.r.t. $\theta_j$, 
 \begin{align*}
 \displaystyle \frac{\partial \mC}{\partial \theta_j} 
@@ -1467,7 +1490,7 @@ In this case too, $\hmu$ is simply the sample mean.
 
 
 \Subsection{Derivative of the loss function}
-Using the results obtained from the previous section, we can reduce the computational cost of the derivative of the loss function,
+Using the results obtained from the Section \secref{deriv_obj_func_MLE} with empirical Bayes, we can reduce the computational cost of the derivative of the loss function,
 \begin{align*}
 \mathcal{L}(\vtheta | \vy)_\GCV
 &= \log \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2} 
@@ -1497,7 +1520,7 @@ Using the similar techniques from \secref{deriv_obj_func_MLE}
 
 \Section{Product kernel}
 
-In this research, We use product kernels in the demonstrations and numerical implementations. They got nice properties which are helpful to obtain analytical results easily. Product kernels are of the form in $d$ dimensions
+In this research, We use product kernels in the demonstrations and numerical implementations. They got nice properties which are helpful to obtain analytical results easily. Product kernels are in $d$ dimensions of the form
 \begin{align}
 \label{eqn:prod_kernel}
 C_\vtheta(\vt, \vx) = 
@@ -1631,10 +1654,10 @@ Please note the above derivatives do not depend on $\mathfrak{C}(x,t)$ and most 
 %$ C_\vtheta(\vt, \vx) = \prod_{l=1}^d [ 1 - \eta_l \mathfrak{C}(x_l,t_l) ]$.
 
 \Subsection{Shape parameter search using steepest descent}
-Having obtained the derivative, we can easily implement the steepest descent search introduced in \secref{grad_descent_MLE} 
+Using the obtained derivative above, we can easily implement the steepest descent search introduced in \secref{grad_descent_MLE} 
 %\eqref{Dong2017a}
 \begin{align*}
-\eta^{(j+1)} = \eta^{(j)} - \nu \frac{\partial}{\partial \eta} \mathcal{L}(\vtheta | \vy)
+\eta^{(j+1)} = \eta^{(j)} - \nu \frac{\partial}{\partial \eta} \mathcal{L}(\vtheta | \vy).
 \end{align*}
 
 
@@ -1652,15 +1675,15 @@ Having obtained the derivative, we can easily implement the steepest descent sea
 \Chapter{Integration lattices and \\ Shift Invariant Kernels}
 \label{sec:shift_invariant_kernel}
 
-The preceding sections lay out an automatic Bayesian cubature algorithm whose computational cost is only $\Order(n \log n)$ if $n$ function values are used.  However, this algorithm relies on covariance kernel functions, $C_{\vtheta}$ and designs, $\{\vx_i\}_{i=1}^n$ that satisfy assumptions \eqref{fastcompAssump}.  
+The preceding sections lay out an automatic Bayesian cubature algorithm whose computational cost is only $\Order(n \log n)$ if $n$ function values are used.  However, this algorithm relies on covariance kernel functions, $C_{\vtheta}$ and node sets, $\{\vx_i\}_{i=1}^n$ that satisfy assumptions \eqref{fastcompAssump}.  
 In this chapter, we demonstrate such a covariance kernel and matching design.
-When periodic shift-invariant kernels are combined with rank-1 lattice nodes as design, we get circulant Gram matrix. 
-We will also satisfy assumption \eqref{addAssump}.  To make the computations simpler and facilitate the fast transform, it is assumed in this section and the next that $n$ is power of $2$.  
+When periodic shift-invariant kernels are combined with rank-1 lattice nodes, the resulting Gram matrix is symmetric circulant. 
+This combination also satisfies assumption \eqref{addAssump}.  To make the computations simpler and facilitate the fast transform, it is assumed in this section and the next that $n$ is power of $2$.  
 
 
 \Section{Extensible Integration lattice Node Sets}
 
-The design or set of nodes used is defined by a shifted extensible integration lattice node sequence, which takes the form
+We choose set of nodes defined by a shifted extensible integration lattice node sequence, which takes the form
 \begin{equation}
 \label{eqn:lattice_gen}
 \vx_{i} = \vh \phi(i-1) + \vDelta \mod \vone, \qquad i \in \naturals.
@@ -1675,9 +1698,16 @@ i & 0_2 & 1_2 & 10_2 & 11_2 & 100_2 & 101_2 & 110_2 & 111_2  & \cdots\\
 \phi(i) & 0 &  0.5 &  0.25 & 0.75 &  0.125 & 0.625  &  0.375 & 0.875 & \cdots
 \end{array}
 \end{equation}
+Note that 
+\begin{multline} \label{phiprop}
+n\phi:\{0, \ldots, n-1 \} \to \{0, \ldots, n-1\} \\
+\text{is one-to-one},
+\end{multline}
+assuming $n$ is a power of $2$.
 
-A random shift  $\vDelta$ is added to $\vx_{i}$ to avoid the origin zero in our point set. However, this shift will preserve the discrepancy properties of $\vx_{i}$. These are called rank-1 lattices.
-rank-1 lattices with the module one addition have a very desirable group structure that helps to satisfy fast transform kernel assumptions.
+These node sets called rank-1 lattices.
+A random shift  $\vDelta$ is added to $\vx_{i}$ to avoid the origin zero in the node sets. However, this shift will preserve the discrepancy properties of $\vx_{i}$. 
+The rank-1 lattices with the module one addition have a very desirable group structure that helps to satisfy fast transform kernel assumptions.
 
 
 An example of $64$ nodes is given in Figure  \ref{latticefig}.  The even coverage of the unit cube is ensured by a well chosen generating vector.  The choice of generating vector is typically done offline by computer search.  See \cite{DicEtal14a} and \cite{HicNie03a} for more on extensible integration lattices. Lattice rules are designed to integrate the class of sinusoidal functions without error.
@@ -1710,10 +1740,10 @@ If the coefficients are chosen as
 then there exists a simpler closed form expression without infinite sum
 \begin{align}
 \label{the_kernel_eqn_bernoulli}
-C_\vtheta(\vt, \vx) =
+K_\vtheta(\vx) =
 \prod_{l=1}^d \biggl[
-1 - (-1)^{r} \eta B_{2r}( |{x_l-t_l}| ) \biggr], \quad  
-\forall \vt,\vx \in [0,1]^d, \\ \qquad  \vtheta = (r,\eta), \ r \in \naturals, \ \eta > 0.
+1 - (-1)^{r} \eta B_{2r}( {x_l} ) \biggr], \quad  
+\forall \vx \in [0,1]^d, \\ \qquad  \vtheta = (r,\eta), \ r \in \naturals, \ \eta > 0.
 \end{align}
 Symmetric, periodic, positive definite kernels of this form appear in  \cite{DicEtal14a} and \cite{Hic96a}.  The Bernoulli polynomials $B_{r}(x)$ are described in \cite[Chapter 24]{OlvEtal10a}
 \begin{align*}
@@ -1843,120 +1873,144 @@ This constraint limits the ability to vary the kernel smoothness to match the in
 Integer kernel order is not suitable to optimally search by an optimization algorithm.
 As a consequence, we usually end up choosing a higher kernel order when the integrand is not  smooth or lower kernel order when the integrand is very smooth.
 Often it leads to longer computation time or poor accuracy in the numerical integration.
-Here we explore an alternative form of the kernel which allows the kernel order to be a positive continuous greater than one. Let us recollect the kernel used so far,
+Here we explore an alternative form of the kernel which allows the kernel order to be a positive continuous greater than one. Let us recollect the infinite series expression that was used to construct the kernel\eqref{the_kernel_eqn_bernoulli},
 \begin{align*}
 C_\vtheta(\vx, \vt) := &  \sum_{\vk \in \mathbb{Z}^d} \alpha_{\vk,\vtheta}  e^{2 \pi\sqrt{-1} \vk^T\vx}
 e^{-2 \pi\sqrt{-1} \vk^T\vt}, \quad \alpha_{\vk,\vtheta} = \prod_{l=1}^d \frac{1}{\max(\frac{|k_l|}{\eta_l},1)^r_{\eta_l\leq 1}} 
 \end{align*}
-where $\theta = (\eta, r)$.  
-To make the derivations easier to follow, let us start with the dimension $d=1$ case,
+where $\theta = (\eta, r)$.  This form is convenient for analytical derivations.
+To make the derivations easier to follow, let us fix the dimension $d=1$,
 \begin{align*}
 C_\vtheta(x, t) = & 1 + \eta \sum_{k \in \mathbb{Z}, k \neq 0 } \frac{1}{\abs{k}^r} 
 e^{ 2 \pi\sqrt{-1} k x}
 e^{-2 \pi\sqrt{-1} k t}
 \end{align*}
 
+
+
+
+
+
+
+
+
 \Subsection{Exponentially decaying kernel}
 \label{sec:exp_decay_kernel}
-We propose the following alternative form of which can also provide exponential decay
+We propose the following alternative form of the kernel. This kernel can also provide exponential decay,
 \begin{align*}
-C_\vtheta(x, t) = & 1 + \eta \sum_{k \in \mathbb{Z}, k \neq 0 } b^{\abs{k}}  
-e^{ 2 \pi\sqrt{-1} k (x-t)}, \quad \text{with} \quad 0 < b < 1
+C_\vtheta(x, t) = & 1 + \eta \sum_{k \in \mathbb{Z}, k \neq 0 } q^{\abs{k}}  
+e^{ 2 \pi\sqrt{-1} k (x-t)}, \quad \text{with} \quad 0 < q < 1
 \end{align*}
-which can be rewritten as
+where $q$ is the kernel order. This can be rewritten as
 \begin{align*}
 C_\vtheta(x, t) = & 1 + \eta \sum_{k \in \mathbb{Z}, k \neq 0 } 
-e^{ 2 \pi\sqrt{-1} k (x-t) + \abs{k} \log(b)}
+e^{ 2 \pi\sqrt{-1} k (x-t) + \abs{k} \log(q)}
 \\
 =& 1 + \eta 
 \left(
-\sum_{k=1}^\infty e^{ 2 \pi\sqrt{-1} k (x-t) + \abs{k} \log(b)} 
+\sum_{k=1}^\infty e^{ 2 \pi\sqrt{-1} k (x-t) + \abs{k} \log(q)} 
 +
-\sum_{k=\infty}^{-1} e^{ 2 \pi\sqrt{-1} k (x-t) + \abs{k} \log(b)}
+\sum_{k=\infty}^{-1} e^{ 2 \pi\sqrt{-1} k (x-t) + \abs{k} \log(q)}
 \right), 
 \\
 =& 1 + \eta 
 \left(
-\sum_{k=1}^\infty e^{ 2 \pi\sqrt{-1} k (x-t) + \abs{k} \log(b)} 
+\sum_{k=1}^\infty e^{ 2 \pi\sqrt{-1} k (x-t) + \abs{k} \log(q)} 
 +
-\sum_{k=-\infty}^{-1} e^{ 2 \pi\sqrt{-1} k (x-t) + \abs{k} \log(b)}
+\sum_{k=-\infty}^{-1} e^{ 2 \pi\sqrt{-1} k (x-t) + \abs{k} \log(q)}
 \right), 
 \\
 =& 1 + \eta 
 \left(
 \underbrace{
-	\sum_{k=1}^\infty e^{ 2 \pi\sqrt{-1} k (x-t) + \abs{k} \log(b)} }_{*}
+	\sum_{k=1}^\infty e^{ 2 \pi\sqrt{-1} k (x-t) + \abs{k} \log(q)} }_{*}
 +
-\sum_{k=1}^{\infty} e^{ -2 \pi\sqrt{-1} k (x-t) + \abs{k} \log(b)}
+\sum_{k=1}^{\infty} e^{ -2 \pi\sqrt{-1} k (x-t) + \abs{k} \log(q)}
 \right), 
 \end{align*}
 Let us focus on the term $(*)$,
 \begin{align*}
-(*) & = \sum_{k=1}^\infty e^{ 2 \pi\sqrt{-1} k (x-t) + \abs{k} \log(b)} =
-\sum_{k=1}^\infty \left[e^{ 2 \pi\sqrt{-1} (x-t) +  \log(b)} \right]^k
+(*) & = \sum_{k=1}^\infty e^{ 2 \pi\sqrt{-1} k (x-t) + \abs{k} \log(q)} =
+\sum_{k=1}^\infty \left[e^{ 2 \pi\sqrt{-1} (x-t) +  \log(q)} \right]^k
 \\
-& = \frac{e^{ 2 \pi\sqrt{-1} (x-t) +  \log(b)}}{1- e^{ 2 \pi\sqrt{-1} (x-t) +  \log(b)}}
-= \frac{1}{ e^{- 2 \pi\sqrt{-1} (x-t) -  \log(b)} -1 }
+& = \frac{e^{ 2 \pi\sqrt{-1} (x-t) +  \log(q)}}{1- e^{ 2 \pi\sqrt{-1} (x-t) +  \log(q)}}
+= \frac{1}{ e^{- 2 \pi\sqrt{-1} (x-t) -  \log(q)} -1 }
 \\
-& =\frac{1}{ b^{-1} e^{- 2 \pi\sqrt{-1} (x-t)} -1 }
+& =\frac{1}{ q^{-1} e^{- 2 \pi\sqrt{-1} (x-t)} -1 }
 \end{align*}
 Using this result
 \begin{align*}
 C_\vtheta(x, t) &= 
 1 + \eta 
 \left(
-\frac{1}{ b^{-1} e^{- 2 \pi\sqrt{-1} (x-t)} -1 }
+\frac{1}{ q^{-1} e^{- 2 \pi\sqrt{-1} (x-t)} -1 }
 +
-\frac{1}{ b^{-1} e^{ 2 \pi\sqrt{-1} (x-t)} -1 }
+\frac{1}{ q^{-1} e^{ 2 \pi\sqrt{-1} (x-t)} -1 }
 \right),
 \\
 &= 
 1 + \eta 
 \left(
-\frac{b^{-1} \left(e^{2 \pi\sqrt{-1} (x-t) }+ e^{ -2 \pi\sqrt{-1} (x-t)}\right) -2 }
-{b^{-2} - b^{-1} \left(e^{ 2 \pi\sqrt{-1} (x-t)} + e^{ -2 \pi\sqrt{-1} (x-t)}\right) + 1 }
+\frac{q^{-1} \left(e^{2 \pi\sqrt{-1} (x-t) }+ e^{ -2 \pi\sqrt{-1} (x-t)}\right) -2 }
+{q^{-2} - q^{-1} \left(e^{ 2 \pi\sqrt{-1} (x-t)} + e^{ -2 \pi\sqrt{-1} (x-t)}\right) + 1 }
 \right),
 \\
 &= 
 1 + \eta 
 \left(
-\frac{2 b^{-1} \cos({2 \pi\sqrt{-1} (x-t) }) -2 }
-{b^{-2} - 2 b^{-1} \cos({ 2 \pi\sqrt{-1} (x-t)})  + 1 }
+\frac{2 q^{-1} \cos({2 \pi\sqrt{-1} (x-t) }) -2 }
+{q^{-2} - 2 q^{-1} \cos({ 2 \pi\sqrt{-1} (x-t)})  + 1 }
 \right),
 \\
 &= 
-1 + 2 \eta b
+1 + 2 \eta q
 \left(
-\frac{ \cos({2 \pi\sqrt{-1} (x-t) }) - b }
-{b^{2} - 2 b \cos({ 2 \pi\sqrt{-1} (x-t)})  + 1 }
+\frac{ \cos({2 \pi\sqrt{-1} (x-t) }) - q }
+{q^{2} - 2 q \cos({ 2 \pi\sqrt{-1} (x-t)})  + 1 }
 \right),
 \end{align*}
 Using the fact $\cos^2(t) + \sin^2(t) = 1$
 \begin{align*}
 C_\vtheta(x, t) &= 
-1 + 2 \eta b
+1 + 2 \eta q
 \left(
-\frac{ \cos({2 \pi\sqrt{-1} (x-t) }) - b }
-{ \left[\cos({ 2 \pi\sqrt{-1} (x-t)})-b\right]^2 + \sin^2({ 2 \pi\sqrt{-1} (x-t)}) }
+\frac{ \cos({2 \pi\sqrt{-1} (x-t) }) - q }
+{ \left[\cos({ 2 \pi\sqrt{-1} (x-t)})-q\right]^2 + \sin^2({ 2 \pi\sqrt{-1} (x-t)}) }
 \right),
 \end{align*}
-We need to have $\eta > 0$ and $ 0 < b < 1$ while searching for the optimum value, so we use the following transformations
+which shows that one to continuously vary the order $q$ while searching for the optimal kernel order. 
+We need to have $\eta > 0$ and $ 0 < q < 1$ while searching for the optimum value, so we use the following transformations
 \begin{align*}
-b: & \quad \frac{1}{1 + e^{-t}} & :(-\infty, \infty) \to (0, 1)
+q: & \quad \frac{1}{1 + e^{-t}} & :(-\infty, \infty) \to (0, 1)
 \\
-\eta: & \quad e^{t} & :(-\infty, \infty) \to (0, \infty)
+\eta: & \quad e^{t} & :(-\infty, \infty) \to (0, \infty).
 \end{align*}
+One disadvantage of this kernel is, it is very sensitive to the changes in kernel order $q \in (0,1)$, to even small vales. So the hyperparameter search sometimes misses the global minima.
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 \Subsection{Truncated series kernel}
 \label{sec:trunc_series_kernel}
+There is an another form to the previous kernel, which has the kernel order in $(1, \infty)$, making it more robust in the hyperparameter search.
 If we use the original definition of the kernel, we could make the kernel order $r$ explicit such that it does not have to be an even integer, which was the constraint previously. For $d=1$,
 \begin{align*}
 C_\vtheta(x, t) = & 1 + \eta \sum_{k \in \mathbb{Z}, k \neq 0 } \frac{1}{\abs{k}^r} 
 e^{ 2 \pi\sqrt{-1} k (x-t)}
 \end{align*}
 where $\theta = (\eta, r)$. 
-But it has the infinite sum which cannot be used in practical applications, so we truncate to length $N$,
+But it has the infinite sum which cannot be used directly, so we truncate to length $N$,
 \begin{align*}
 C_{\vtheta, N}(x, t) = & 1 + \eta \sum_{k = - N/2 }^{N/2} \frac{1}{\abs{k}^r} 
 e^{ 2 \pi\sqrt{-1} k (x-t)}
@@ -1990,7 +2044,7 @@ $x_{il}-x_{1l} \in \lbrace 0, \frac 1n, \frac 2n, \dots \frac{n-1}{n}  \rbrace$.
 \mathfrak{C} \left(\frac jN, r \right) &= \sum_{k = - N/2 }^{N/2} \frac{1}{\abs{k}^r} 
 e^{ 2 \pi\sqrt{-1} k (\frac jN)}, \quad \text{where} \;  j=0,1,\dots N-1
 \end{align*}
-These notations were introduced to help us compute the discrete Fourier transform of $g$ easily. 
+These notations were introduced to help us compute the discrete Fourier transform of $\mathfrak{C}$ easily. 
 \begin{align*}
 \widetilde{\mathfrak{C}}(m, r) &:= \sum_{j=0}^{N-1} \mathfrak{C} (j/n, r) e^{- 2 \pi\sqrt{-1} jm/N} \\
 &= \sum_{k = - N/2, k \neq 0 }^{N/2} 
