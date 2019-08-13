@@ -347,7 +347,7 @@ For high dimensional problems, it is difficult to adaptively change the sampling
 We assume a Gaussian process parameterized by a constant mean and a covariance function defined by a scale parameter and a function specifying how the integrand values at two different points in the domain are related.
 These parameters are estimated from integrand values or are given non-informative priors.  This leads to credible interval for the integral.  The sample size, $n$, is chosen to make the credible interval for the Bayesian posterior error no greater than the desired error tolerance. 
 
-However, the process just outlined typically requires vector-matrix operations  with a computational cost of $O(n^3)$. Our innovation is to pair low discrepancy nodes with matching kernels that lower the  computational cost to $O(n \log n)$.   This approach is demonstrated using two methods: 1) rank-1 lattice sequences and shift-invariant kernels, 2) Sobol sequences and Walsh kernel.  They are also implemented in the Guaranteed Automatic Integration Library (GAIL).
+However, the process just outlined typically requires vector-matrix operations  with a computational cost of $O(n^3)$. Our innovation is to pair low discrepancy nodes with matching kernels that lower the  computational cost to $O(n \log n)$.   This approach is demonstrated using two methods: 1) rank-1 lattice sequences and shift-invariant kernels, 2) Sobol' sequences and Walsh kernel.  They are also implemented in the Guaranteed Automatic Integration Library (GAIL).
 The Bayesian cubatures, we develop are guaranteed for integrands belonging to cone of functions that belong to the middle of the sample space. The concept of cone of functions is explained in \secref{sec:cone_of_functions}.
 
 %\keywords{Bayesian cubature \and Probabilistic numeric methods \and GAIL}
@@ -425,7 +425,7 @@ D(\mathcal{P}) := \sup_{M \in \mathcal{M}}
 \abs{ \frac{\abs{M \cap \mathcal{P}}}{\abs{\mathcal{P}}} - \lambda_L(M) }
 \end{align*}
 The \emph{low discrepancy points} satisfy $D(\mathcal{P}) = \Order(\log n^d/n)$.
-In this work we experiment with two most popular low discrepancy point sets, 1) lattice points, 2) Sobol points.
+In this work we experiment with two most popular low discrepancy point sets, 1) lattice points, 2) Sobol' points.
 
 \Section{Prior Work}
 
@@ -436,7 +436,7 @@ Hickernell and Jim\'enez-Rugama~\cite{HicJim16a,JimHic16a} have developed stoppi
 Chapter \ref{sec:BC} explains the Bayesian approach to estimate the posterior cubature error and defines our automatic Bayesian cubature. Although much of this material is known, it is included for completeness.  We end Chapter \ref{sec:BC}  by demonstrating why Bayesian cubature is typically computationally expensive.
 Chapter \ref{sec:fast_BC}  introduces the concept of covariance kernels that match the nodes and expedite the computations required by our automatic Bayesian cubature. 
 Chapter \ref{sec:shift_invariant_kernel} implements this concept for shift invariant kernels and rank-1 lattice nodes. 
-Chapter \ref{sec:sobol_walsh} demonstrates another implementation of matching nodes and kernel using Sobol points and Walsh kernel. It also develops approaches to build shift-invariant kernels of continuous valued kernel order rather than fixing the kernel order to integer values.
+Chapter \ref{sec:sobol_walsh} demonstrates another implementation of matching nodes and kernel using Sobol' points and Walsh kernel. It also develops approaches to build shift-invariant kernels of continuous valued kernel order rather than fixing the kernel order to integer values.
 Chapter \ref{sec:NumImpl} describes how to avoid cancellation error for kernels of product form. 
 It also covers  some of the additional techniques used in the implementation of our Bayesian Cubature algorithms. 
 Numerical examples are provided in Chapter \ref{sec:NumExp} to demonstrate the performance and advantages of our new algorithms.  We conclude with a brief discussion and future work.
@@ -1272,7 +1272,7 @@ d = 3, \quad \va = \begin{pmatrix}
 	\caption{Multivariate Gaussian probability estimated using Mat\'ern kernel in $d=2$ using empirical Bayes stopping criterion. Computation time rapidly increases with increase of $n$. This figure can be conditionally reproduced using \code{matern\_guaranteed\_plots.m} in GAIL.}
 	\label{fig:MVN_Metern_d2b2_time_growth}
 \end{figure}
-The node sets are randomly scrambled Sobol points \cite{DicEtal14a,DicPil10a}.  The results are for 400 randomly chosen $\varepsilon$ in the interval $[10^{-5}, 10^{-2}]$ as shown in \figref{fig:MVN_Metern_d2b2}. In each run, the nodes are randomly scrambled.  We  observe the algorithm meets the error criterion 95\% of the time even-though we used 99\% credible intervals.
+The node sets are randomly scrambled Sobol' points \cite{DicEtal14a,DicPil10a}.  The results are for 400 randomly chosen $\varepsilon$ in the interval $[10^{-5}, 10^{-2}]$ as shown in \figref{fig:MVN_Metern_d2b2}. In each run, the nodes are randomly scrambled.  We  observe the algorithm meets the error criterion 95\% of the time even-though we used 99\% credible intervals.
 One possible explanation is that the matrix inversions in the algorithm are ill-conditioned leading to numerical inaccuracies.  Another possible explanation is that this Mat\'ern covariance kernel is not a good match for the integrand.
 
 %with Intel i7 3630QM and 16GB RAM memory
@@ -2529,15 +2529,15 @@ However, there is a trade-off.  Smoother periodizing transformations tend to giv
 
 
 
-\Chapter{Sobol Nets and Walsh Kernels}
+\Chapter{Sobol' Nets and Walsh Kernels}
 \label{sec:sobol_walsh}
 
-\Section{Sobol Nets}
+\Section{Sobol' Nets}
 
 The previous section showed an automatic Bayesian cubature algorithm using rank-1 lattice nodes and shift-invariant kernels. 
 In this chapter, We demonstrate a second approach to formulate fast transform using matching kernel and point sets. 
-Scrambled Sobol nets and Walsh kernels are paired to achieve $\Order(N^{-1 + \epsilon})$  order error convergence. 
-Sobol nets \cite{Sob67} are low discrepancy quasi-random points, used extensively in numerical integration, simulation, and optimization. 
+Scrambled Sobol' nets and Walsh kernels are paired to achieve $\Order(N^{-1 + \epsilon})$  order error convergence. 
+Sobol' nets \cite{Sob67} are low discrepancy quasi-random points, used extensively in numerical integration, simulation, and optimization. 
 %Higher order digital nets with matching smoother kernels could be combined to provide higher order error convergence $\Order(N^{-\alpha + \epsilon})$ for $\alpha \ge 1$ and $\epsilon > 0$ but it is not covered in this work.
 
 
@@ -2559,10 +2559,10 @@ The digital sequence in \textup{base} $b$ is $\{z_0, z_1, z_2, \dots\}$, where e
 % \JRNote{Higher order nets details serves no purpose}
 % \begin{defn}
 A $(t,m,d)$-net in base $b$ is a sequence of $x_i$ of $b^m$ points of $[0,1]^d$  
-with the property that every elementary interval in base $b$ of volume $b^{t-m}$ contains precisely $b^t$ points from $x_i$. Here $d \ge 1$, $b\ge 2$ and given two integers $0 \le t \le m$. Sobol \cite{Sob76}  nets are special case of $(t,m, d)$-nets when base $b=2$. Digital sequences are infinite length digital nets.
+with the property that every elementary interval in base $b$ of volume $b^{t-m}$ contains precisely $b^t$ points from $x_i$. Here $d \ge 1$, $b\ge 2$ and given two integers $0 \le t \le m$. Sobol' \cite{Sob76}  nets are special case of $(t,m, d)$-nets when base $b=2$. Digital sequences are infinite length digital nets.
 % \end{defn}
 
-In this research we use Sobol points, so base $b=2$ is assumed if not specified or the notation is dropped.  
+
 Digital sequences are defined using digitwise operations. Digitwise addition, $\oplus$, subtraction $\ominus$, are defined in terms of $b$-ary expansions of points in $[0, 1)^d]$,
 \begin{align*}
 \vx \oplus \vy = \left( \sum_{l=1}^\infty [x_{jl} + y_{jl} \bmod b] b^{-l} \bmod 1 \right)_{j=1}^d,
@@ -2574,8 +2574,8 @@ where
 x_{jl}, y_{jl} \in \{0,\dots,b-1\},
 \end{align*}
 
-Digital nets have a group structure under the digit-wise addition, which is a very useful property exploited in our algorithm, especially to develop fast transform to speedup computations. 
-Let $\{\vx_i\}_{i=0}^{b^m-1}$ be the digital net, then
+Digital nets have a group structure under the digit-wise addition, which is a very useful property exploited in our algorithm, especially to develop fast Bayesian transform to speedup computations. 
+Let $\{\vx_i\}_{i=0}^{b^m-1}$ be a digital net, then
 \begin{align*}
 \forall i_i, i_2 \in \{0,\dots,2^m-1\}, \quad \vx_{i_1} \oplus \vx_{i_2} = \vx_{i_3}, \quad \text{for some} \; i_3 \in \{0,\dots,b^m-1\}.
 \end{align*}
@@ -2589,7 +2589,7 @@ Let $\vx_i, \vx_j$ are digitally shifted digital nets and $\vz_i, \vz_j$ are the
 \label{eqn:digital_shift_prop}
 \vx_i \ominus \vx_j = \vz_i \ominus \vz_j = \vz_{i \ominus j}, \quad \forall i,j \in \naturals_0,
 \end{align}
-i.r., 
+i.e., 
 \begin{align*}
 \vec{x}_{il} = \vec{z}_{il} + \vec{\Delta}_l \bmod 1,
 \end{align*}
@@ -2603,10 +2603,10 @@ where $\vec{x}_{il}$ is the $l$th component of $i$th digital net and $\vec{\Delt
 
 The proof of Lemma \ref{lemma:digital_net_prop} can be obtained from the definition of digital nets which stated that the digital nets are obtained using generator matrices, $\vec{z}_{il} = \mG_{l} \, \vec{\imath} \bmod 2$. Rewriting the subtraction using the generating matrix provides the result,
 \begin{align*}
-\vec{z}_{il} - \vec{z}_{jl} \bmod 2 & = (\mG \vec{\imath} \bmod 2) - (\mG_l \vec{\jmath} \bmod 2) \\
-& = (\mG_l \vec{\imath} - \mG_l \vec{\jmath} ) \bmod 2 \\
-& = \mG_l (\vec{\imath} - \vec{\jmath} ) \bmod 2 \\
-& = \mG_l (\overrightarrow{i \ominus j} ) \bmod 2 \\
+\vec{z}_{il} - \vec{z}_{jl} \bmod b & = (\mG \vec{\imath} \bmod b) - (\mG_l \vec{\jmath} \bmod b) \\
+& = (\mG_l \vec{\imath} - \mG_l \vec{\jmath} ) \bmod b \\
+& = \mG_l (\vec{\imath} - \vec{\jmath} ) \bmod b \\
+& = \mG_l (\overrightarrow{i \ominus j} ) \bmod b \\
 & = \vec{z}_{i \ominus j \; l}.
 \end{align*}
 The rest of Lemma is obvious from the definition of digital nets.
@@ -2622,12 +2622,12 @@ where the $\pi_{a_1a_2 \dots}$ are random permutations of the elements in $\{0,\
 
 
 
-An example of $64$ Sobol points in $d=2$ is given in \figref{latticefig}.  The even coverage of the unit cube is ensured by a well chosen generating matrix.  The choice of generating vector is typically done offline by computer search.  See \cite{KuoNuyens2016} and \cite{NuySoft} for more on generating matrices. We use randomly scrambled Sobol sequences in this research \cite{HonHic00a} which eliminates bias while retraining the low-discrepancy properties. 
+An example of $64$ Sobol' points in $d=2$ is given in \figref{latticefig}.  The even coverage of the unit cube is ensured by a well chosen generating matrix.  The choice of generating vector is typically done offline by computer search.  See \cite{KuoNuyens2016} and \cite{NuySoft} for more on generating matrices. We use randomly scrambled Sobol' sequences in this research \cite{HonHic00a} which eliminates bias while retraining the low-discrepancy properties. 
 
 \begin{figure}[htp]
 	\centering
 	\includegraphics[width=0.8\linewidth]{SSobolPoints}
-	\caption{Example of a scrambled Sobol node set  in $d=2$ \label{sobolfig} }
+	\caption{Example of a scrambled Sobol' node set  in $d=2$ \label{sobolfig} }
 \end{figure}
 
 
@@ -2636,7 +2636,7 @@ An example of $64$ Sobol points in $d=2$ is given in \figref{latticefig}.  The e
 Walsh kernels are product kernels based on the Walsh functions. We introduce the necessary concepts in this section.
 
 \Subsection{Walsh functions}
-Like Fourier transform used with lattice points (Section \ref{sec:shift_invar_kern}), Hadamard-Walsh transform used for the digital nets, which we will call simply Walsh transform. Walsh transform is defined using Walsh functions. Define $\naturals:=\lbrace1,2,\dots \rbrace$ and $\naturals_0 : \lbrace0,1,2,\dots \rbrace$.
+Like Fourier transform used with lattice points (Section \ref{sec:shift_invar_kern}), Hadamard-Walsh transform used for the digital nets, which we will simply call Walsh transform. Walsh transform is defined using Walsh functions. Define $\naturals:=\lbrace1,2,\dots \rbrace$ and $\naturals_0 := \lbrace0,1,2,\dots \rbrace$.
 The one-dimensional Walsh functions in base $b$ are defined as
 \begin{align}
 \label{eqn:walsh_func}
@@ -2660,7 +2660,8 @@ As shown in \eqref{eqn:walsh_func}, the Walsh functions only take the values in 
 \textup{wal}_{b,i} (\vx) \textup{wal}_{b,j}(\vx) \dx = \delta_{i, j}
 \end{align*}
 Digital nets are designed to integrate the Walsh functions without error.
-Thus our Bayesian cubature algorithm could integrate linear combinations of its ideal integrands without error. Functions that are well approximated by such linear combinations are then integrated with small errors.
+Thus our Bayesian cubature algorithm could integrate linear combinations of these ideal integrands without error. Functions that are well approximated by such linear combinations are then integrated with small errors.
+In this research we use Sobol' nodes, so base $b=2$ is assumed if not specified or the notation is dropped.  
 
 \Subsection{Walsh kernels}
 Consider the kernels of the form \cite{Nuyens2013}
@@ -2673,7 +2674,8 @@ where $\ominus$ is bitwise subtraction,
 \omega_r(\vx) = \prod_{l=1}^d \sum_{k=1}^\infty 
 \frac{\textup{wal}_{b,k}(x_l) }{b^{2r \lfloor \log_b k \rfloor}}
 \end{align*}
-where $r$ is kernel order. Explicit expression available for $\omega_{r}$ \cite{Nuyens2013} in case of $b=2$, order $r=1$, % and Hilbert space setup,
+where $r$ is kernel order. 
+Explicit expression available for $\omega_{r}$ \cite{Nuyens2013} in case of $b=2$, order $r=1$, % and Hilbert space setup,
 \begin{align}
 \label{eqn:omega1}
 \omega_1(\vx) 
@@ -2711,7 +2713,7 @@ The Walsh-Hadamard transforms are $2^m \times 2^m$ Walsh-Hadamard matrices, whic
 1 & -1 & -1 & 1 \\
 \end{pmatrix}, \\
 \nonumber
-& \hdots
+& \vdots
 \\
 \label{eqn:hadamard_matrix}
 \mH^{({m+1})} &= 
@@ -2845,12 +2847,13 @@ K(\vz_{1}) & K(\vz_{0})
 \begin{pmatrix}
 \mC^{(1)} & \mC^{(1,1)} \\
 \mC^{(1,1)} & \mC^{(1)}
-\end{pmatrix} 
+\end{pmatrix},
 \end{align*}
 is a block-Toeplitz as it is obvious from the block structure depicted. 
 % Here we used the notation $\mC^{(1,1)}$ to indicate the additional operation involved in the matrix.
 % Where the matrix $\mC^{(1,1)}$ is obtained using the following shift operation.
-	
+
+Please note if $\mC^m$ is block-Toeplitz then $\mC^{(m,m)}$ is also a block-Toeplitz. 
 Assuming $\mC^m$ is a block-Toeplitz, we need to prove $\mC^{m+1}$ is also a block-Toeplitz. Let $n=2^m$,
 \begin{align*}
 \mC^{m+1} &= 
@@ -2890,6 +2893,7 @@ K(\vz_{ n-1  }) & \hdots & K(\vz_{ 0 })
 \end{pmatrix}
 \end{pmatrix} 
 \\
+\intertext{where we used the fact $ i \oplus 2^m \ominus j = i \ominus j \ominus 2^m = i \ominus j \oplus 2^m $ for $i,j=0,\dots,2^{m-1}$ since $i \ominus j < 2^{m-1}$,}
 & =
 \begin{pmatrix}
 \mC^m & \mC^{m,m} \\ \mC^{m,m} & \mC^m
@@ -2897,7 +2901,7 @@ K(\vz_{ n-1  }) & \hdots & K(\vz_{ 0 })
 \end{align*}
 is a block-Toeplitz, where we used the properties  \ref{eqn:digital_shift_prop}, \ref{eqn:digital_net_symmetric_prop} and facts $2n-1 \ominus n = n-1$, $2n-1 \ominus n-1 = n$, and $n \ominus n-1 = 2n-1$.
 %\end{itemize}
-Thus $\mC$ of size $2^l, \; l \in \naturals$, is a block-Toeplitz and every block and it's sub-blocks of size $2^l, \; l \in \naturals$ are also block-Toeplitz.
+Thus $\mC$ of size $2^l$, for $l \in \naturals$, is a block-Toeplitz and every block and it's sub-blocks of size $2^l, \; l \in \naturals$ are also block-Toeplitz.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2968,11 +2972,12 @@ Thus $\mC$ is a block-Toeplitz and every block its and sub-blocks are also block
 
 \begin{theorem}
 	\label{thrm:hadamard_eigenvector}
-The Hadamard matrix diagonalizes $\mC$ so the columns of Hadamard matrix are the eigenvectors of $\mC$.
+The Hadamard matrix $\mH$ diagonalizes $\mC$ so the columns of Hadamard matrix are the eigenvectors of $\mC$.
 \end{theorem}
 
 
-\Subsubsection{Proof of Theorem \ref{thrm:hadamard_eigenvector}}
+% \Subsubsection
+\textbf{Proof of Theorem \ref{thrm:hadamard_eigenvector}:}
 Again we use proof-by-induction technique to show that the Hadamard matrix diagonalizes $\mC$.
 
 We can easily see the Hadamard matrix $\mH^{1}$ diagonalizes $\mC^{1}$,
@@ -3070,10 +3075,10 @@ We can easily show the Walsh-Hadamard matrices satisfy the assumptions of fast-t
 Assumption \eqref{fastcompAssumpB} follows automatically by the fact that Walsh-Hadamard matrices can be constructed analytically. Assumption \eqref{fastcompAssumpA} can also be verified as the first row/column are one vectors. Finally, assumption \eqref{fastcompAssumpC} is satisfied due to the fact that fast Walsh transform can be computed in $\Order({n \log n})$ operations using fast Walsh-Hadamard transform.
 
 
-We have implemented a fast adaptive Bayesian cubature algorithm using the kernel \eqref{eqn:walsh_kernel} with $r=1$ and Sobol points \cite{BraFox88} in MATLAB as part of the Guaranteed Adaptive Integration Library (GAIL) \cite{ChoEtal17b} as \allowbreak \code{cubBayesNet\_g}. The Sobol points used in this algorithm are generated using MATLAB's builtin function \code{sobolset} and scrambled using MATLAB function \code{scramble} \cite{HonHic00a}. The fast Walsh-Hadamard transform \eqref{eqn:hadamard_fwht} is computed using MATLAB's builtin function \code{fwht} with \emph{hadamard} ordering. Thus the Walsh-Hadamard is a fast transform as per the \eqref{fastcompAssump}.
+We have implemented a fast adaptive Bayesian cubature algorithm using the kernel \eqref{eqn:walsh_kernel} with $r=1$ and Sobol' points \cite{BraFox88} in MATLAB as part of the Guaranteed Adaptive Integration Library (GAIL) \cite{ChoEtal17b} as \allowbreak \code{cubBayesNet\_g}. The Sobol' points used in this algorithm are generated using MATLAB's builtin function \code{sobolset} and scrambled using MATLAB function \code{scramble} \cite{HonHic00a}. The fast Walsh-Hadamard transform \eqref{eqn:hadamard_fwht} is computed using MATLAB's builtin function \code{fwht} with \emph{hadamard} ordering. Thus the Walsh-Hadamard is a fast transform as per the \eqref{fastcompAssump}.
 
-\Subsection{Extensible Sobol points}
-Similar to the extensible lattice points, Sobol points could be extended to improve the integration accuracy till the required error tolerance is met. Extensible Sobol point-set can be combined with Hadamard matrices as demonstrated here. Using the same notations as in \secref{sec:iter_fft}, let Let $\widetilde{\vy} = \mH({2^m}) {\vy}$ for some arbitrary $\vy \in \reals^{2n}$ define, 
+\Subsection{Extensible Sobol' points}
+Similar to the extensible lattice points, Sobol' points could be extended to improve the integration accuracy till the required error tolerance is met. Extensible Sobol' point-set can be combined with Hadamard matrices as demonstrated here. Using the same notations as in \secref{sec:iter_fft}, let Let $\widetilde{\vy} = \mH({2^m}) {\vy}$ for some arbitrary $\vy \in \reals^{2n}$ define, 
 \begin{gather*}
 \vy = \begin{pmatrix} y_1 \\ \vdots \\ y_{2n} \end{pmatrix}, \quad 
 \vy^{(1)} = \begin{pmatrix} y_1 \\ \vdots \\ y_{n} \end{pmatrix}, \quad 
@@ -3347,7 +3352,7 @@ Three integrals were evaluated using our GAIL algorithms:  a multivariate Gaussi
 Four hundred different randomly chosen error tolerances, $\varepsilon$,  were set for each example, with the tolerances chosen from a fixed interval. 
 The error tolerance intervals were chosen depending on the difficulty of the problem.
 The nodes used in \allowbreak \code{cubBayesLattice\_g} were the randomly shifted lattice rules supplied by GAIL.  
-Where as the nodes used in \code{cubBayesNet\_g} were the randomly scrambled Sobol rules supplied by MATLAB's Sobol sequence generator. 
+Where as the nodes used in \code{cubBayesNet\_g} were the randomly scrambled Sobol' nodes supplied by MATLAB's Sobol' sequence generator. 
 
 For each integral, and each of our stopping criteria---empirical Bayes, full Bayes, and generalized cross-validation---our algorithm is run  $400$ times.  For each test, the execution time is plotted against $\abs{\mu - \hmu}/\varepsilon$.  We expect $\abs{\mu - \hmu}/\varepsilon$ to be no greater than one, but hope that it is not too much smaller than one, which would indicate a stopping criterion that is too conservative.
 %Unlike the examples in previous \secref{sec:numerical_experiments_cubBayesLattice}, periodization variable transform is not required.
@@ -4028,7 +4033,7 @@ apply our method to Saltelli’s idea, and to the replication procedure.
 
 We have developed a fast, automatic Bayesian cubature that estimates the high dimensional integral within a user defined error tolerance  that occur in many scientific computing such as finance, machine learning, or imaging, etc.  The stopping criteria arise from assuming the integrand to be a Gaussian process.  In \secref{sec:stopping_criteria}, we developed three versions:  empirical Bayes, full Bayes, and generalized cross-validation.  Empirical-Bayes uses maximum-likelihood to optimally choose the parameters, where posterior of the parameters given the integrand values is maximized. Alternatively, full-Bayes assumes non-informative prior on the parameters and then computes posterior distribution of the integral $\mu$, which leads to a $t$-distribution to obtain the parameters. Generalized cross-validation extends the concept of cross-validation to construct an objective which in turn maximized.
 
-The computational cost of the automatic Bayesian cubature can be dramatically reduced if the covariance kernel matches the nodes.  We have demonstrated two such matches in practice. The first algorithm was based on rank-1 lattice nodes and shift-invariant kernels where the matrix-vector multiplications can be accomplished using the fast Fourier Transform.  The second algorithm was based on Sobol points with first order Walsh kernel where the matrix-vector multiplications can be accomplished using the fast Walsh transform. Three integration problems illustrate the performance of our automatic Bayesian cubature.  
+The computational cost of the automatic Bayesian cubature can be dramatically reduced if the covariance kernel matches the nodes.  We have demonstrated two such matches in practice. The first algorithm was based on rank-1 lattice nodes and shift-invariant kernels where the matrix-vector multiplications can be accomplished using the fast Fourier Transform.  The second algorithm was based on Sobol' points with first order Walsh kernel where the matrix-vector multiplications can be accomplished using the fast Walsh transform. Three integration problems illustrate the performance of our automatic Bayesian cubature.  
 
 % Optimal kernel order selection for the integrand
 For faster computations one could use fixed order kernels in \code{cubBayesLattice\_g}, but for more advanced usage, we have added a kernel variation in \secref{sec:non_integer_kernel_order} that allows one to optimally choose the kernel order without the constraint of being even integer.
