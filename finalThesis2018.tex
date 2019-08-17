@@ -22,6 +22,7 @@
 %
 \usepackage{graphicx}
 \usepackage{amssymb}
+\usepackage{amsthm}
 
 
 %
@@ -339,7 +340,7 @@ QMC methods are equal-weight quadrature rules where the quadrature points are ch
 The families of integration lattice node and digital nets are the most popular quadrature points used. 
 These methods consider the integrand a deterministic function.
 % Section 2.2 describes digital sequences and rank-1 lattice node sequences, two of the most common points used in quasi-Monte Carlo.
-There is an alternate approach called Bayesian methods.
+There is an alternate approach called Bayesian cubature methods.
 Bayesian cubature methods postulate the integrand is an instance of a Gaussian stochastic process.  
 % For high dimensional problems, it makes sense to fix the sampling density but determine the sample size, $n$, automatically.
 
@@ -416,7 +417,7 @@ which is explained in Section \ref{sec:bayes_cubature_algo}. Note that aside fro
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%55
 
 
-\Section{Low discrepancy points}
+\Section{Low Discrepancy Points}
 
 Low discrepancy points are characterized by how uniformly and randomly the points are distributed which is measured by the \emph{discrepancy} score, especially when the points are projected onto low-dimensions. The goal is to have as much as uniform space filling. The discrepancy measure is defined as below.
 Let $\mathcal{M}$ be the set of all intervals of the form $\prod_{j=1}^{d} [a_j, b_j) = \{ \vx \in \mathbb{R}^d : a_j \le x_j \le b_j, 0 \le a_j \le b_j \le 1 \}$, where $\abs{\mathcal{P}}$ is the cardinality of the set $\mathcal{P}$, and $\lambda_L$ is the Lebesgue measure. Then, the discrepancy of a point set $\mathcal{P}$ is,
@@ -463,7 +464,7 @@ We use the terms integrand or function interchangeably to denote the function $f
 
 The Bayesian approach for numerical analysis was popularized by Diaconis \cite{Dia88a}. The earliest reference for such kind of approach dates back to Poincar\'e, where, the theory of interpolation was discussed.
 Diaconis motivates the reader by interpreting the most well known numerical methods, 1) Trapezoidal-rule and 2) Splines, from the statistical point of view with whatever is known about the integrand as prior information. 
-For Example, the trapezoidal-rule can be interpreted as a Bayesian method with prior information being modeled as Brownian motion in $\mathcal{C}[0,1]$ with normal prior.
+For Example, the trapezoidal-rule can be interpreted as a Bayesian method with prior information being modeled as Brownian motion in $\mathcal{C}[0,1]$, the space of continuous functions, with normal prior.
 
 This research is focused on Bayesian approach for numerical integration that is known as Bayesian Cubature as introduced by O'Hagan \cite{OHagen1991}. 
 The Bayesian Cubature returns a probability distribution $\mathbb{P}_f$, that expresses belief about the true value of integral, $\mu(f)$.
@@ -471,7 +472,7 @@ The probability distribution $\mathbb{P}_f$ will be based on a prior that depend
 The $\mathbb{P}_f$ is computed via Bayes' rule using  the \emph{data} contained in the function evaluations. 
 The maximum likelihood estimate of $\mathbb{P}_f$ can be interpreted as a point estimate of the integral \cite{BriEtal18a}. The distribution in general captures numerical uncertainty due to the fact that we have only used a finite number of function values to evaluate the integral.
 
-\Section{Bayesian posterior error}
+\Section{Bayesian Posterior Error}
 \label{sec:BayesPostErr}
 
 We assume the integrand, $f$, is an instance of a stochastic Gaussian process, i.e., $f \sim \mathcal{GP}(m,s^2 C_\vtheta)$.  Specifically, $f$ is a real-valued random function with constant mean $m$ and covariance function $s^2C_\vtheta$, where $s$ is a positive scale factor, and $C_\vtheta: [0,1]^d \times [0,1]^d \to \mathbb{R} $ is a symmetric, positive-definite function and parameterized by $\vtheta$:
@@ -480,7 +481,7 @@ We assume the integrand, $f$, is an instance of a stochastic Gaussian process, i
  \text{for all } \va \ne 0, \;
  n\in \mathbb{N}, \; \text{distinct} \; \vx_1, \ldots, \vx_n \in [0,1]^d.
 \end{multline}
-The covariance function, $C$, and the Gram matrix, $\mC$ depend implicitly on $\vtheta$, but the notation may omit this for simplicity's sake.
+The covariance function, $C$, and the Gram matrix, $\mC$ depend implicitly on $\vtheta$, but the notation may omit this for simplicity's sake wherever possible.
 Procedures for estimating or integrating out the hyperparameters $m$, $s$, and $\vtheta$ are explained later in this section.
 
 For a Gaussian process, all vectors of linear functionals of $f$ have a multivariate Gaussian distribution. 
@@ -557,7 +558,7 @@ A credible interval for the integral is given by
 Naturally, $2.58$ and $99\%$ can be replaced by other quantiles and credible levels.
 
 
-\Section{Hyperparameter estimation}
+\Section{Hyperparameter Estimation}
 \label{sec:stopping_criteria}
 
 The credible interval in \eqref{eqn_prob_confidence_interval} suggests how our automatic Bayesian cubature proceeds.  Integrand data is accumulated until the width of the credible interval, $\err_{\textup{CI}}$, is no greater than the error tolerance.  As $n$ increases, one expects $c_{0} - \vc^T\mC^{-1}\vc$ to decrease for well-chosen nodes, $\{\vx_i\}_{i=1}^n$. Please note that the credible interval depends on the parameters $m, s$, and $\vtheta$
@@ -1132,7 +1133,7 @@ Estimated integral value of our algorithm closely match the integral of a smooth
 
 
 
-\Section{The automatic Bayesian cubature algorithm} 
+\Section{The Automatic Bayesian Cubature Algorithm} 
 \label{sec:bayes_cubature_algo}
 
 The previous section presents three credible intervals, \eqref{eqn_prob_CI_MLE}, \eqref{eqn_prob_CI_full}, and \eqref{GCVCI}, for the $\mu$, the desired integral.  Each credible interval is based on different assumptions about the hyperparameters $m$, $s$, and $\vtheta$.  We stress that one must estimate these hyperparameters or assume a prior distribution on them because the credible intervals are used as stopping criteria for our cubature rule.  Since a credible interval makes a statement about a typical function---not an outlier---one must try to ensure that the integrand is a typical draw from the assumed Gaussian process.
@@ -1187,7 +1188,7 @@ As described above, the computational cost of Algorithm \ref{algorithm1} is the 
 As we see in the example in the next section, the cost increases quickly as the $n$ required to meet the error tolerance increases.  This motivates the fast Bayesian cubature algorithm presented in Chapter \ref{sec:fast_BC}.
 
 
-\Section{Example with the Mat\'ern kernel} \label{MVN_example}
+\Section{Example with the Mat\'ern Kernel} \label{MVN_example}
 
 To demonstrate automatic Bayesian cubature consider a Mat\'ern covariance kernel:
 \begin{align*}
@@ -1301,7 +1302,7 @@ So, Algorithm \ref{algorithm1} in its current form is impractical when $n$ must 
 The generic automatic Bayesian cubature algorithm described in the previous section requires $\Order\bigl(n \$(f) +  N_{\opt} [n^2 \$(C_\vtheta) + n^3]\bigr)$ operations to compute the cubature. Now we explain how to speed up the calculations. A key is to choose covariance kernels that match the nodes, $\{\vx_i\}_{i=1}^n$, so that the vector-matrix operations required by Bayesian cubature can be accomplished using fast Bayesian transforms at a computational cost of $\Order\bigl(n \$(f) + N_{\opt} [n \$(C_\vtheta)  + n \log(n)] \bigr)$.
 
 
-\Section{Fast Transform Kernel}
+\Section{Fast Bayesian Transform Kernel}
 
 We make some assumptions about the relationship between the covariance kernel and the nodes. 
 In chapter \ref{sec:shift_invariant_kernel} these assumptions are shown to hold  for rank-1 lattices and shift-invariant kernels and again in chapter \ref{sec:sobol_walsh} to hold for Sobol' nodes and Walsh kernels.  Although the integrands and covariance kernels are real, it is convenient to allow related vectors and matrices to be complex.  A relevant example is the fast Fourier transform (FFT) of a real-valued vector, which is a complex-valued vector.
@@ -1822,7 +1823,7 @@ Using the obtained derivative above, one can easily implement the steepest desce
 The assumptions and derivations in this chapter lead to the following theorem.
 
 \begin{theorem} \label{thm:fastparam}
-	Under assumptions \eqref{fastcompAssump}, the parameters and credible interval half-widths in Theorem \ref{thm:param} may be expressed in terms of the fast Bayesian transforms of the integrand data, the first column of the Gram matrix, and $\vc_\vtheta$ as follows:
+	Under assumptions \eqref{fastcompAssump}, the parameters and credible interval half-widths in Theorem \ref{thm:param} may be expressed in terms of the fast Bayesian transforms of the integrand data, the first column of the Gram matrix, $c_0$, and $\vc$ as follows:
 	\begin{align}
 	\nonumber
 	m_\MLE &=  m_{\full} = m_{\GCV} =  \frac{\widetilde{y}_1}{n} = \frac 1n \sum_{i=1}^n y_i,
@@ -1852,15 +1853,15 @@ The assumptions and derivations in this chapter lead to the following theorem.
 		\argmin_{\vtheta}
 		\left[
 		\log\left(
-		\sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_{\vtheta, i}}
+		\sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_{i}}
 		\right) 
-		+ \frac{1}{n}\sum_{i=1}^n \log(\lambda_{\vtheta,i})
+		+ \frac{1}{n}\sum_{i=1}^n \log(\lambda_{i})
 		\right],\\
 		\label{thetaGCV} 
 		\vtheta_{\GCV} 
-		&= \argmin_\vtheta \left[ \log \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_{\vtheta, i}^2} 
+		&= \argmin_\vtheta \left[ \log \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_{i}^2} 
 		\right)  
-		-2\log\left( \sum_{i=1}^n \frac{1}{\lambda_{\vtheta, i}} \right)
+		-2\log\left( \sum_{i=1}^n \frac{1}{\lambda_{i}} \right)
 		\right], 
 		\end{align}
 	\end{subequations}
@@ -1942,7 +1943,7 @@ When periodic shift-invariant kernels are combined with rank-1 lattice nodes, th
 This combination also satisfies assumption \eqref{addAssump}.  To conveniently facilitate the fast transform, it is assumed in this section and the next that $n$ is power of $2$.  
 
 
-\Section{Extensible Integration lattice Node Sets}
+\Section{Extensible Integration Lattice Node Sets}
 
 We choose set of nodes defined by a shifted extensible integration lattice node sequence, which takes the form
 \begin{equation}
@@ -2033,8 +2034,8 @@ Lattice cubature rules are known to have convergence rates that depend on the sm
 For general shift-invariance covariance functions the Gram matrix takes the form
 \begin{align}
 \label{shInvKernGramMatrix}
-\mC &= \bigl ( C(\vx_i, \vx_j) \bigr)_{i, j = 1}^n \\
-& = \Bigl ( K(\vh(\phi(i-1) - \phi(j-1)) \bmod \vone ) \Bigr)_{i, j = 1}^n.
+\mC_\vtheta &= \bigl ( C_\vtheta(\vx_i, \vx_j) \bigr)_{i, j = 1}^n \\
+& = \Bigl ( K_\vtheta(\vh(\phi(i-1) - \phi(j-1)) \bmod \vone ) \Bigr)_{i, j = 1}^n.
 \end{align}
 
 We now demonstrate that the eigenvector matrix for $\mC$ is 
@@ -2076,7 +2077,7 @@ For this last equality to hold for all integers $m$, we must have $k = \ell$ or 
 This establishes $\mV^H \mC \mV$ as a diagonal matrix whose diagonal elements are $n$ times the eigenvalues, i.e., $\lambda_k = \omega_{k,k}/n$.  Furthermore, $\mV$ is the matrix of eigenvectors, which satisfies assumption \eqref{fastcompAssumpA}.
 
 
-One can interpret the sequence reordering from $\{\phi(i-1)\}_{i=1}^n$ to $(0, \ldots, 1-1/n)$, for $n$ a power of $2$, as a permutation in turn as a permutation matrix acting upon $\mC$ in \ref{shInvKernGramMatrix}. 
+One can interpret the sequence reordering from $\{\phi(i-1)\}_{i=1}^n$ to $(0, \ldots, 1-1/n)$, for $n$ a power of $2$, as a permutation, consequently as a permutation matrix acting upon $\mC$ in \ref{shInvKernGramMatrix}. 
 With out the sequence reordering, the matrix $\Bigl ( K(\vh((i-1) - (j-1)) \bmod \vone ) \Bigr)_{i, j = 1}^n$ is nothing but a circulant matrix.
 % One can see the sequence $0, \ldots, 1-1/n$ in combination with modulo 1 in \eqref{eq:shInv}.
 Thus it can be shown that the Gram matrix $\mC$ is the permutation of a circulant matrix.
@@ -2097,7 +2098,7 @@ is a permutation matrix, where $\delta_{\cdot,\cdot}$ is the Kronecker delta fun
 K_\vtheta \bigl (\vh (i'-j')/n \bmod \vone \bigr )
 \delta_{j'-1,n\phi(j-1)} 
 \biggr)_{i,j=1}^n \\
-& = \mP \mK_{\vtheta}  \mP^T,  \label{shInvKernGramMatrix} 
+& = \mP \mK_{\vtheta}  \mP^T,  \label{shInvKernGramMatrixPermut} 
 \intertext{where } 
 \mK_{\vtheta} &= \bigl ( K_\vtheta \bigl (\vh (i-j)/n \bmod \vone \bigr ) \bigr)_{i, j = 1}^n.
 \end{align}
@@ -2106,7 +2107,7 @@ Because $\mK_\vtheta$ is circulant, we know the form of it's eigenvector-eigenva
 \begin{equation} \label{Keig}
 \mK_{\vtheta} = \frac 1n \mW \mLambda_\vtheta \mW^H, \; \ \mW =  \Bigl ( \me^{2 \pi \sqrt{-1} (i-1)(j-1)/n} \Bigr)_{i,j = 1}^n.
 \end{equation}
-By \eqref{shInvKernGramMatrix} we then have the eigenvector-eigenvalue decomposition for $\mC_{\vtheta}$ assumed in \eqref{eqn:ftk_factor}, namely
+By \eqref{shInvKernGramMatrixPermut} we then have the eigenvector-eigenvalue decomposition for $\mC_{\vtheta}$ assumed in \eqref{eqn:ftk_factor}, namely
 \begin{equation} \label{Clateig}
 \mC_{\vtheta} = \frac 1n \mV \mLambda_\vtheta \mV^H , \qquad \mV = \mP \mW,
 \end{equation}
@@ -2171,7 +2172,7 @@ where $\odot$ denotes the Hadamard (term-by-term) product.  By a similar argumen
 
 The computational cost to compute $\mV^{(2n)H}\vb$ is then twice the cost of computing $\mV^{(n)H}\vb^{(1)}$ plus $2n$ multiplications plus $2n$ additions/subtractions.  An inductive argument shows that $\mV^{(n)H}\vb$ requires only $\Order(n \log n)$ operations.
 
-\Section{Continuous valued kernel order}
+\Section{Continuous Valued Kernel Order}
 \label{sec:non_integer_kernel_order}
 
 \JRNote{Need better and more convincing motivation}
@@ -2535,7 +2536,7 @@ However, there is a trade-off.  Smoother periodizing transformations tend to giv
 \Section{Sobol' Nets}
 
 The previous section showed an automatic Bayesian cubature algorithm using rank-1 lattice nodes and shift-invariant kernels. 
-In this chapter, We demonstrate a second approach to formulate fast transform using matching kernel and point sets. 
+In this chapter, we demonstrate a second approach to formulate fast transform using matching kernel and point sets. 
 Scrambled Sobol' nets and Walsh kernels are paired to achieve $\Order(N^{-1 + \epsilon})$  order error convergence. 
 Sobol' nets \cite{Sob67} are low discrepancy quasi-random points, used extensively in numerical integration, simulation, and optimization. 
 %Higher order digital nets with matching smoother kernels could be combined to provide higher order error convergence $\Order(N^{-\alpha + \epsilon})$ for $\alpha \ge 1$ and $\epsilon > 0$ but it is not covered in this work.
@@ -2546,24 +2547,28 @@ Nets were developed to provide deterministic sample points for quasi-Monte Carlo
 The $(t,m, d)$-nets in base $b$ introduced by Niederreiter are such point sets consisting of $b^m$ points in $[0, 1)^d$, whose quality is governed by $t$, in particular, lower values of $t$ correspond to $(t,m, d)$-nets of higher quality \cite{Bald10a}.
 Digital $(t,m, d)$-nets are a special case of $(t,m, d)$-nets, constructed using matrix-vector multiplications over finite fields.
 
+
+% \JRNote{Higher order nets details serves no purpose}
+% \begin{defn}
+A $(t,m,d)$-net in base $b$ is a sequence of $z_i$ of $b^m$ points of $[0,1]^d$  
+with the property that every elementary interval in base $b$ of volume $b^{t-m}$ contains precisely $b^t$ points from $x_i$. Here $d \ge 1$, $b\ge 2$ and given two integers $0 \le t \le m$. Sobol' \cite{Sob76}  nets are special case of $(t,m, d)$-nets when base $b=2$. Digital sequences are infinite length digital nets.
+% \end{defn}
+
+
 \begin{defn}
 For any non-negative integer $i = \dots i_3 i_2 i_1(\textup{base} \, b)$, define the $\infty \times 1$ vector $\vec{\imath}$ as the vector of its digits, that is, $\vec{\imath} = (i_1, i_2, \dots)^T$. 
 For any point $z = 0.z_1 z_2 \dots (\textup{base}\, b) \in [0, 1)$, let $\vec{z} = (z_1, z_2, \dots)^T$ denote the $\infty \times 1$ vector of the digits of $z$. Let $ \mathsf{G}_1, \dots , \mathsf{G}_d$ denote predetermined $\infty \times \infty$ generator matrices. 
-The digital sequence in \textup{base} $b$ is $\{z_0, z_1, z_2, \dots\}$, where each $z_i = ( z_{i1}, \dots , z_{id})^T \in [0, 1)^d$ is defined by
+The digital sequence in \textup{base} $b$ is $\{\vz_0, \vz_1, \vz_2, \dots\}$, where each $\vz_i = ( z_{i1}, \dots , z_{id})^T \in [0, 1)^d$ is defined by
 \begin{align*}
 \vec{z}_{i\ell} = \mathsf{G}_{\ell} \, \vec{\imath}, \quad \ell = 1, \dots, d, \quad i = 0, 1, \dots \;.
 \end{align*}
 \end{defn}
 
 
-% \JRNote{Higher order nets details serves no purpose}
-% \begin{defn}
-A $(t,m,d)$-net in base $b$ is a sequence of $x_i$ of $b^m$ points of $[0,1]^d$  
-with the property that every elementary interval in base $b$ of volume $b^{t-m}$ contains precisely $b^t$ points from $x_i$. Here $d \ge 1$, $b\ge 2$ and given two integers $0 \le t \le m$. Sobol' \cite{Sob76}  nets are special case of $(t,m, d)$-nets when base $b=2$. Digital sequences are infinite length digital nets.
-% \end{defn}
 
-
-Digital sequences are defined using digitwise operations. Digitwise addition, $\oplus$, subtraction $\ominus$, are defined in terms of $b$-ary expansions of points in $[0, 1)^d]$,
+% Digital sequences are defined using digitwise operations. 
+Digital nets have a group structure under the digit-wise addition, which is a very useful property exploited in our algorithm, especially to develop fast Bayesian transform to speedup computations.
+Digitwise addition, $\oplus$, subtraction $\ominus$, are defined in terms of $b$-ary expansions of points in $[0, 1)^d]$,
 \begin{align*}
 \vx \oplus \vy = \left( \sum_{l=1}^\infty [x_{jl} + y_{jl} \bmod b] b^{-l} \bmod 1 \right)_{j=1}^d,
 \end{align*}
@@ -2573,8 +2578,7 @@ where
 \vy = \left( \sum_{l=1}^{\infty} y_{jl}b^{-l}\right)_{j=1}^d, \quad
 x_{jl}, y_{jl} \in \{0,\dots,b-1\},
 \end{align*}
-
-Digital nets have a group structure under the digit-wise addition, which is a very useful property exploited in our algorithm, especially to develop fast Bayesian transform to speedup computations. 
+ 
 Let $\{\vx_i\}_{i=0}^{b^m-1}$ be a digital net, then
 \begin{align*}
 \forall i_i, i_2 \in \{0,\dots,2^m-1\}, \quad \vx_{i_1} \oplus \vx_{i_2} = \vx_{i_3}, \quad \text{for some} \; i_3 \in \{0,\dots,b^m-1\}.
@@ -2596,20 +2600,24 @@ i.e.,
 where $\vec{x}_{il}$ is the $l$th component of $i$th digital net and $\vec{\Delta}_l$ is the digital shift for $l$th component. Also note that the digital subtraction is symmetric,
 \begin{align}
 \label{eqn:digital_net_symmetric_prop}
-\vx_i \ominus \vx_i = 0, \qquad 
+\vx_i \ominus \vx_i = \boldsymbol{ 0}, \qquad 
 \vx_i \ominus \vx_j = \vx_j \ominus \vx_i, \quad \forall i,j \in \naturals_0.
 \end{align}
 \end{lemma}
 
+\begin{proof}
+
 The proof of Lemma \ref{lemma:digital_net_prop} can be obtained from the definition of digital nets which stated that the digital nets are obtained using generator matrices, $\vec{z}_{il} = \mG_{l} \, \vec{\imath} \bmod 2$. Rewriting the subtraction using the generating matrix provides the result,
 \begin{align*}
-\vec{z}_{il} - \vec{z}_{jl} \bmod b & = (\mG \vec{\imath} \bmod b) - (\mG_l \vec{\jmath} \bmod b) \\
+\vec{z}_{il} - \vec{z}_{jl} \bmod b & = (\mG_l \vec{\imath} \bmod b) - (\mG_l \vec{\jmath} \bmod b) \\
 & = (\mG_l \vec{\imath} - \mG_l \vec{\jmath} ) \bmod b \\
 & = \mG_l (\vec{\imath} - \vec{\jmath} ) \bmod b \\
 & = \mG_l (\overrightarrow{i \ominus j} ) \bmod b \\
 & = \vec{z}_{i \ominus j \; l}.
 \end{align*}
-The rest of Lemma is obvious from the definition of digital nets.
+The rest of the lemma is obvious from the definition of digital nets.
+\end{proof}
+
 % \JRNote{Define and explain scrambling}
 
 We use digitally shifted and scrambled nets in this research \cite{HicYue00}. Digital shift helps to avoid having nodes at origin, similar to the random shift used with lattice nodes.
@@ -2661,7 +2669,9 @@ As shown in \eqref{eqn:walsh_func}, the Walsh functions only take the values in 
 \end{align*}
 Digital nets are designed to integrate the Walsh functions without error.
 Thus our Bayesian cubature algorithm could integrate linear combinations of these ideal integrands without error. Functions that are well approximated by such linear combinations are then integrated with small errors.
-In this research we use Sobol' nodes, so base $b=2$ is assumed if not specified or the notation is dropped.  
+
+% \JRNote{separate paragraph}
+In this research we use Sobol' nodes which are digital nets with base $b=2$. So here afterwards base $b=2$ is assumed if not specified or the notation is dropped.  
 
 \Subsection{Walsh kernels}
 Consider the kernels of the form \cite{Nuyens2013}
@@ -2687,7 +2697,8 @@ Explicit expression available for $\omega_{r}$ \cite{Nuyens2013} in case of $b=2
 \begin{figure}
 	\centering
 	\includegraphics[width=0.9\linewidth]{"figures/walsh_kernel dim_1"}
-	\caption[Walsh kernel]{Walsh kernel of order $r=1$ in dimension $d=1$. This figure can be reproduced using \code{plot\_walsh\_kernel.m}}
+	\caption[Walsh kernel]{Walsh kernel of order $r=1$ in dimension $d=1$. This figure can be reproduced using \code{plot\_walsh\_kernel.m}. %\JRNote{remove $r=1$ in the figure}
+	}
 	\label{fig:walshkernel-dim1}
 \end{figure}
 The \figref{fig:walshkernel-dim1} shows $r=1$ order Walsh kernel in the interval $[0,1]$. Unlike the shift-invariant kernels used with lattice nodes, low order Walsh kernels are not very smooth and only piecewise constant. Smaller $\eta$ implies lesser variation in the amplitude of the kernel. Also the Walsh kernels are digital shift invariant but not periodic.
@@ -2721,7 +2732,7 @@ The Walsh-Hadamard transforms are $2^m \times 2^m$ Walsh-Hadamard matrices, whic
 \mH^{(m)} & \mH^{(m)} \\ \mH^{(m)} & -\mH^{(m)}
 \end{pmatrix} = \mH^{(1)} \bigotimes \mH^{(m)}
 \end{align}
-where $\bigotimes$ is Kronecker product. Alternatively for $b=2$, these matrices can be  directly obtained by,
+where $\bigotimes$ is Kronecker product. Alternatively for base $b=2$, these matrices can be  directly obtained by,
 \begin{align*}
 \mH^{(m)} % = \bigg(\exp(\pi \sqrt{-1} \vec{\imath}_m^T\vec {j}_m) \bigg)_{i,j=0}^{n-1}  
 = \bigg((-1)^{(\vec{\imath}_m^T \vec{j}_m)} \bigg)_{i,j=0}^{n-1},
@@ -2758,7 +2769,7 @@ An example of Walsh matrix of length $n=8$ is given in Table \ref{tab:hadamard_m
 
 \Subsection{Eigenvectors of $\mC$ are columns of Hadamard matrix}
 \label{sec:eigenvector_hadamard}
-The Gram matrix $\mC$ formed by Walsh kernels and Sobol' nodes have a special structure called  block-Toeplitz matrix which can be used to construct fast transform. 
+The Gram matrix $\mC$ formed by Walsh kernels and Sobol' nodes have a special structure called  block-Toeplitz matrix which can be used to construct the fast Bayesian transform. 
 A Toeplitz matrix is a diagonal-constant matrix in which each descending diagonal from left to right is constant.
 A block Toeplitz matrix is a special block matrix, which contains blocks that are repeated down the diagonals of the matrix, as a Toeplitz matrix has elements repeated down the diagonal. 
 We prove the eigenvectors of $\mC$ are columns of Hadamard matrix in two theorems. 
@@ -2773,11 +2784,15 @@ The Gram matrix,
 is a block-Toeplitz matrix and all the sub-blocks and its sub-sub-blocks are also block-Toeplitz. 
 \end{theorem}
 
-\Subsubsection{Proof of Theorem \ref{thrm:block-toeplitz}}: 
+%\Subsubsection
+\begin{proof}
+	
+
+%\textbf{Proof of Theorem \ref{thrm:block-toeplitz}}: 
 We prove this by induction.
 The relation between sub-block matrices can be deciphered using the properties of digital nets.
 To help with the proof of block-Toeplitz structure, consider the digital net properties \ref{eqn:digital_shift_prop}
-\ref{eqn:digital_net_symmetric_prop}.
+and \ref{eqn:digital_net_symmetric_prop}.
 %\begin{align*}
 %\bigl(K(\vz_i \ominus \vz_j)\bigr)_{i,j=0}^{n-1}.
 %\end{align*}
@@ -2786,12 +2801,12 @@ Let us introduce some notation,
 \begin{align*}
 \mC^{(l)} &:= 
 \begin{pmatrix}
-K_{z_{(i \ominus j )}}
+K({z_{i \ominus j}})
 \end{pmatrix}_{i,j=0}^{2^{l}-1},
 \\
 \mC^{(l,q)} &:= 
 \begin{pmatrix}
-K_{z_{(i \ominus j )+ 2^q}}
+K({z_{i \ominus j + q 2^l}})
 \end{pmatrix}_{i,j=0}^{2^{l}-1},
 \qquad 
 \text{furthermore,} \quad
@@ -2799,7 +2814,17 @@ K_{z_{(i \ominus j )+ 2^q}}
 \end{align*}
 This notation is convenient for the proof as shown below.
 
-As the first step, lets verify the property holds for,
+As the first step, we verify the property holds for $l=0$,
+\begin{align*}
+\mC^{(0)} &= \begin{pmatrix}
+K(\vz_{0 \ominus 0})  
+\end{pmatrix} = 
+\begin{pmatrix}
+K(\vz_{0})
+\end{pmatrix}, \quad \text{by \ref{eqn:digital_shift_prop}},
+\end{align*} thus by definition $\mC^{(0)}$ is a block-Toeplitz.
+
+\iffalse
 \begin{align*}
 \mC^{(1)} &= \begin{pmatrix}
 K(\vz_{0 \ominus 0}) & K(\vz_{1 \ominus 0})  \\
@@ -2850,13 +2875,15 @@ K(\vz_{1}) & K(\vz_{0})
 \end{pmatrix},
 \end{align*}
 is a block-Toeplitz as it is obvious from the block structure depicted. 
+\fi
 % Here we used the notation $\mC^{(1,1)}$ to indicate the additional operation involved in the matrix.
 % Where the matrix $\mC^{(1,1)}$ is obtained using the following shift operation.
 
-Please note if $\mC^m$ is block-Toeplitz then $\mC^{(m,m)}$ is also a block-Toeplitz. 
+Please note if $\mC^{(m)}$ is block-Toeplitz then $\mC^{(m,1)}$ is also a block-Toeplitz. 
+This is due to the fact that $ i \oplus 2^m \ominus j = i \ominus j \ominus 2^m = i \ominus j \oplus 2^m $ for $i,j=0,\dots,2^{m-1}$ since $i \ominus j < 2^{m-1}$.
 Assuming $\mC^m$ is a block-Toeplitz, we need to prove $\mC^{m+1}$ is also a block-Toeplitz. Let $n=2^m$,
 \begin{align*}
-\mC^{m+1} &= 
+\mC^{(m+1)} &= 
 \begin{pmatrix}
 K(\vz_{0    \ominus 0}) & \hdots & K(\vz_{0    \ominus n-1}) & K(\vz_{0    \ominus n}) & \hdots & K(\vz_{0    \ominus 2n-1}) \\
 \vdots             & \vdots &             \vdots          &           \vdots      & \vdots &             \vdots         \\
@@ -2893,16 +2920,15 @@ K(\vz_{ n-1  }) & \hdots & K(\vz_{ 0 })
 \end{pmatrix}
 \end{pmatrix} 
 \\
-\intertext{where we used the fact $ i \oplus 2^m \ominus j = i \ominus j \ominus 2^m = i \ominus j \oplus 2^m $ for $i,j=0,\dots,2^{m-1}$ since $i \ominus j < 2^{m-1}$,}
 & =
 \begin{pmatrix}
-\mC^m & \mC^{m,m} \\ \mC^{m,m} & \mC^m
+\mC^{(m)} & \mC^{(m,1)} \\ \mC^{(m,1)} & \mC^{(m)}
 \end{pmatrix}
 \end{align*}
 is a block-Toeplitz, where we used the properties  \ref{eqn:digital_shift_prop}, \ref{eqn:digital_net_symmetric_prop} and facts $2n-1 \ominus n = n-1$, $2n-1 \ominus n-1 = n$, and $n \ominus n-1 = 2n-1$.
 %\end{itemize}
-Thus $\mC$ of size $2^l$, for $l \in \naturals$, is a block-Toeplitz and every block and it's sub-blocks of size $2^l, \; l \in \naturals$ are also block-Toeplitz.
-
+Thus $\mC$ of size $2^m$, for $m \in \naturals$, is a block-Toeplitz and every block and it's sub-blocks of size $2^p, \; p \in \naturals, \; p \le m$ are also block-Toeplitz.
+\end{proof}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -2975,9 +3001,11 @@ Thus $\mC$ is a block-Toeplitz and every block its and sub-blocks are also block
 The Hadamard matrix $\mH$ diagonalizes $\mC$ so the columns of Hadamard matrix are the eigenvectors of $\mC$.
 \end{theorem}
 
+\begin{proof}
+	
 
 % \Subsubsection
-\textbf{Proof of Theorem \ref{thrm:hadamard_eigenvector}:}
+%\textbf{Proof of Theorem \ref{thrm:hadamard_eigenvector}:}
 Again we use proof-by-induction technique to show that the Hadamard matrix diagonalizes $\mC$.
 
 We can easily see the Hadamard matrix $\mH^{1}$ diagonalizes $\mC^{1}$,
@@ -2990,11 +3018,7 @@ We can easily see the Hadamard matrix $\mH^{1}$ diagonalizes $\mC^{1}$,
 K(\vz_{0}) & K(\vz_{1}) \\ K(\vz_{1}) & K(\vz_{0})
 \end{pmatrix},
 \\
-& = 
-\begin{pmatrix}
-K(\vz_{0})+K(\vz_{1}) & K(\vz_{0})+K(\vz_{1}) \\ K(\vz_{0})-K(\vz_{1}) & K(\vz_{1})-K(\vz_{0})
-\end{pmatrix},
-\\ 
+% & = \begin{pmatrix} K(\vz_{0})+K(\vz_{1}) & K(\vz_{0})+K(\vz_{1}) \\ K(\vz_{0})-K(\vz_{1}) & K(\vz_{1})-K(\vz_{0}) \end{pmatrix}, \\ 
 & = 
 \begin{pmatrix}
 K(\vz_{0})+K(\vz_{1}) & 0 \\ 0 & K(\vz_{0})-K(\vz_{1})
@@ -3003,15 +3027,12 @@ K(\vz_{0})+K(\vz_{1}) & 0 \\ 0 & K(\vz_{0})-K(\vz_{1})
 1 & 1 \\ 1 & -1
 \end{pmatrix},
 \\ 
-& = 
-\begin{pmatrix}
-K(\vz_{0})+K(\vz_{1}) & 0 \\ 0 & K(\vz_{0})-K(\vz_{1})
-\end{pmatrix}
-\mH^{(1)}.
+% & = \begin{pmatrix} K(\vz_{0})+K(\vz_{1}) & 0 \\ 0 & K(\vz_{0})-K(\vz_{1}) \end{pmatrix} \mH^{(1)} \\
+&= \Lambda^{(1)} \mH^{(1)}.
 \end{align*}
-Thus $\mH{(1)}$ diagonalizes $\mC^{(1)}$.
+Where $\Lambda^{(1)}$ is a diagonal matrix, thus $\mH{(1)}$ diagonalizes $\mC^{(1)}$.
 
-Let us assume $\mH^{m}$ diagonalizes $\mC^{m}$, we need to prove $\mH^{m+1}$ diagonalizes $\mC^{m+1}$,
+Let us assume $\mH^{m}$ diagonalizes $\mC^{m}$, so $\mH^{(m)} \mC^{(m)} = \Lambda^{(m)} \mH^{(m)}$ where $\Lambda^{(m)}$ is diagonal, we need to prove $\mH^{m+1}$ diagonalizes $\mC^{m+1}$,
 \begin{align*}
 \mH^{(m+1)} \mC^{(m+1)} &= 
 \begin{pmatrix}
@@ -3021,12 +3042,10 @@ Let us assume $\mH^{m}$ diagonalizes $\mC^{m}$, we need to prove $\mH^{m+1}$ dia
 \mC^{(m)} & \mC^{(m,m)} \\ \mC^{(m,m)} & \mC^{(m)}
 \end{pmatrix},
 \\
-& = 
-\begin{pmatrix}
-\mH^{(m)}\mC^{(m)} + \mH^{(m)}\mC^{(m,m)} & \mH^{(m)}\mC^{(m)} + \mH^{(m)}\mC^{(m,m)} \\ 
-\mH^{(m)}\mC^{(m)} - \mH^{(m)}\mC^{(m,m)} & \mH^{(m)}\mC^{(m,m)} - \mH^{(m)}\mC^{(m)} 
-\end{pmatrix},
-\\ 
+% & = \begin{pmatrix}
+% \mH^{(m)}\mC^{(m)} + \mH^{(m)}\mC^{(m,m)} & \mH^{(m)}\mC^{(m)} + \mH^{(m)}\mC^{(m,m)} \\ 
+% \mH^{(m)}\mC^{(m)} - \mH^{(m)}\mC^{(m,m)} & \mH^{(m)}\mC^{(m,m)} - \mH^{(m)}\mC^{(m)} 
+% \end{pmatrix}, \\ 
 & = 
 \begin{pmatrix}
 \mC^{(m)} + \mC^{(m,m)} & 0 \\ 0 & \mC^{(m)} - \mC^{(m,m)}
@@ -3035,13 +3054,11 @@ Let us assume $\mH^{m}$ diagonalizes $\mC^{m}$, we need to prove $\mH^{m+1}$ dia
 \mH^{(m)} & \mH^{(m)} \\ \mH^{(m)} & -\mH^{(m)}
 \end{pmatrix},
 \\ 
-& = 
-\begin{pmatrix}
-\mC^{(m)} + \mC^{(m,m)} & 0 \\ 0 & \mC^{(m)} - \mC^{(m,m)}
-\end{pmatrix}
-\mH^{(m+1)}.
+% & = \begin{pmatrix} \mC^{(m)} + \mC^{(m,m)} & 0 \\ 0 & \mC^{(m)} - \mC^{(m,m)} \end{pmatrix} \mH^{(m+1)} \\
+& = \Lambda^{(m+1)} \mH^{(m+1)} .
 \end{align*}
-Thus $\mH^{(m+1)}$ diagonalizes $\mC^{(m+1)}$. Where we used the fact that both $\mH$ and $\mC$ are symmetric positive definite.
+Thus $\mH^{(m+1)}$ diagonalizes $\mC^{(m+1)}$ and $\Lambda^{(m+1)}$ is diagonal. Here we used the fact that both $\mH$ and $\mC$ are symmetric positive definite.
+\end{proof}
 
 \iffalse
 Next, we show the eigenvectors of a block-Toeplitz matrix can be obtained by Kronecker product of its sub-block matrices. If $\mA, \mB$ share same eigenvalues $\mA \mV = \mLambda \mV, \mB \mV = \mV \mSigma$ then
@@ -3064,54 +3081,55 @@ Next, we show the eigenvectors of a block-Toeplitz matrix can be obtained by Kro
 
 
 \Subsection{Fast transform}
-We can easily show the Walsh-Hadamard matrices satisfy the assumptions of fast-transform \eqref{fastcompAssump} $\mV^H$. It is important to note that the columns/rows of Walsh-Hadamard matrices are mutually orthogonal. As proven in Section \ref{sec:eigenvector_hadamard},
+We can easily show that the Walsh-Hadamard matrices satisfy the assumptions of fast Bayesian transform \eqref{fastcompAssump} $\mV^H$. It is important to note that the columns/rows of Walsh-Hadamard matrices are mutually orthogonal. As shown in Section \ref{sec:eigenvector_hadamard} the eigenvectors are,
 \begin{align}
 \label{eqn:hadamard_fwht}
-\mV &= \mH^{({2^m})} = \underbrace{ \mH^{(1)} \bigotimes \ldots \bigotimes \mH^{(1)} }_{m \; \text{times}} \\
+\mV &= \mH^{({m})} = \underbrace{ \mH^{(1)} \bigotimes \ldots \bigotimes \mH^{(1)} }_{m \; \text{times}}, \\
 \nonumber
-\mC^{(m)} &= \frac{1}{n} \mH^{(m)} \mLambda \mH^{(m)}.
+\text{where} \quad \mC^{(m)} &= \frac{1}{n} \mH^{(m)} \mLambda^{(m)} \mH^{(m)}.
 \end{align}
 % \JRNote{prove eigenvalues for Sobol case}
 Assumption \eqref{fastcompAssumpB} follows automatically by the fact that Walsh-Hadamard matrices can be constructed analytically. Assumption \eqref{fastcompAssumpA} can also be verified as the first row/column are one vectors. Finally, assumption \eqref{fastcompAssumpC} is satisfied due to the fact that fast Walsh transform can be computed in $\Order({n \log n})$ operations using fast Walsh-Hadamard transform.
+Thus the Walsh-Hadamard transform is a fast Bayesian transform as per the \eqref{fastcompAssump}.
 
-
-We have implemented a fast adaptive Bayesian cubature algorithm using the kernel \eqref{eqn:walsh_kernel} with $r=1$ and Sobol' points \cite{BraFox88} in MATLAB as part of the Guaranteed Adaptive Integration Library (GAIL) \cite{ChoEtal17b} as \allowbreak \code{cubBayesNet\_g}. The Sobol' points used in this algorithm are generated using MATLAB's builtin function \code{sobolset} and scrambled using MATLAB function \code{scramble} \cite{HonHic00a}. The fast Walsh-Hadamard transform \eqref{eqn:hadamard_fwht} is computed using MATLAB's builtin function \code{fwht} with \emph{hadamard} ordering. Thus the Walsh-Hadamard is a fast transform as per the \eqref{fastcompAssump}.
+We have implemented a fast adaptive Bayesian cubature algorithm using the kernel \eqref{eqn:walsh_kernel} with $r=1$ and Sobol' points \cite{BraFox88} in MATLAB as part of the Guaranteed Adaptive Integration Library (GAIL) \cite{ChoEtal17b} as \allowbreak \code{cubBayesNet\_g}. The Sobol' points used in this algorithm are generated using MATLAB's builtin function \code{sobolset} and scrambled using MATLAB function \code{scramble} \cite{HonHic00a}. The fast Walsh-Hadamard transform \eqref{eqn:hadamard_fwht} is computed using MATLAB's builtin function \code{fwht} with \emph{hadamard} ordering. 
 
 \Subsection{Extensible Sobol' points}
-Similar to the extensible lattice points, Sobol' points could be extended to improve the integration accuracy till the required error tolerance is met. Extensible Sobol' point-set can be combined with Hadamard matrices as demonstrated here. Using the same notations as in \secref{sec:iter_fft}, let Let $\widetilde{\vy} = \mH({2^m}) {\vy}$ for some arbitrary $\vy \in \reals^{2n}$ define, 
+Similar to the extensible lattice points, Sobol' points could be extended to improve the integration accuracy till the required error tolerance is met. Extensible Sobol' nodes can be combined with Hadamard matrices as demonstrated here. Using the same notations as in \secref{sec:iter_fft}, let Let $\widetilde{\vy} = \mH^{(m+1)} {\vy}$ for some arbitrary $\vy \in \reals^{2n}$, $n = 2^m$. Define, 
 \begin{gather*}
 \vy = \begin{pmatrix} y_1 \\ \vdots \\ y_{2n} \end{pmatrix}, \quad 
 \vy^{(1)} = \begin{pmatrix} y_1 \\ \vdots \\ y_{n} \end{pmatrix}, \quad 
 \vy^{(2)}  = \begin{pmatrix} y_{n+1} \\ \vdots \\ y_{2n} \end{pmatrix}, \\ 
-\widetilde{\vy} = \begin{pmatrix} \widetilde{y}_1 \\ \vdots \\ \widetilde{y}_{2n} \end{pmatrix}, \quad 
-\widetilde{\vy}^{(1)} = \begin{pmatrix} \widetilde{\vy}_1 \\ \widetilde{\vy}_3 \\ \vdots \\ \widetilde{\vy}_{2n-1} \end{pmatrix}, \quad 
-\widetilde{\vy}^{(2)}  = \begin{pmatrix} \widetilde{\vy}_{2} \\  \widetilde{\vy}_{4} \\ \vdots \\ \widetilde{\vy}_{2n} \end{pmatrix}. 
+\widetilde{\vy}^{(1)} = \mH^{(m)} \vy^{(1)} = 
+\begin{pmatrix} \widetilde{y}^{(1)}_1 \\ \widetilde{y}^{(1)}_2 \\ \vdots \\ \widetilde{y}^{(1)}_{n} \end{pmatrix}, \quad 
+\widetilde{\vy}^{(2)}  =  \mH^{(m)} \vy^{(2)} =
+\begin{pmatrix} \widetilde{y}^{(2)}_{1} \\  \widetilde{y}^{(2)}_{2} \\ \vdots \\ \widetilde{y}^{(2)}_{n} \end{pmatrix}. 
 \end{gather*}
-
+Then,
 \begin{align*}
-\widetilde{\vy} &= \mH^{({m})} {\vy} \\
+\widetilde{\vy} &= \mH^{({m+1})} {\vy} \\
 & = \begin{pmatrix}
-\mH^{(m-1)} & \mH^{(m-1)} \\ \mH^{(m-1)} & - \mH^{(m-1)}
+\mH^{(m)} & \mH^{(m)} \\ \mH^{(m)} & - \mH^{(m)}
 \end{pmatrix} 
 \begin{pmatrix}
 \vy^{(1)} \\ \vy^{(2)}
 \end{pmatrix}, \qquad \text{by \eqref{eqn:hadamard_matrix}} \\
 &= 
 \begin{pmatrix}
-\mH^{(m-1)} \vy^{(1)} + \mH^{(m-1)} \vy^{(2)} \\ 
-\mH^{(m-1)} \vy^{(1)} - \mH^{(m-1)} \vy^{(2)}
+\mH^{(m)} \vy^{(1)} + \mH^{(m)} \vy^{(2)} \\ 
+\mH^{(m)} \vy^{(1)} - \mH^{(m)} \vy^{(2)}
 \end{pmatrix},\\
 &= 
 \begin{pmatrix}
 \widetilde{\vy}^{(1)} + \widetilde {\vy}^{(2)} \\ 
 \widetilde {\vy}^{(1)} - \widetilde {\vy}^{(2)}
-\end{pmatrix}.
+\end{pmatrix} =: \widetilde{\vy} \quad.
 \end{align*}
-As before with the lattice nodes, the computational cost to compute $\mV^{(2n)H} \vy$ is then
-twice the cost of computing $\mV^{(n)H} \vy^{(1)}$ plus $2n$ additions. An inductive argument shows that $\mV^{(n)H}b$ requires only $\Order(n \log n)$ operations. Usually the multiplications in $\mV^{(n)H} \vy^{(1)}$ are multiplications by $-1$ which are simply accomplished using negations, requiring no multiplications at all.
+As before with the lattice nodes, the computational cost to compute $\mV^{(m+1)H} \vy$ is then
+twice the cost of computing $\mV^{(m)H} \vy^{(1)}$ plus $2n$ additions, where $n=2^m$. An inductive argument shows that for any $m \in \naturals$, $\mV^{(m)H}\vy$ requires only $\Order(n \log n)$ operations. Usually the multiplications in $\mV^{(m)H} \vy^{(1)}$ are multiplications by $-1$ which are simply accomplished using sign change or negation, requiring no multiplications at all.
 
 
-\Subsection{Higher order nets}
+\Subsection{Higher Order Nets}
 Higher order digital nets are a modified $(t,m,d)$-nets, introduced in \cite{Dic08a} which can be used to numerically integrate smoother functions which are not necessarily periodic, but have square integrable mixed partial derivatives of order $\alpha$, at a rate of $\Order(N^{-\alpha})$ multiplied by a power of a $\log N$ factor using rules corresponding to the modified $(t,m, d)$-nets.
 We want to emphasizes that quasi-Monte Carlo rules based on these point sets can achieve convergence rates faster than $\Order(N^{-1})$.
 
@@ -3139,30 +3157,31 @@ We summarize the results of this chapter as a theorem,
 \Chapter{Numerical Implementation} 
 \label{sec:NumImpl}
 
-\Section{Overcoming the Cancellation error}
+\Section{Overcoming the Cancellation Error}
 \label{sec:overcome_cancel_error}
 
-For the kernels used in our computation it may happen that $n/\lambda_1$ is close to $1$.  Thus, the term $1-n/\lambda_1$, which appears in the credible interval widths, $\err_{\MLE}$, $\err_{\textup{full}}$, and $\err_{\textup{GCV}}$, may suffer from cancellation error.  We can avoid this cancellation error by modifying how we compute the Gram matrix and its eigenvalues.
+For the covariance kernels used in our computation, it may happen that $n/\lambda_1$ is close to $1$.  Thus, the term $1-n/\lambda_1$, which appears in the credible interval widths, $\err_{\MLE}$, $\err_{\textup{full}}$, and $\err_{\textup{GCV}}$, may suffer from cancellation error.  We can avoid this cancellation error by modifying how we compute the Gram matrix and its eigenvalues.
 
-Define a new function $\rC : = C -1$, and its associated Gram matrix $\rmC = \mC - \vone \vone^T$.   Note that $\rC$ inherits the shift-invariant properties of $C$.  Since $\vone$ is the first eigenvector of $\mC$ it follows that the eigenvalues of $\rmC$ are $\rlambda_1 = \lambda_1 - n, \lambda_2, \ldots, \lambda_n$.  Moreover,
+Any shift-invariant or digital shift-invariant covariance kernel satisfying \eqref{addAssump} can be written as $C_\vtheta = 1 + \rC_\vtheta$, where $\rC_\vtheta$ is also symmetric and positive definite.
+The associated Gram matrix for $\rC_\vtheta$ is then $\rmC_\vtheta = \mC_\vtheta - \vone \vone^T$, and the eigenvalues of $\rmC_\vtheta$ are $\rlambda_1 = \lambda_1 - n, \lambda_2, \ldots, \lambda_n$, which follows because $\vone$ is the first eigenvector of both $\mC_\vtheta$ and $\rmC_\vtheta$. Note that $\rC_\vtheta$ inherits the shift-invariant properties of $C_\vtheta$. Then,
 \begin{equation*}
 1 - \frac{n}{\lambda_1}  = \frac{\lambda_1 - n}{\lambda_1} = \frac{\rlambda_1}{\rlambda_1 +n},
 \end{equation*}
 where now the right hand side is free of cancellation error.
 
-We show how to compute $\rC$ without introducing round-off error.  The covariance functions that we use are of product form, namely,
+We show how to compute $\rC_\vtheta$ without introducing round-off error.  The covariance functions that we use are of product form, namely,
 \begin{equation*}
-C(\vt, \vx) = \prod_{\ell=1}^d \left[1 + \rC_\ell(t_\ell,x_\ell) \right], \qquad  \rC_\ell:[0,1]^2 \to \reals.
+C_\vtheta(\vt, \vx) = \prod_{\ell=1}^d \left[1 + \rC_{_\vtheta,\ell}(t_\ell,x_\ell) \right], \qquad  \rC_{_\vtheta,\ell}:[0,1]^2 \to \reals.
 \end{equation*}
-Direct computation of $\rC (\vt,\vx) = C(\vt,\vx) -1$ introduces cancellation error if the $ \rC_\ell$ are small.  So, we employ the iteration
+Direct computation of $\rC_\vtheta (\vt,\vx) = C_\vtheta(\vt,\vx) -1$ introduces cancellation error if the $ \rC_\ell$ are small.  So, we employ the iteration
 \begin{align*}
-\rC^{(1)} &= \rC_1(t_1,x_1),  \\
-\rC^{(\ell)} &  = \rC^{(\ell-1)}[1 + \rC_\ell(t_\ell,x_\ell)] + \rC_\ell(t_\ell,x_\ell),  \hspace{1cm} \ell = 2, \ldots, d, \\
-\rC(\vt,\vx)  & = \rC^{(d)}.
+\rC_\vtheta^{(1)} &= \rC_{_\vtheta,1}(t_1,x_1),  \\
+\rC_\vtheta^{(\ell)} &  = \rC_\vtheta^{(\ell-1)}[1 + \rC_{\vtheta,\ell}(t_\ell,x_\ell)] + \rC_{\vtheta,\ell}(t_\ell,x_\ell),  \hspace{1cm} \ell = 2, \ldots, d, \\
+\rC_\vtheta(\vt,\vx)  & = \rC_\vtheta^{(d)}.
 \end{align*}
-In this way, the Gram matrix $\rmC$, whose $i,j$-element is $\rC(\vx_i,\vx_j)$ can be constructed with minimal round-off error.
+In this way, the Gram matrix $\rmC_\vtheta$, whose $i,j$-element is $\rC_\vtheta(\vx_i,\vx_j)$ can be constructed with minimal round-off error.
 
-Computing the eigenvalues of $\rmC$ via the procedure given in \eqref{eqn:fast_transform_to_eigvalues} yields $\rlambda_1 = \lambda_1 - n, \lambda_2, \ldots, \lambda_n$. The estimates of $\vtheta$ are computed in terms of the eigenvalues of $\rmC$, so \eqref{eqn_MLE_loss_func_optimized_2} and \eqref{thetaGCV} become
+Computing the eigenvalues of $\rmC_\vtheta$ via the procedure given in \eqref{eqn:fast_transform_to_eigvalues} yields $\rlambda_1 = \lambda_1 - n, \lambda_2, \ldots, \lambda_n$. The estimates of $\vtheta$ are computed in terms of the eigenvalues of $\rmC_\vtheta$, so \eqref{eqn_MLE_loss_func_optimized_2} and \eqref{thetaGCV} become
 \begin{subequations}
 	\label{thetaSimple}
 	\begin{align}
@@ -3242,8 +3261,8 @@ The computational steps for the improved, faster, automatic Bayesian cubature ar
 	\caption{Fast Automatic Bayesian Cubature}\label{algorithm2}
 	\begin{algorithmic}[1]
 		\Require a generator for the rank-1 Lattice sequence
-		$\vx_1, \vx_2, \ldots$; 
-		a shift-invariant  kernel, $C_\vtheta$;
+		$\vx_1, \vx_2, \ldots$ and a matching shift-invariant  kernel, $C_\vtheta$ 
+		or a generator for Sobol sequence and a matching digital shift-invariant kernel, $C_\vtheta$;
 		a black-box function, $f$; 
 		an absolute error tolerance,
 		$\varepsilon>0$; the positive initial sample size, $n_0$, that is a power of $2$;
@@ -3280,7 +3299,7 @@ The Algorithm \ref{algorithm2} has a computational cost which is the sum of the 
 \end{itemize}
 
 
-\Section{Kernel parameters search}
+\Section{Kernel Parameters Search}
 \label{sec:kernel_param_search}
 
 \JRNote{Explain the transformation used to make the search range positive, $> 0$ , etc.}
@@ -3290,7 +3309,7 @@ The parameter search can be done in two major ways.
 Bounded minima search if the search interval is known else unbounded search.  Most of the time, the search interval is unknown. So the natural choice is to use unbounded search over the unbound domain such as is done by our algorithms using \code{fminsearch} provided by MATLAB.
 % line in -- that is semi-bounded.
 Our parameters need to live in a domain that is bounded or semi-bounded. 
-There some simple domain transformations to achieve such constraints.
+There are some simple domain transformations available to achieve such constraints.
 
 \Subsection{Positive kernel shape parameter}
 The following parameter map is used to ensure that the shape parameter values are positive real numbers,
@@ -3341,24 +3360,24 @@ q_{\textup{opt}} = \frac{1}{1 + e^{-t_{3, \textup{opt}}}}.
 
 \JRNote{use uniformly randomly chosen $\varepsilon$ instead 4 fixed}
 
-Bayesian cubature algorithms developed in this work are demonstrated using widely used integration examples.
-Three integrals were evaluated using both the algorithms \code{cubBayesLattice\_g} and \code{cubBayesNet\_g}. The first example shows evaluating a multivariate Gaussian probability given the intervals. The second example shows integrating the Keister's function, and the final example shows computing an Asian arithmetic option pricing.  
+Bayesian cubature algorithms developed in this work are demonstrated using three commonly used integration examples.
+These integrals were evaluated using both the algorithms \code{cubBayesLattice\_g} and \code{cubBayesNet\_g}. The first example shows evaluating a multivariate Gaussian probability given the interval. The second example shows integrating the Keister's function, and the final example shows computing an Asian arithmetic option pricing.  
 
 % \Section{Test Results and Observations for \code{cubBayesLattice\_g}}
 \Section{Testing Methodology}
 \label{sec:numerical_experiments_cubBayesLattice}
 
-Three integrals were evaluated using our GAIL algorithms:  a multivariate Gaussian probability, the Keister's example, and an option pricing example. 
+% Three integrals were evaluated using our GAIL algorithms:  a multivariate Gaussian probability, the Keister's example, and an option pricing example. 
 Four hundred different randomly chosen error tolerances, $\varepsilon$,  were set for each example, with the tolerances chosen from a fixed interval. 
 The error tolerance intervals were chosen depending on the difficulty of the problem.
 The nodes used in \allowbreak \code{cubBayesLattice\_g} were the randomly shifted lattice rules supplied by GAIL.  
 Where as the nodes used in \code{cubBayesNet\_g} were the randomly scrambled Sobol' nodes supplied by MATLAB's Sobol' sequence generator. 
 
-For each integral, and each of our stopping criteria---empirical Bayes, full Bayes, and generalized cross-validation---our algorithm is run  $400$ times.  For each test, the execution time is plotted against $\abs{\mu - \hmu}/\varepsilon$.  We expect $\abs{\mu - \hmu}/\varepsilon$ to be no greater than one, but hope that it is not too much smaller than one, which would indicate a stopping criterion that is too conservative.
+For each integral, and each of our stopping criteria---empirical Bayes, full Bayes, and generalized cross-validation---our algorithm is run  $400$ times with each randomly chosen error tolerance as mentioned above.  For each test, the execution time is plotted against $\abs{\mu - \hmu}/\varepsilon$.  We expect $\abs{\mu - \hmu}/\varepsilon$ to be no greater than one, but hope that it is not too much smaller than one, which would indicate a stopping criterion that is too conservative.
 %Unlike the examples in previous \secref{sec:numerical_experiments_cubBayesLattice}, periodization variable transform is not required.
 
 
-Periodization variable transforms are used in the examples with \allowbreak \code{cubBayesLattice\_g} as the algorithm assumes the integrands to be periodic in $[0,1]^d$. But the \allowbreak \code{cubBayesNet\_g} does not need this additional requirement, So the integrands are used directly.
+Periodization variable transforms are used in the examples with \allowbreak \code{cubBayesLattice\_g} as the algorithm assumes the integrands to be periodic in $[0,1]^d$. But the \allowbreak \code{cubBayesNet\_g} does not need this additional requirement, so the integrands are used as such.
 
 % \Section{Test Results and Observations for \code{cubBayesNet\_g}}
 % \label{sec:numerical_experiments_cubBayesNet}
@@ -4105,7 +4124,7 @@ number & number & number \\
 \fi
 
 
-\Section{Future work}
+\Section{Future Work}
 %\label{sec:futureWork}
 
 We demonstrated the capability our new Bayesian cubature algorithms to successfully compute the integrals faster within the user defined error tolerances. But there are few potential improvements and new areas of applications.

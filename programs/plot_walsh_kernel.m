@@ -22,7 +22,7 @@ if dim==1
     for eta = shape_param
       Z(:,i) = prod(1 + eta*kernelFunc(mod(xpts, 1)),2);
 
-      leg_text{i} = sprintf('$r=%d,\\eta=%1.1f$', r, eta);
+      leg_text{i} = sprintf('$\\eta=%1.1f$', eta);
       i=i+1;
     end
   end
