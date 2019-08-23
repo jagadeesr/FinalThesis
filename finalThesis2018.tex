@@ -332,28 +332,27 @@
 
 Automatic cubatures approximate multidimensional integrals to user-specified error tolerances. 
 In many real-world integration problems, the analytical solution is either unavailable or difficult to compute.
-To overcome this, one can use numerical algorithms that approximately estimates the value of the integral. 
+To overcome this, one can use numerical algorithms that approximately estimate the value of the integral. 
 
 For high dimensional integrals, usage of quasi-Monte Carlo (QMC) methods are very popular.
 QMC methods are equal-weight quadrature rules where the quadrature points are chosen deterministically, unlike Monte Carlo (MC) methods where the points are chosen randomly.
 % \JRNote{add ref} 
-The families of integration lattice node and digital nets are the most popular quadrature points used. 
-These methods consider the integrand a deterministic function.
+The families of integration lattice nodes and digital nets are the most popular quadrature points used. 
+These methods consider the integrand to be a deterministic function.
 % Section 2.2 describes digital sequences and rank-1 lattice node sequences, two of the most common points used in quasi-Monte Carlo.
-There is an alternate approach called Bayesian cubature methods.
-Bayesian cubature methods postulate the integrand is an instance of a Gaussian stochastic process.  
+An an alternate approach called, Bayesian cubature methods postulates the integrand to be an instance of a Gaussian stochastic process.  
 % For high dimensional problems, it makes sense to fix the sampling density but determine the sample size, $n$, automatically.
 
-For high dimensional problems, it is difficult to adaptively change the sampling pattern, but one can automatically determine the sample size, $n$, given a fixed and reasonable sampling pattern. We take this approach using a Bayesian perspective.
+For high dimensional problems, it is difficult to adaptively change the sampling pattern. But one can automatically determine the sample size, $n$, given a fixed and reasonable sampling pattern. We take this approach using a Bayesian perspective.
 We assume a Gaussian process parameterized by a constant mean and a covariance function defined by a scale parameter and a function specifying how the integrand values at two different points in the domain are related.
-These parameters are estimated from integrand values or are given non-informative priors.  This leads to credible interval for the integral.  The sample size, $n$, is chosen to make the credible interval for the Bayesian posterior error no greater than the desired error tolerance. 
+These parameters are estimated from integrand values or are given non-informative priors. This leads to a credible interval for the integral.  The sample size, $n$, is chosen to make the credible interval for the Bayesian posterior error no greater than the desired error tolerance. 
 
 However, the process just outlined typically requires vector-matrix operations  with a computational cost of $O(n^3)$. Our innovation is to pair low discrepancy nodes with matching kernels that lower the computational cost to $O(n \log n)$. 
 The contributions of this thesis are as follows:
 \begin{itemize}
-	\item Fast Bayesian transform is introduced, which generalizes the techniques that speedup Bayesian cubature when the kernel matches low discrepancy nodes.
-	\item This approach is demonstrated using two methods: 1) rank-1 lattice sequences and shift-invariant kernels, 2) Sobol' sequences and Walsh kernel.
-	\item These two methods are implemented as fast automatic Bayesian cubature algorithms in the Guaranteed Automatic Integration Library (GAIL).
+	\item Fast Bayesian transform is introduced. This generalizes the techniques that speedup Bayesian cubature when the kernel matches low discrepancy nodes.
+	\item Fast Bayesian transform approach is demonstrated using two methods: 1) rank-1 lattice sequences and shift-invariant kernels, 2) Sobol' sequences and Walsh kernel.
+	These two methods are implemented as fast automatic Bayesian cubature algorithms in the Guaranteed Automatic Integration Library (GAIL).
 	\item We develop additional numerical implementation techniques: 1) to avoid cancellation error that arises in the algorithms, 2) gradient descent for hyperparameter search, 3) non-integer kernel order selection.
 \end{itemize}
 The thesis concludes by applying the fast automatic Bayesian cubature algorithms to integrate three sample integrands, showing that our algorithms are faster than the basic Bayesian cubature.
@@ -376,7 +375,7 @@ The Bayesian cubatures, we develop are guaranteed for integrands belonging to co
 
 Cubature is the problem of inferring a numerical value for a definite integral, 
 $ \mu := \int_{\reals^d} g(\vx) \, \dif \vx$, where $\mu$ has no closed form analytic expression. Typically, $g$ is accessible through a black-box function routine. 
-Cubature means numerical multi-variate integration and is a key component of many problems in Scientific computing, finance \cite{Gla03}, statistical modeling, Imaging \cite{Keller2013}, uncertainty quantification, machine learning \cite{Goodfellow-et-al-2016} \JRNote{add references}.  
+Cubature means numerical multi-variate integration and is a key component of many problems in scientific computing, finance \cite{Gla03}, statistical modeling, Imaging \cite{Keller2013}, uncertainty quantification, machine learning, etc. \cite{Goodfellow-et-al-2016} \JRNote{add references}.  
 
 The integral may often be expressed as
 \begin{equation}
@@ -389,7 +388,7 @@ where $f:[0,1]^d \to \reals$ is the integrand, and $\boldsymbol{X} \sim \mathcal
 \hmu: = \hmu(f) := w_0 + \sum_{i=1}^{n} f(\vx_i) w_i,
 \end{equation}
 where the weights, $w_0$, and  $\vw = (w_i)_{i=1}^n \in \reals^n$, and the nodes, $\{\vx_i\}_{i=1}^n \subset [0,1]^d$, are chosen to make the error, $\abs{\mu - \hmu}$, small. The integration domain $[0,1]^d$ is convenient for the low discrepancy node sets that we use.  The nodes are assumed to be deterministic.
-The integral of function $f$ is the same over $[0, 1]^d$ or $(0, 1)^d$ or $[0, 1)^d$, So we use $[0, 1]^d$ or $[0, 1)^d$ depending on the application. Most often $[0, 1)^d$ is preferred especially for extensible node-sets because  it partitions easily into congruent subhypercubes.
+The integral of function $f$ is the same over $[0, 1]^d$ or $(0, 1)^d$ or $[0, 1)^d$. So we use $[0, 1]^d$ or $[0, 1)^d$ depending on the application. Most often $[0, 1)^d$ is preferred especially for extensible node-sets because  it partitions easily into congruent subhypercubes.
 This research focuses on expensive multivariate numerical integrals 
 where the computational cost of evaluating the integrand is a  bottleneck.
 
@@ -401,7 +400,7 @@ We construct a reliable stopping criterion that determines the number of integra
 \abs{\mu - \hmu} \leq \errtol .
 \end{equation}
 Rather than relying on strong assumptions about the integrand, such as an upper bound on its variance or total variation, we construct a stopping criterion that is based on a credible interval arising from a Bayesian approach to the problem.  We build upon the work of Briol et al.~\cite{BriEtal18a}, Diaconis~\cite{Dia88a}, O'Hagan~\cite{OHa91a}, Ritter~\cite{Rit00a}, Rasmussen and Ghahramani~\cite{RasGha03a}, and others.  Our algorithm is an example of \emph{probabilistic numerics}.
-To study numerical algorithms from a statistical point of view, where uncertainty is formally due to the presence of an unknown numerical error is the goal of probabilistic numerics.
+To study numerical algorithms from a statistical point of view, where uncertainty is formally due to the presence of an unknown numerical error, is the goal of probabilistic numerics.
 
 \JRNote{Briefly explain Probabilistic numeric ..}
 
@@ -417,7 +416,7 @@ n \log(n)] \bigr),
 where $\$(f)$ is the cost of one integrand value, $\$(C)$ is the cost of a single covariance kernel value,  $\Order(n \log(n))$ is the cost of a fast Fourier transform, and $N_{\opt}$ is an upper bound on the number of optimization steps required to choose the hyperparameters. If function evaluation is expensive, e.g., the output of a computationally intensive simulation, or if $\$(f) = \Order(d)$ for large $d$, then $\$(f)$ might be similar in magnitude to $N_{\opt} \log(n)$ in practice.  Typically, $\$(C) = \Order(d)$.  Note that the $\Order(n \log(n))$ contribution is $d$ independent.
 
 
-By contrast to our fast algorithm, the typical computational cost for Bayesian cubature is
+In contrast to our fast algorithm, the typical computational cost for Bayesian cubature is
 \begin{equation} \label{eqn:TheiralgoCost}
 \Order\bigl(n \$(f) + N_{\opt}[n^2\$(C) + n^3] \bigr),
 \end{equation} 
@@ -428,7 +427,7 @@ which is explained in Section \ref{sec:bayes_cubature_algo}. Note that aside fro
 
 \Section{Low Discrepancy Points}
 
-Low discrepancy points are characterized by how uniformly and randomly the points are distributed which is measured by the \emph{discrepancy} score, especially when the points are projected onto low-dimensions. The goal is to have as much as uniform space filling. The discrepancy measure is defined as below.
+Low discrepancy points are characterized by how uniformly and randomly the points are distributed which is measured by the \emph{discrepancy} score, especially when the points are projected onto low-dimensions. The goal is to have maximum uniform space filling. The discrepancy measure is defined as below.
 Let $\mathcal{M}$ be the set of all intervals of the form $\prod_{j=1}^{d} [a_j, b_j) = \{ \vx \in \mathbb{R}^d : a_j \le x_j \le b_j, 0 \le a_j \le b_j \le 1 \}$, where $\abs{\mathcal{P}}$ is the cardinality of the set $\mathcal{P}$, and $\lambda_L$ is the Lebesgue measure. Then, the discrepancy of a point set $\mathcal{P}$ is,
 \begin{align*}
 D(\mathcal{P}) := \sup_{M \in \mathcal{M}} 
@@ -441,7 +440,7 @@ In this work we experiment with two most popular low discrepancy point sets, 1) 
 
 Hickernell~\cite{Hic17a} compares different approaches to cubature error analysis depending on whether the rule is deterministic or random and whether the integrand is assumed to be deterministic or random.  Error analysis that assumes a deterministic integrand lying in a Banach space leads to an error bound that is typically impractical for deciding how large $n$ must be to satisfy \eqref{eqn:err_crit}.  The deterministic error bound includes a (semi-) norm of the integrand, which is often more complex to compute than the original integral.
 
-Hickernell and Jim\'enez-Rugama~\cite{HicJim16a,JimHic16a} have developed stopping criteria for cubature rules based on low discrepancy nodes by tracking the decay of the discrete Fourier coefficients of the integrand.  The algorithms proposed here also relies on discrete Fourier coefficients, but in a different way.  Although we only explore automatic Bayesian cubature for absolute error tolerances, the recent work by Hickernell, Jim\'enez-Rugama, and Li~\cite{HicEtal17a} suggests how one might accommodate more general error criteria, such as relative error tolerances.
+Hickernell and Jim\'enez-Rugama~\cite{HicJim16a,JimHic16a} have developed stopping criteria for cubature rules based on low discrepancy nodes by tracking the decay of the discrete Fourier coefficients of the integrand.  The algorithms proposed here also rely on discrete Fourier coefficients, but in a different way.  Although we only explore automatic Bayesian cubature for absolute error tolerances, the recent work by Hickernell, Jim\'enez-Rugama, and Li~\cite{HicEtal17a} suggests how one might accommodate more general error criteria, such as relative error tolerances.
 
 Chapter \ref{sec:BC} explains the Bayesian approach to estimate the posterior cubature error and defines our automatic Bayesian cubature. Although much of this material is known, it is included for completeness.  We end Chapter \ref{sec:BC}  by demonstrating why Bayesian cubature is typically computationally expensive.
 Chapter \ref{sec:fast_BC}  introduces the concept of covariance kernels that match the nodes and expedite the computations required by our automatic Bayesian cubature. 
@@ -449,10 +448,10 @@ Chapter \ref{sec:shift_invariant_kernel} implements this concept for shift invar
 Chapter \ref{sec:sobol_walsh} demonstrates another implementation of matching nodes and kernel using Sobol' points and Walsh kernel. It also develops approaches to build shift-invariant kernels of continuous valued kernel order rather than fixing the kernel order to integer values.
 Chapter \ref{sec:NumImpl} describes how to avoid cancellation error for kernels of product form. 
 It also covers  some of the additional techniques used in the implementation of our Bayesian Cubature algorithms. 
-Numerical examples are provided in Chapter \ref{sec:NumExp} to demonstrate the performance and advantages of our new algorithms.  We conclude with a brief discussion and future work.
+Numerical examples are provided in Chapter \ref{sec:NumExp} to demonstrate the performance and advantages of our new algorithms.  We conclude with a brief discussion and potential future work.
 
 
-We use the terms integrand or function interchangeably to denote the function $f$ being considered for the numerical integration. Also we use the terms, nodes, points, node-sets, design, and data-sites interchangeably to denote the points $\mathcal{P} := \{\vx_i\}_{i=1}^n \subset [0,1]^d$ used in the cubature.
+We use the terms integrand or function interchangeably to denote the function $f$ being considered for the numerical integration. Also we use the terms, nodes, points, node-sets, design, and data-sites interchangeably to denote the points $\mathcal{P} := \{\vx_i\}_{i=1}^n \subset [0,1)^d$ used in the cubature.
 
 
 
@@ -1104,15 +1103,15 @@ where the cone of functions is defined as $\mathscr{C} = \{f : f \in \mathscr{C}
 & = \err_{f,n}(a f(x_1), \dots a f(x_n)).
 \end{align*}
 If the integrand is multiplied by a constant, say $a=45$, then the integral error is also multiplied by the same constant $a=45$, but the factor $\err_{f,n}$ which depends on the characteristic of $f$ does not change.
-In the context of Bayesian cubature, One can explain the cone concept beginning with the definition of credible interval \eqref{eqn_prob_confidence_interval}. 
-Let $f \sim \mathcal{GP}$, is an instance of a Gaussian stochastic process
+In the context of Bayesian cubature, one can explain the cone concept beginning with the definition of credible interval \eqref{eqn_prob_confidence_interval}. 
+Let $f \sim \mathcal{GP}$, be an instance of a Gaussian stochastic process:
 \begin{align*}
 \mathbb{P}_f \left[
 |\mu(f)-\hmu_n(f)| \leq \err_{n}(f) \right] \ge 99\%.
 \end{align*}
-This can be interpreted as $|\mu(f)-\hmu_n(f)| \leq \err_{n}(f)$ with 99\% confidence. If $f$ is in the 99\% middle of the functions space such that $f(x_i) = y_i$ then $af$ is also in the center of 99\%.
+This can be interpreted as $|\mu(f)-\hmu_n(f)| \leq \err_{n}(f)$ with 99\% confidence. If $f$ is in the 99\% middle of the functions space such that $f(x_i) = y_i$ then $af$ is also in the middle of 99\%.
 
-We explain the credible interval using the following example. For this purpose, chosen a smooth and periodic integrand $f_{nice}(\vx) = \exp(\sum_{j=1}^{d} \cos(2\pi x_j)) + a_{nice} f_{noise}$ and another integrand $f_{peaky}(\vx) = f_{nice} + a_{peaky} f_{noise}$ where $a_{peaky} >> a_{nice}$. Here the function $f_{noise}(\vx) = (1 - \exp(2\pi i \sqrt{-1} \vx^T \vzeta))$ is chosen to be zero at the sampling nodes $\{ \vx_i\}_{i=1}^n$, where $a \in \mathbb{R}$ is some constant, $\vzeta \in \mathbb{R}^d$ is some $d$-dimensional vector belonging to the dual space of the lattice nodes $\{ \vx_i\}_{i=1}^n$ chosen to sample the integrand. This helps to satisfy $f_{nice}(\vx_i) = f_{real}(\vx_i) $ at the sampling nodes $\{ \vx_i\}_{i=1}^n$
+We demonstrate the credible interval using the following example. For this purpose, choose a smooth and periodic integrand $f_{nice}(\vx) = \exp(\sum_{j=1}^{d} \cos(2\pi x_j)) + a_{nice} f_{noise}$ and another integrand $f_{peaky}(\vx) = f_{nice} + a_{peaky} f_{noise}$ where $a_{peaky} >> a_{nice}$. Here the function $f_{noise}(\vx) = (1 - \exp(2\pi i \sqrt{-1} \vx^T \vzeta))$ is chosen to be zero at the sampling nodes $\{ \vx_i\}_{i=1}^n$, where $a \in \mathbb{R}$ is some constant, $\vzeta \in \mathbb{R}^d$ is some $d$-dimensional vector belonging to the dual space of the lattice nodes $\{ \vx_i\}_{i=1}^n$, chosen to sample the integrand. This helps to satisfy $f_{nice}(\vx_i) = f_{real}(\vx_i) $ at the sampling nodes $\{ \vx_i\}_{i=1}^n$.
 
 
 \begin{figure}[ht]
@@ -1133,12 +1132,12 @@ We explain the credible interval using the following example. For this purpose, 
 \end{figure}
 % Done: \JRNote{Use standard deviation $\sigma$ in x-axis.  $f_{nice}$ using kernel approximation} 
 
-As shown in \figref{fig:cone_bayes_functions}, sampled function values $\{f(\vx_i)\}_{i=1}^n$ from a smooth integrand $f_{true}$ are shown as dots. One can imagine these samples $\{f(\vx_i)\}_{i=1}^n$ were obtained from $f_{nice}$, a moderately smoother function or from $f_{peaky}$, a highly oscillating function.
+As shown in \figref{fig:cone_bayes_functions}, the sampled function values, $\{f_{true}(\vx_i)\}_{i=1}^n$ from a smooth integrand $f_{true}$ are shown as dots. One can imagine these samples $\{f(\vx_i)\}_{i=1}^n$ were obtained from $f_{nice}$, a moderately smoother function or from $f_{peaky}$, a highly oscillating function.
 
-When using $n=16$ rank-1 lattice points and $r=1$ shift-invariant kernel, we get the posterior distribution of $\mu$ as shown in \figref{fig:cone_bayes_posterior}. The true integral value is shown as $\mu_{true}$ which is at the center of the plot. The integral of the peaky function $f_{peaky}$ almost lies outside of the 99\% of the credible interval given by \eqref{eqn_prob_CI_MLE}, whereas the $\mu_{nice}$ falls within.
+When using $n=16$ rank-1 lattice points, and $r=1$ shift-invariant kernel, we get the posterior distribution of $\mu$ as shown in \figref{fig:cone_bayes_posterior}. The true integral value is shown as $\mu_{true}$ which is at the center of the plot. The integral of the peaky function $f_{peaky}$ almost lies outside of the 99\% of the credible interval given by \eqref{eqn_prob_CI_MLE}, whereas the $\mu_{nice}$ falls within.
 
 Our Bayesian Cubature algorithms compute the approximate integral using only the samples of the integrand. 
-Estimated integral value of our algorithm closely match the integral of a smooth function that falls within the middles of the confidence interval. If the true integrand were to resemble the smooth approximate function then the estimated integral will be accurate.  
+Estimated integral value of our algorithm closely matches the integral of a smooth function that falls within the middle of the confidence interval. If the true integrand were to resemble the smooth approximate function then the estimated integral will be accurate.  
 
 
 
@@ -2194,9 +2193,9 @@ Often it leads to longer computation time or poor accuracy in the numerical inte
 Here we explore two alternative forms of the kernel which allow the kernel order to be positive continuous value greater than one or a continuous value in the range $(0,1)$. Let us recollect the infinite series expression that was used to construct the kernel\eqref{the_kernel_eqn_bernoulli},
 \begin{align*}
 C_\vtheta(\vx, \vt) := &  \sum_{\vk \in \mathbb{Z}^d} \alpha_{\vk,\vtheta}  e^{2 \pi\sqrt{-1} \vk^T\vx}
-e^{-2 \pi\sqrt{-1} \vk^T\vt}, \quad \alpha_{\vk,\vtheta} = \prod_{l=1}^d \frac{1}{\max(\frac{|k_l|}{\eta_l},1)^r_{\eta_l\leq 1}} 
+e^{-2 \pi\sqrt{-1} \vk^T\vt}, \quad \text{where} \; \alpha_{\vk,\vtheta} = \prod_{l=1}^d \frac{1}{\max(\frac{|k_l|}{\eta_l},1)^r_{\eta_l\leq 1}} 
 \end{align*}
-where $\theta = (\eta, r)$.  This form is convenient for analytical derivations.
+and $\theta = (\eta, r)$.  This form is convenient for analytical derivations.
 To make the derivations easier to follow, we fix the dimension $d=1$,
 \begin{align*}
 C_\vtheta(x, t) = & 1 + \eta \sum_{k \in \mathbb{Z}, k \neq 0 } \frac{1}{\abs{k}^r} 
@@ -2229,14 +2228,14 @@ e^{ 2 \pi\sqrt{-1} k (x-t) + \abs{k} \log(q)}
 \sum_{k=1}^\infty e^{ 2 \pi\sqrt{-1} k (x-t) + \abs{k} \log(q)} 
 +
 \sum_{k=\infty}^{-1} e^{ 2 \pi\sqrt{-1} k (x-t) + \abs{k} \log(q)}
-\right), 
+\right)
 \\
 =& 1 + \eta 
 \left(
 \sum_{k=1}^\infty e^{ 2 \pi\sqrt{-1} k (x-t) + \abs{k} \log(q)} 
 +
 \sum_{k=-\infty}^{-1} e^{ 2 \pi\sqrt{-1} k (x-t) + \abs{k} \log(q)}
-\right), 
+\right)
 \\
 =& 1 + \eta 
 \left(
@@ -2244,11 +2243,11 @@ e^{ 2 \pi\sqrt{-1} k (x-t) + \abs{k} \log(q)}
 	\sum_{k=1}^\infty e^{ 2 \pi\sqrt{-1} k (x-t) + \abs{k} \log(q)} }_{*}
 +
 \sum_{k=1}^{\infty} e^{ -2 \pi\sqrt{-1} k (x-t) + \abs{k} \log(q)}
-\right), 
+\right).
 \end{align*}
-Let us focus on the term $(*)$,
+Let us focus on the first term $(*)$ within the parenthesis in the previous equation,
 \begin{align*}
-(*) & = \sum_{k=1}^\infty e^{ 2 \pi\sqrt{-1} k (x-t) + \abs{k} \log(q)} =
+\sum_{k=1}^\infty e^{ 2 \pi\sqrt{-1} k (x-t) + \abs{k} \log(q)} & =
 \sum_{k=1}^\infty \left[e^{ 2 \pi\sqrt{-1} (x-t) +  \log(q)} \right]^k
 \\
 & = \frac{e^{ 2 \pi\sqrt{-1} (x-t) +  \log(q)}}{1- e^{ 2 \pi\sqrt{-1} (x-t) +  \log(q)}}
@@ -2264,28 +2263,28 @@ C_\vtheta(x, t) &=
 \frac{1}{ q^{-1} e^{- 2 \pi\sqrt{-1} (x-t)} -1 }
 +
 \frac{1}{ q^{-1} e^{ 2 \pi\sqrt{-1} (x-t)} -1 }
-\right),
+\right)
 \\
 &= 
 1 + \eta 
 \left(
 \frac{q^{-1} \left(e^{2 \pi\sqrt{-1} (x-t) }+ e^{ -2 \pi\sqrt{-1} (x-t)}\right) -2 }
 {q^{-2} - q^{-1} \left(e^{ 2 \pi\sqrt{-1} (x-t)} + e^{ -2 \pi\sqrt{-1} (x-t)}\right) + 1 }
-\right),
+\right)
 \\
 &= 
 1 + \eta 
 \left(
 \frac{2 q^{-1} \cos({2 \pi\sqrt{-1} (x-t) }) -2 }
 {q^{-2} - 2 q^{-1} \cos({ 2 \pi\sqrt{-1} (x-t)})  + 1 }
-\right),
+\right)
 \\
 &= 
 1 + 2 \eta q
 \left(
 \frac{ \cos({2 \pi\sqrt{-1} (x-t) }) - q }
 {q^{2} - 2 q \cos({ 2 \pi\sqrt{-1} (x-t)})  + 1 }
-\right),
+\right).
 \end{align*}
 Using the fact $\cos^2(t) + \sin^2(t) = 1$
 \begin{align*}
@@ -2303,7 +2302,7 @@ The hyperparameters need to be $\eta > 0$ and $ 0 < q < 1$ while searching for t
 % \\
 % \eta: & \quad e^{t} & :(-\infty, \infty) \to (0, \infty).
 % \end{align*}
-One disadvantage of this kernel is, it is very sensitive to the changes in kernel order $q \in (0,1)$, to even small vales. So the hyperparameter search sometimes misses the global minima.
+One disadvantage of this kernel is that it is very sensitive to the changes in kernel order $q \in (0,1)$, for even small vales which might cause the hyperparameter search to miss the global minima.
 
 
 
@@ -2321,14 +2320,15 @@ One disadvantage of this kernel is, it is very sensitive to the changes in kerne
 
 \Subsection{Truncated series kernel}
 \label{sec:trunc_series_kernel}
-There is an another form to the previous kernel, which has the kernel order in $(1, \infty)$, making it more robust in the hyperparameter search.
-If we use the original definition of the kernel, we could make the kernel order $r$ explicit such that it does not have to be an even integer, which was the constraint previously. For $d=1$,
+There is another form of the previous kernel, which has the kernel order in the interval $(1, \infty)$, making it more robust in the hyperparameter search.
+By using the original definition of the kernel, we could make the kernel order $r$ continuous valued such that it does not have to be an even integer. %, which was the constraint previously. 
+For $d=1$,
 \begin{align*}
 C_\vtheta(x, t) = & 1 + \eta \sum_{k \in \mathbb{Z}, k \neq 0 } \frac{1}{\abs{k}^r} 
 e^{ 2 \pi\sqrt{-1} k (x-t)}
 \end{align*}
 where $\theta = (\eta, r)$. 
-But it has the infinite sum which cannot be used directly, so we truncate to length $N$,
+Since the infinite sum cannot be used directly, we truncate to length $N$,
 \begin{align*}
 C_{\vtheta, N}(x, t) = & 1 + \eta \sum_{k = - N/2 }^{N/2 - 1} \frac{1}{\abs{k}^r} 
 e^{ 2 \pi\sqrt{-1} k (x-t)}
@@ -2344,14 +2344,14 @@ The first column of the Gram matrix is
 &= \left( \prod_{l=1}^d \left[ 1 + \eta_l \sum_{k = - N/2, k \neq 0 }^{N/2 - 1} \frac{1}{\abs{k_l}^r} 
 e^{ 2 \pi\sqrt{-1} k_l (x_{il}-x_{1l})}\right] \right)_{i=1}^n, 
 \end{align*}
-where $d$ is number of dimensions and $n$ is the number of points. 
-But the direct computation involves $nN$ computations, or $n^2$ computations if $N \approx n$. We can reduce the computations to $\Order(n\log n)$ using the FFT.
+where $d$ is then number of dimensions and $n$ is the number of points. 
+However the direct computation involves $nN$ computations, or $n^2$ computations if $N \approx n$. We can reduce the computations to $\Order(n\log n)$ using the FFT.
 Define
 \begin{align*}
 \mathfrak{C}_r(t) &:= \sum_{k = - N/2, k \neq 0 }^{N/2 -1} \frac{1}{\abs{k}^r} 
 e^{ 2 \pi\sqrt{-1} k\, t}.
 \end{align*}
-Using the notation $\mathfrak{C}_r$, rewrite
+Using the $\mathfrak{C}_r$, rewrite
 \begin{align}
 \label{eqn:trunc_series_kernel}
 \vC_{\vtheta, N}
@@ -2376,12 +2376,12 @@ This notation is very convenient to show that $\widetilde{\mathfrak{C}}_r$,  the
 \\
 &= \sum_{k = - N/2, k \neq 0  }^{N/2-1} \frac{N}{\abs{k}^r} \; \delta_{k-m \bmod N, 0} \; .
 \end{align*}
-By simply observing the above result, it is evident that $\widetilde{\mathfrak{C}}_r$ can be computed analytically,
+Based on the above result, it is evident that $\widetilde{\mathfrak{C}}_r$ can be computed analytically,
 \begin{align} \label{dft_of_g}
 \widetilde{\mathfrak{C}}_r(m) &= 
 \begin{cases}
-0, & \text{for} \quad m=0,\\
-\frac{N}{\abs{m}^r}, & \text{for} \quad m=1,\dots,N/2-1, \\
+0, & \text{for} \quad m=0 \\
+\frac{N}{\abs{m}^r}, & \text{for} \quad m=1,\dots,N/2-1 \\
 \frac{N}{\abs{N-m}^r}, & \text{for} \quad m=N/2,\dots,N-1
 \end{cases}
 \end{align}
@@ -2392,33 +2392,33 @@ where we used the fact,
 \begin{cases}
 \frac{1 - e^{2\pi \sqrt{-1} j N /N}}{1 - e^{2\pi \sqrt{-1} j /N}} = 0, &j \ne 0 \bmod N
 \\
-N, & j = 0 \bmod N
-\end{cases}.
+N, & j = 0 \bmod N.
+\end{cases}
 \end{align}
-Having these result, we can easily back-compute $\mathfrak{C}$ using inverse discrete Fourier transform. It can be easily shown that inverse DFT of $\widetilde{\mathfrak{C}}_{r}$ returns $\mathfrak{C}$ indeed,
+Having these results, we can easily back-compute $\mathfrak{C}$ using inverse discrete Fourier transform. It can be shown that inverse DFT of $\widetilde{\mathfrak{C}}_{r}$ returns $\mathfrak{C}$,
 \begin{align*}
 \frac{1}{N} &\sum_{m=0}^{N-1} \widetilde{\mathfrak{C}}_{r} (m) e^{2 \pi\sqrt{-1} lm/N} \\
 & = \frac{1}{N} \sum_{m=0}^{N-1} 
 \sum_{j=0}^{N-1} \mathfrak{C}_{r} (j/n) e^{- 2 \pi\sqrt{-1} jm/N}
-e^{2 \pi\sqrt{-1} lm/N}, \quad \text{by \ref{eqn:dft_delta_fact}}  \\
+e^{2 \pi\sqrt{-1} lm/N}, \quad \text{by \eqref{eqn:dft_delta_fact}}  \\
 % & = \frac{1}{N} \sum_{j=0}^{N-1} \mathfrak{C}_{r} (j/n) \sum_{m=0}^{N-1} e^{2 \pi\sqrt{-1} (l-j)m/N} \\
 & = \frac{1}{N}  \sum_{j=0}^{N-1} \mathfrak{C}_{r} (j/n) N \delta_{(l-j) \bmod N, 0} \\
 & = \mathfrak{C}_{r} (l/n), \quad \text{for} \quad l=0,\dots,N-1
 \end{align*}
-This shows that to compute $n$ values of $\biggl( C_{\vtheta, N}(\vx_i, \vx_1) \biggr)_{i=1}^n$, we need to have $N=n$. 
+This implies that to compute $n$ values of $\biggl( C_{\vtheta, N}(\vx_i, \vx_1) \biggr)_{i=1}^n$, we need to have $N=n$. 
 The above results are summarized as an algorithm to compute $\mathfrak{C}$ using FFT:
 \begin{enumerate}
-\item Analytically compute $\left(\widetilde{\mathfrak{C}}_{r}(m)\right)_{m=0}^{N-1}$, the discrete Fourier coefficients of $\left(\mathfrak{C}_r(j/N)\right)_{j=0}^{N-1}$ using \eqref{dft_of_g}.
-\item Take the inverse FFT of $\left(\widetilde{\mathfrak{C}}_{r}(m)\right)_{m=0}^{N-1}$ to get $\left(\mathfrak{C}_r(j/N)\right)_{j=0}^{N-1}$.
+\item Analytically compute $\left(\widetilde{\mathfrak{C}}_{r}(m)\right)_{m=0}^{N-1}$, the discrete Fourier coefficients of $\left(\mathfrak{C}_r(j/N)\right)_{j=0}^{N-1}$ using \eqref{dft_of_g}
+\item Take the inverse FFT of $\left(\widetilde{\mathfrak{C}}_{r}(m)\right)_{m=0}^{N-1}$ to get $\left(\mathfrak{C}_r(j/N)\right)_{j=0}^{N-1}$
 \end{enumerate}
-where the computational cost is $\Order(n \log n)$ instead of $\Order(n^2)$. Plugging-in the values of $\mathfrak{C}$ in \eqref{eqn:trunc_series_kernel} gives the kernel. Another major benefit is, the FFT approach is numerically stable than the direct sum approach.
+where the computational cost is $\Order(n \log n)$ instead of $\Order(n^2)$. Plugging-in the values of $\mathfrak{C}$ in \eqref{eqn:trunc_series_kernel} gives the kernel. Another major benefit is that the FFT approach is numerically more stable than the direct sum approach.
 
 
 
 
 \Section{Summary}
 
-We summarize the results of this Chapter and the previous one as a theorem below. 
+We summarize the results of this and the previous Chapter as a theorem below. 
 % In comparison to Algorithm \ref{algorithm1}, the second and third components of the computational cost of Algorithm  \ref{algorithm2} are substantially reduced.
 \begin{theorem}
 Let $\mCtheta$ be any symmetric, positive definite, shift-invariant covariance kernel of the form \eqref{eq:shInv}, where $K_\vtheta$ has period one in every variable. Furthermore, let $K_\vtheta$ be scaled to satisfy \eqref{addAssump}. When matched with rank-1 lattice data-sites, $\mCtheta$ must satisfy assumptions \eqref{fastcompAssump}. The cubature, $\hmu$, is just the sample mean. 
@@ -2430,9 +2430,7 @@ The \emph{fast Fourier transform} (FFT) can be used to expedite the estimates of
 
 Although the third part of the computational cost has the largest dependence on $n$, in practice it need not be the largest contributor to the computational cost.  If function values are the result of an expensive simulation, then the first part may consume most of the computation time.
 
-We have implemented the fast adaptive Bayesian cubature algorithm in MATLAB as part of the Guaranteed Adaptive Integration Library (GAIL) \cite{ChoEtal17b} as \allowbreak \\ \code{cubBayesLattice\_g}. This algorithm uses the kernel defined in  \eqref{the_kernel_eqn_bernoulli} with  $r=1,2$
-
- or the continuous valued order kernel \eqref{eqn:trunc_series_kernel}, and the periodizing variable transforms in \secref{sec:period_var_tx}. The rank-1 lattice node generator is taken from \cite{NuyMagic} (\code{exod2\_base2\_m20}).
+We have implemented the fast adaptive Bayesian cubature algorithm in MATLAB as part of the Guaranteed Adaptive Integration Library (GAIL) \cite{ChoEtal17b} as \allowbreak \\ \code{cubBayesLattice\_g}. This algorithm uses the kernel defined in  \eqref{the_kernel_eqn_bernoulli} with  $r=1,2$ or the continuous valued order kernel \eqref{eqn:trunc_series_kernel}, and the periodizing variable transforms in \secref{sec:period_var_tx}. The rank-1 lattice node generator is taken from \cite{NuyMagic} (\code{exod2\_base2\_m20}).
 
 
 
@@ -3177,9 +3175,9 @@ where now the right hand side is free of cancellation error.
 
 We show how to compute $\rC_\vtheta$ without introducing round-off error.  The covariance functions that we use are of product form, namely,
 \begin{equation*}
-C_\vtheta(\vt, \vx) = \prod_{\ell=1}^d \left[1 + \rC_{_\vtheta,\ell}(t_\ell,x_\ell) \right], \qquad  \rC_{_\vtheta,\ell}:[0,1]^2 \to \reals.
+C_\vtheta(\vt, \vx) = \prod_{\ell=1}^d \left[1 + \rC_{_\vtheta,\ell}(t_\ell,x_\ell) \right], \qquad  \rC_{_\vtheta,\ell}:[0,1] \times [0,1] \to \reals.
 \end{equation*}
-Direct computation of $\rC_\vtheta (\vt,\vx) = C_\vtheta(\vt,\vx) -1$ introduces cancellation error if the $ \rC_\ell$ are small.  So, we employ the iteration
+Direct computation of $\rC_\vtheta (\vt,\vx) = C_\vtheta(\vt,\vx) -1$ introduces cancellation error if the $ \rC_\ell$ are small.  So, we employ the iteration,
 \begin{align*}
 \rC_\vtheta^{(1)} &= \rC_{_\vtheta,1}(t_1,x_1),  \\
 \rC_\vtheta^{(\ell)} &  = \rC_\vtheta^{(\ell-1)}[1 + \rC_{\vtheta,\ell}(t_\ell,x_\ell)] + \rC_{\vtheta,\ell}(t_\ell,x_\ell),  \hspace{1cm} \ell = 2, \ldots, d, \\
@@ -3187,7 +3185,7 @@ Direct computation of $\rC_\vtheta (\vt,\vx) = C_\vtheta(\vt,\vx) -1$ introduces
 \end{align*}
 In this way, the Gram matrix $\rmC_\vtheta$, whose $i,j$-element is $\rC_\vtheta(\vx_i,\vx_j)$ can be constructed with minimal round-off error.
 
-Computing the eigenvalues of $\rmC_\vtheta$ via the procedure given in \eqref{eqn:fast_transform_to_eigvalues} yields $\rlambda_1 = \lambda_1 - n, \lambda_2, \ldots, \lambda_n$. The estimates of $\vtheta$ are computed in terms of the eigenvalues of $\rmC_\vtheta$, so \eqref{eqn_MLE_loss_func_optimized_2} and \eqref{thetaGCV} become
+Computing the eigenvalues of $\rmC_\vtheta$ via the procedure given in \eqref{eqn:fast_transform_to_eigvalues} yields $\rlambda_1 = \lambda_1 - n, \lambda_2, \ldots, \lambda_n$. The estimates of $\vtheta$ are computed in terms of the eigenvalues of $\rmC_\vtheta$.  So \eqref{eqn_MLE_loss_func_optimized_2} and \eqref{thetaGCV} become
 \begin{subequations}
 	\label{thetaSimple}
 	\begin{align}
@@ -3208,7 +3206,7 @@ Computing the eigenvalues of $\rmC_\vtheta$ via the procedure given in \eqref{eq
 	\right],
 	\end{align}
 \end{subequations}
-where $\lambda_1 = n + \rlambda_1$.  The widths of the credible intervals in \eqref{eq:errMLEAllAsump}, \eqref{FJH:eq:errFullSimple}, and   \eqref{errGCVSimple} become
+where $\lambda_1 = n + \rlambda_1$.  The widths of the credible intervals in \eqref{eq:errMLEAllAsump}, \eqref{FJH:eq:errFullSimple}, and   \eqref{errGCVSimple} become,
 \begin{subequations}
 	\label{fastStoppingCriterions}
 	\begin{align}
@@ -3266,9 +3264,9 @@ The computational steps for the improved, faster, automatic Bayesian cubature ar
 \begin{algorithm}
 	\caption{Fast Automatic Bayesian Cubature}\label{algorithm2}
 	\begin{algorithmic}[1]
-		\Require a generator for the rank-1 Lattice sequence
-		$\vx_1, \vx_2, \ldots$ and a matching shift-invariant  kernel, $C_\vtheta$ 
-		or a generator for Sobol sequence and a matching digital shift-invariant kernel, $C_\vtheta$;
+		\Require 
+		A choice of generator for the point set $\vx_1, \vx_2, \ldots$ and a matching kernel $C_\vtheta$ from, 
+		1) rank-1 Lattice sequence and a matching shift-invariant  kernel, 2) Sobol' sequence and a matching digital shift-invariant kernel;
 		a black-box function, $f$; 
 		an absolute error tolerance,
 		$\varepsilon>0$; the positive initial sample size, $n_0$, that is a power of $2$;
@@ -3296,26 +3294,25 @@ In comparison to Algorithm \ref{algorithm1}, the second and third components of 
 The Algorithm \ref{algorithm2} has a computational cost which is the sum of the following:
 % so that the computational cost is the sum of the following:
 \begin{itemize}
-	\item $\Order\bigl(n\$(f) \bigr)$ for the integrand data, where $\$(f)$ is the computational cost of a single $f(\vx)$;
+	\item $\Order\bigl(n\$(f) \bigr)$ for the integrand data, where $\$(f)$ is the computational cost of a single $f(\vx)$
 	
-	\item $\Order\bigl(N_{\opt} n \$(C_\vtheta) \bigr)$ for the evaluations of the vector $\vC_{1}$, where $N_\opt$ is the number of optimization steps required, and  $\$(C_\vtheta)$ is the computational cost of a single $C_\vtheta(\vt,\vx)$; and
+	\item $\Order\bigl(N_{\opt} n \$(C_\vtheta) \bigr)$ for the evaluations of the vector $\vC_{1}$, where $N_\opt$ is the number of optimization steps required, and  $\$(C_\vtheta)$ is the computational cost of a single $C_\vtheta(\vt,\vx)$
 	
-	\item $\Order\bigl(N_{\opt} n \log(n) \bigr)$ for the FFT calculations; there is no $d$ dependence in these calculations.
-	
+	\item $\Order\bigl(N_{\opt} n \log(n) \bigr)$ for the FFT calculations; there is no $d$ dependence in these calculations
 \end{itemize}
 
 
-\Section{Kernel Parameters Search}
+\Section{Kernel Hyperparameters Search}
 \label{sec:kernel_param_search}
 
 \JRNote{Explain the transformation used to make the search range positive, $> 0$ , etc.}
 
-The various parameters introduced and used by our algorithms need to be optimally chosen. We have not discussed how that will be done. 
+The various hyperparameters introduced and used by our algorithms need to be optimally chosen. % We have not discussed how that will be done. 
 The parameter search can be done in two major ways. 
-Bounded minima search if the search interval is known else unbounded search.  Most of the time, the search interval is unknown. So the natural choice is to use unbounded search over the unbound domain such as is done by our algorithms using \code{fminsearch} provided by MATLAB.
+Bounded minima search, if the search interval is known, else unbounded search.  Most of the time, the search interval is unknown. So the natural choice is to use unbounded search over the unbound domain such as \code{fminsearch} provided by MATLAB.
 % line in -- that is semi-bounded.
-Our parameters need to live in a domain that is bounded or semi-bounded. 
-There are some simple domain transformations available to achieve such constraints.
+However hyperparameters need to live in a domain that is bounded or semi-bounded. 
+There are some simple domain transformations available to achieve this.
 
 \Subsection{Positive kernel shape parameter}
 The following parameter map is used to ensure that the shape parameter values are positive real numbers,
@@ -3325,7 +3322,7 @@ The following parameter map is used to ensure that the shape parameter values ar
 \end{align*}
 So one may search for the optimal $t_1 = \log(\eta)$ over the whole real line $\reals$. 
 % After the successful completion the minima 
-The optimal value $t_{1, \textup{opt}}$ can be transformed to back the $(0, \infty)$ interval using 
+The optimal value $t_{1, \textup{opt}}$ can be transformed back to the $(0, \infty)$ interval using 
 % the inverse of the transform $\log(t_0 )$ where $t_0$ is the minima.
 \begin{align*}
 \eta_{\textup{opt}} = e^{t_{\textup{opt}}}.
@@ -3366,7 +3363,7 @@ q_{\textup{opt}} = \frac{1}{1 + e^{-t_{3, \textup{opt}}}}.
 
 \JRNote{use uniformly randomly chosen $\varepsilon$ instead 4 fixed}
 
-Bayesian cubature algorithms developed in this work are demonstrated using three commonly used integration examples.
+Fast Bayesian cubature algorithms developed in this research are demonstrated using three commonly used integration examples.
 These integrals were evaluated using both the algorithms \code{cubBayesLattice\_g} and \code{cubBayesNet\_g}. The first example shows evaluating a multivariate Gaussian probability given the interval. The second example shows integrating the Keister's function, and the final example shows computing an Asian arithmetic option pricing.  
 
 % \Section{Test Results and Observations for \code{cubBayesLattice\_g}}
@@ -3374,16 +3371,15 @@ These integrals were evaluated using both the algorithms \code{cubBayesLattice\_
 \label{sec:numerical_experiments_cubBayesLattice}
 
 % Three integrals were evaluated using our GAIL algorithms:  a multivariate Gaussian probability, the Keister's example, and an option pricing example. 
-Four hundred different randomly chosen error tolerances, $\varepsilon$,  were set for each example, with the tolerances chosen from a fixed interval. 
-The error tolerance intervals were chosen depending on the difficulty of the problem.
-The nodes used in \allowbreak \code{cubBayesLattice\_g} were the randomly shifted lattice rules supplied by GAIL.  
-Where as the nodes used in \code{cubBayesNet\_g} were the randomly scrambled Sobol' nodes supplied by MATLAB's Sobol' sequence generator. 
+Four hundred different error tolerances, $\varepsilon$, were randomly chosen from a fixed interval  for each example. 
+The intervals for error tolerance were chosen depending on the difficulty of the problem.
+The nodes used in \allowbreak \code{cubBayesLattice\_g} were the randomly shifted lattice points supplied by GAIL, whereas the nodes used in \code{cubBayesNet\_g} were the randomly scrambled and shifted Sobol' points supplied by MATLAB's Sobol' sequence generator. 
 
-For each integral, and each of our stopping criteria---empirical Bayes, full Bayes, and generalized cross-validation---our algorithm is run  $400$ times with each randomly chosen error tolerance as mentioned above.  For each test, the execution time is plotted against $\abs{\mu - \hmu}/\varepsilon$.  We expect $\abs{\mu - \hmu}/\varepsilon$ to be no greater than one, but hope that it is not too much smaller than one, which would indicate a stopping criterion that is too conservative.
+For each integral example, and each stopping criteria---empirical Bayes, full Bayes, and generalized cross-validation---our algorithm is run with each randomly chosen error tolerance as mentioned above.  For each test, the execution time is plotted against $\abs{\mu - \hmu}/\varepsilon$.  We expect $\abs{\mu - \hmu}/\varepsilon$ to be no greater than one, but hope that it is not too much smaller than one, which would indicate a stopping criterion that is too conservative.
 %Unlike the examples in previous \secref{sec:numerical_experiments_cubBayesLattice}, periodization variable transform is not required.
 
 
-Periodization variable transforms are used in the examples with \allowbreak \code{cubBayesLattice\_g} as the algorithm assumes the integrands to be periodic in $[0,1]^d$. But the \allowbreak \code{cubBayesNet\_g} does not need this additional requirement, so the integrands are used as such.
+Periodization variable transforms are used in the examples with \allowbreak \code{cubBayesLattice\_g}, which assumes the integrands to be periodic in $[0,1]^d$. But the \allowbreak \code{cubBayesNet\_g} does not need this additional requirement, so the integrands are used directly.
 
 % \Section{Test Results and Observations for \code{cubBayesNet\_g}}
 % \label{sec:numerical_experiments_cubBayesNet}
@@ -3394,13 +3390,13 @@ Periodization variable transforms are used in the examples with \allowbreak \cod
 
 \Section{Multivariate Gaussian Probability}
 
-This example was already introduced in Section \ref{MVN_example}, where we used the Mat\'ern covariance kernel.  We reuse $ f_{\textup{Genz}}$ \eqref{eqn:fGenzdef} and apply periodization transform when required.
+This example was already introduced in Section \ref{MVN_example}, where we used the Mat\'ern covariance kernel.  We reuse $f_{\textup{Genz}}$ \eqref{eqn:fGenzdef} and apply periodization transform to obtain $f_{\textup{GenzP}}$ when required.
 
 \Subsection{Using \code{cubBayesLattice\_g}}
-As required by the algorithm, we apply Sidi's $C^2$  periodization to $ f_{\textup{Genz}}$ \eqref{eqn:fGenzdef}, and chose $d=3$ and $r=2$. The simulation results for this example function are summarized in Figures \ref{fig:mvn-guaranteed-MLE}, \ref{fig:mvn-guaranteed-FB}, and \ref{fig:mvn-guaranteed-GCV}.  In all cases the Bayesian cubature returns an approximation within the prescribed error tolerance. We used the same setting as before with generic slow Bayesian cubature in \secref{MVN_example} for comparision. For error threshold $\varepsilon=10^{-5}$ with empirical stopping criterion, our fast algorithm takes 0.001 seconds as shown in \figref{fig:mvn-guaranteed-MLE} whereas the basic algorithm takes 30 seconds as shown in \figref{fig:MVN_Metern_d2b2}. 
+As required by the algorithm, we apply Sidi's $C^2$  periodization to $ f_{\textup{Genz}}$ \eqref{eqn:fGenzdef}, and chose $d=3$ and $r=2$. The simulation results for this example integrand  are summarized in Figures \ref{fig:mvn-guaranteed-MLE}, \ref{fig:mvn-guaranteed-FB}, and \ref{fig:mvn-guaranteed-GCV}.  In all cases, $\code{cubBayesLattice\_g}$ returns an approximation within the prescribed error tolerance. We used the same setting as before with generic slow Bayesian cubature in \secref{MVN_example} for comparision. For error threshold $\varepsilon=10^{-5}$ with empirical stopping criterion, our fast algorithm takes 0.001 seconds as shown in \figref{fig:mvn-guaranteed-MLE} whereas the basic algorithm takes 30 seconds as shown in \figref{fig:MVN_Metern_d2b2}. 
 Amongst the three stopping criteria, GCV achieved the results faster than others. 
-One can also observe from the figures, the credible intervals are wider, causing the true error much smaller than requested.
-This could be due to the periodization transformed $f_\textup{Genz}$ is smoother than the $r=2$ kernel could approximate. Using a kernel of matching smoothness could produce right credible intervals.
+One can also observe from the figures that the credible intervals are wider, causing true error much smaller than requested.
+This could be due to the periodization transformed integrand, $f_\textup{GenzP}$, being smoother than the $r=2$ kernel approximation. Using a kernel of matching smoothness could produce right credible intervals.
 
 \begin{figure}
 	\centering
@@ -3427,13 +3423,13 @@ This could be due to the periodization transformed $f_\textup{Genz}$ is smoother
 
 
 \Subsection{Using \code{cubBayesNet\_g}}
-Here we use $ f_{\textup{Genz}}$ \eqref{eqn:fGenzdef} without any periodization, and chose $d=3$ and $r=1$. The simulation results for this example function are summarized in Figures \ref{fig:Sobol-mvn-guaranteed-MLE}, \ref{fig:Sobol-mvn-guaranteed-FB}, and \ref{fig:Sobol-mvn-guaranteed-GCV}.  In all cases the {\code{cubBayesNet\_g} returns an approximation within the prescribed error tolerance. We used the same setting as before with generic slow Bayesian cubature in \secref{MVN_example} for comparision. For error threshold $\varepsilon=10^{-5}$ with empirical stopping criterion, our fast algorithm takes about 2 seconds as shown in \figref{fig:mvn-guaranteed-MLE} whereas the basic algorithm takes 30 seconds as shown in \figref{fig:MVN_Metern_d2b2}. 
-{\code{cubBayesNet\_g} uses fast Walsh transform which is slower in MATLAB due to the way it was implemented. This is reason it takes more time than the {\code{cubBayesLattice\_g}. 
+Here we use $ f_{\textup{Genz}}$ \eqref{eqn:fGenzdef} without any periodization, and chose $d=3$ and $r=1$. The simulation results for this example integrand are summarized in Figures \ref{fig:Sobol-mvn-guaranteed-MLE}, \ref{fig:Sobol-mvn-guaranteed-FB}, and \ref{fig:Sobol-mvn-guaranteed-GCV}.  In all cases, {\code{cubBayesNet\_g} returns an approximation within the prescribed error tolerance. We used the same setting as before with generic slow Bayesian cubature in \secref{MVN_example} for comparision. For error threshold $\varepsilon=10^{-5}$ with empirical stopping criterion, our fast algorithm takes about 2 seconds as shown in \figref{fig:mvn-guaranteed-MLE} whereas the basic algorithm takes 30 seconds as shown in \figref{fig:MVN_Metern_d2b2}. 
+{\code{cubBayesNet\_g} uses fast Walsh transform which is slower in MATLAB due to the way it was implemented. This is reason it takes more longer the {\code{cubBayesLattice\_g}. 
 But comparing the number of samples, $n$, used for integration provides more insight which directly relates to the alogrithm's computational cost. The {\code{cubBayesLattice\_g} used $n=16384$ samples whereas {\code{cubBayesNet\_g} used $n=32768$ samples even with $r=1$ order kernel.
 
 Amongst the three stopping criteria, GCV achieved the results faster than others. 
-One can also observe from the figures, the credible intervals are narrower than we observed in \figref{fig:mvn-guaranteed-MLE}.
-This shows {\code{cubBayesNet\_g} with $r=1$ kernel more accurately approximates the integrand.
+One can also observe from the figures that the credible intervals are narrower than in \figref{fig:mvn-guaranteed-MLE}.
+This shows that {\code{cubBayesNet\_g} with $r=1$ kernel more accurately approximates the integrand.
 
 \begin{figure}]
 \centering
@@ -3476,7 +3472,7 @@ This multidimensional integral function comes from \cite{Kei96} and is inspired 
 \nonumber
 f_\textup{Keister}(\vx) &= \pi^{d/2} \cos\left(\norm{ \Phi^{-1}(\vx)/2}\right)  ,
 \end{align}
-and again $\Phi$ is the standard normal distribution.
+and $\Phi$ is the standard normal distribution.
 %\begin{figure}
 %	\captionsetup[subfigure]{labelformat=empty}
 %	\begin{subfigure}[h]{0.48\linewidth}
@@ -3537,9 +3533,8 @@ As we can see the GCV stopping criterion achieved the results faster than the ot
 
 \Subsection{Using \code{cubBayesNet\_g}}
 Figures \ref{fig:Sobol-keister-guaranteed-MLE}, \ref{fig:Sobol-keister-guaranteed-FB} and \ref{fig:Sobol-keister-guaranteed-GCV} summarize the numerical tests for this case. We used  dimension $d=4$, and $r=1$.  No periodization transform was used as the integrand need not be periodic. 
-In this example, we use $r=1$ order kernel where as in \secref{sec:cubBayesLattice_keister_example}, $r=2$ kernel was used, which necessitates
-the \code{cubBayesNet\_g} to use more samples for integration.
-As we can see the GCV stopping criterion achieved the results faster than the others similar to the multivariate Gaussian case.
+In this example, we use $r=1$ order kernel whereas in \secref{sec:cubBayesLattice_keister_example}, $r=2$ kernel was used. This necessitates \code{cubBayesNet\_g} to use more samples for integration.
+As observed from the figures, the GCV stopping criterion achieved the results faster than the others which was also the case with the multivariate Gaussian example.
 
 \begin{figure}
 	\centering
@@ -3594,7 +3589,7 @@ $
 T = 1/4, \ \ d = 13, \ \ S_0 = 100, \ \ r =  0.05, \ \ \sigma = 0.5, \ \ K = 100.
 $
 Moreover, $\mL$ is chosen to be the matrix of eigenvectors of $\mSigma$ times the square root of the diagonal matrix of eigenvalues of $\mSigma$.
-Because the integrand has a kink caused by the $\max$ function, it does not help to use a periodizing transform that is very smooth.  We choose the baker's transform \eqref{eq:bakerTrans} and $r = 1$.
+Because the integrand has a kink caused by the $\max$ function, it does not help to use a periodizing transform that is very smooth.  We chose the baker's transform \eqref{eq:bakerTrans} and $r = 1$.
 
 
 \label{sec:cubBayesLattice_option_pricing_example}
@@ -3620,11 +3615,12 @@ Because the integrand has a kink caused by the $\max$ function, it does not help
 \Subsection{Using \code{cubBayesNet\_g}}
 %\Subsection{Option Pricing}
 The Figures \ref{fig:Sobol-optprice-guaranteed-MLE}, \ref{fig:Sobol-optprice-guaranteed-FB} and 
-\ref{fig:Sobol-optprice-guaranteed-GCV} summarize the numerical results for the option pricing example using the same values as in \secref{sec:cubBayesLattice_option_pricing_example},
+\ref{fig:Sobol-optprice-guaranteed-GCV} summarize the numerical results for the option pricing example using the same values for,
 $
-T = 1/4, \ \ d = 13, \ \ S_0 = 100, \ \ r =  0.05, \ \ \sigma = 0.5, \ \ K = 100.
-$
-As mentioned before, this integrand has a kink caused by the $\max$ function, So, \code{cubBayesNet\_g} could be more efficient than \code{cubBayesLattice\_g}, as no periodization transform is required. This can be observed from the number of samples used for intgration to meet the same error threshold. For the error tolerance $\varepsilon=10^{-3}$, the \code{cubBayesLattice\_g} used $n=2^{20}$ samples, whereas the \code{cubBayesNet\_g} used $n=2^{17}$ samples.
+%T = 1/4, \ \ d = 13, \ \ S_0 = 100, \ \ r =  0.05, \ \ \sigma = 0.5, \ \ K = 100.
+T, \ \ d, \ \ S_0, \ \ r, \ \ \sigma, \ \ K
+$, as in \secref{sec:cubBayesLattice_option_pricing_example}.
+As mentioned before, this integrand has a kink caused by the $\max$ function, so, \code{cubBayesNet\_g} could be more efficient than \code{cubBayesLattice\_g}, as no periodization transform is required. This can be observed from the number of samples used for intgration to meet the same error threshold. For the error tolerance, $\varepsilon=10^{-3}$,  \code{cubBayesLattice\_g} used $n=2^{20}$ samples, whereas \code{cubBayesNet\_g} used $n=2^{17}$ samples.
 
 
 \begin{figure}
@@ -3651,10 +3647,10 @@ As mentioned before, this integrand has a kink caused by the $\max$ function, So
 
 \Section{Discussion}
 
-As shown in Figures \ref{fig:mvn-guaranteed-MLE} to \ref{fig:Sobol-optprice-guaranteed-GCV}, both the algorithms computed integral within user specified threshold most of the times except on a few occasions. This is especially the case with option pricing example due to the complexity and high dimension of the integrand. 
-Also notice the \code{cubBayesLattice\_g} algorithm finished within 10seconds of time for Keister and multivariate Gaussian. For the option pricing it look closer to 70seconds. This is again due to the complexity of the integrand.
+As shown in Figures \ref{fig:mvn-guaranteed-MLE} to \ref{fig:Sobol-optprice-guaranteed-GCV}, both the algorithms computed the integral within user specified threshold most of the time except on a few occasions. This is especially the case with option pricing example due to the complexity and high dimension of the integrand. 
+Also notice that the \code{cubBayesLattice\_g} algorithm finished within 10 seconds for Keister and multivariate Gaussian. Option pricing took closer to 70 seconds due to the complexity of the integrand.
 
-Another noticeable aspect from the plots of \code{cubBayesLattice\_g} is how much the error bounds differ from the true error. For option pricing example, the error bound is not as conservative as it is for the multivariate Gaussian and Keister examples. A possible reason is that the latter integrands are significantly smoother than is assumed by our covariance kernel.  This is a matter for further investigation.
+Another noticeable aspect from the plots of \code{cubBayesLattice\_g} is how much the error bounds differ from the true error. For option pricing example, the error bound is not as conservative as it is for the multivariate Gaussian and Keister examples. A possible reason is that the latter integrands are significantly smoother than the covariance kernel.  This is a matter for further investigation.
 
 % As shown in Figures \ref{fig:Sobol-mvn-guaranteed-MLE} to \ref{fig:Sobol-optprice-guaranteed-GCV}, the \code{cubBayesNet\_g} algorithm computes the integral within user specified threshold most of the times except on a few occasions. This is especially the case with option pricing example due to the complexity and high dimension of the integrand as mentioned in the previous example. 
 
@@ -3662,8 +3658,8 @@ Another noticeable aspect from the plots of \code{cubBayesLattice\_g} is how muc
 
 
 Most noticeable aspect from the plots of \code{cubBayesNet\_g} is how closer the error bounds are to the true error. 
-This shows the \code{cubBayesNet\_g}'s estimation of expected error in the stopping criterion is very accurate. 
-Similar to \code{cubBayesLattice\_g}, it missed meeting the given error threshold for the option pricing example, as marked by the hollow stars, for $\varepsilon=10^{-4}$. This is because the complexity of the integrand and the algorithm reached max allowed number of samples $n=2^{20}$.
+This shows that the \code{cubBayesNet\_g}'s estimation of expected error in the stopping criterion is very accurate. 
+Similar to \code{cubBayesLattice\_g}, it missed meeting the given error threshold for the option pricing example, as marked by the hollow stars, for $\varepsilon=10^{-4}$. The algorithm reached max allowed number of samples, $n=2^{20}$ due to the complexity of the integrand.
 
 
 
@@ -3671,20 +3667,19 @@ Similar to \code{cubBayesLattice\_g}, it missed meeting the given error threshol
 
 \Section{Comparison with \code{cubMC\_g}, \code{cubLattice\_g} and \code{cubSobol\_g}}
 
-GAIL library provides variety of numerical integration algorithms based on different theoretical foundation, We would like to compare how our algorithms perform relatively. We consider three GAIL algorithms 1) \code{cubMC\_g} a simple Monte-Carlo method for multi-dimensional integration, 2) \code{cubLattice\_g} a quasi-Monte-Carlo method using Lattice points, and 3) \code{cubSobol\_g} a quasi-Monte-Carlo method using Sobol points.
+GAIL library provides variety of numerical integration algorithms based on different theoretical foundations, We would like to compare how our algorithms perform relatively to these. We consider three GAIL algorithms 1) \code{cubMC\_g}, a simple Monte-Carlo method for multi-dimensional integration, 2) \code{cubLattice\_g}, a quasi-Monte-Carlo method using Lattice points, and 3) \code{cubSobol\_g}, a quasi-Monte-Carlo method using Sobol points.
 
 \Subsection{Keister integral}
 The Table~\ref{tab2} summarizes the performance of the methods MC, Lattice, Sobol,
-BayesLat, and BayesSob---they refer to the GAIL cubatures, \texttt{cubMC\_g},
+BayesLat, and BayesSob---which refer to the GAIL cubatures, \texttt{cubMC\_g},
 \code{cubLattice\_g}, \code{cubSobol\_g},  \code{cubBayesLattice\_g},  \code{cubBayesNet\_g},
 respectively for estimating Keister integral defined in \eqref{eqn:keister_integral}.
-We conducted two simulations with $d=3,8$. In the case of $d=3$, all five methods succeeded completely meaning the
-absolute error is less than given tolerance, i.e., $|\mu - \hat{\mu}| \le
+We conducted two simulations with $d=3$ and $8$. In the case of $d=3$, all five methods succeeded completely, meaning, the absolute error is less than given tolerance, i.e., $|\mu - \hat{\mu}| \le
 \varepsilon$, where $\hat{\mu}$ is a cubature's approximated value. The
 fastest method was \code{cubBayesLattice\_g}.
 In the case of $d=8$,   \code{cubSobol\_g} achieved 100\% success rate
 and was the fastest. But \code{cubBayesLattice\_g}  was competitive and
-had the smallest average absolute error. \code{cubBayesNet\_g} used lowest number of samples in case of $d=8$ but slower than \code{cubSobol\_g}.
+had the smallest average absolute error. \code{cubBayesNet\_g} used lowest number of samples but was slower than \code{cubSobol\_g}.
 
 \JRNote{avoid Exp notation for 2 decimals}
 \begin{table}[ht] % MATLAB Driver: KeisterCubatureExampleBayes.m
@@ -3710,14 +3705,14 @@ $
 
 
 
-\Subsection{Multi-variate Normal}
+\Subsection{Multi-variate Gaussian}
 The Table~\ref{tab3} summarizes the performance of the methods MC, Lattice, Sobol,
-BayesLat, and BayesSob for estimating the multi-dimensional Normal probability $\bf{X}\sim N(\bf{\mu},\Sigma)$. This experiment demonstrates our algorithm's ability to handle very high-dimensional integral.
+BayesLat, and BayesSob for estimating the multi-dimensional Gaussian probability $\bf{X}\sim N(\bf{\mu},\Sigma)$. This experiment demonstrates our algorithm's ability to handle  high-dimensional integral.
 
-We conducted two simulations with different $\Sigma$ and estimation intervals $(\bf{a}, \bf{b})$ but fixed $\mu=0$ and required error threshold $\varepsilon=10^{-3}$. In the first case, all five methods succeeded completely. 
-The fastest method was \code{cubBayesLattice\_g} but code{cubBayesNet\_g} used the lowest number of samples.
-In the second case also all five methods succeeded,  but \code{cubLattice\_g} was the fastest. 
-The \code{cubBayesNet\_g}  was competitive and had the smallest average absolute error using lowest number of samples. The \code{cubBayesLattice\_g} achieved the next lowest average error but slower than \code{cubSobol\_g}.
+We conducted two simulations with different $\Sigma$ and estimation intervals $(\bf{a}, \bf{b})$ but fixed $\mu=0$ and required error threshold, $\varepsilon=10^{-3}$. In the first case, all five methods succeeded completely. 
+The fastest method was \code{cubBayesLattice\_g} but \code{cubBayesNet\_g} used the lowest number of samples.
+In the second case also, all five methods succeeded,  but \code{cubLattice\_g} was the fastest. 
+The \code{cubBayesNet\_g}  was competitive and had the smallest average absolute error using lowest number of samples. The \code{cubBayesLattice\_g} achieved the next lowest average error but was slower than \code{cubSobol\_g}.
 %\label{eqn:GaussDef}fGenzdef
 
 \begin{table}[ht] % MATLAB Driver: MVNCubatureExampleBayes.m
@@ -3750,7 +3745,7 @@ $
 
 \JRNote{ Numerical examples for the case of shape parameter per dimension }
 
-Allowing the kernel shape parameter to vary for each dimension could improve the accuracy of numerical integration when the integrand under consideration has only very low effective dimension such as Option Pricing example we demonstrated. We demonstrate this advantage by integrating a function that is not symmetric across dimensions,
+Allowing the kernel shape parameter to vary for each dimension could improve the accuracy of numerical integration when the integrand under consideration has only very low effective dimension  as in the Option Pricing example we demonstrated. We demonstrate this advantage by integrating a function that is not symmetric across dimensions,
 \begin{align}
 \label{eqn:fresnels}
 f(\vx) = \sum_{j=1}^d \upsilon_j \sin(2 \pi x_j^2)
@@ -3781,9 +3776,9 @@ where \code{fresnels} is the Fresnel Sine integral,
 	$
 \end{table}
 
-The results are summarized from the two different approaches in Table \ref{tabMultiTheta}. The first method, called \code{OneTheta}, uses common shape parameter across all the dimensions, whereas the second method, called \code{MultiTheta}, allows the shape parameters to vary across the dimensions. In the \code{MultiTheta} method, the shape parameter search is multi-variate so the magnitude of shape parameter depends on the integrand's magnitude in each dimensions. We have chosen a integrand particularly to demonstrate this aspect \eqref{eqn:fresnels} where we used $d=3$ and the constants $\bm{\upsilon}= (10^{-4}, 1, 10^4)$. The choice of magnitude variations in constants $\bm{\upsilon}$ allows to make the integrand vary significantly across dimensions.
+The results are summarized from the two different approaches in Table \ref{tabMultiTheta}. The first method, called \code{OneTheta}, uses common shape parameter across all the dimensions, whereas the second method, called \code{MultiTheta}, allows the shape parameters to vary across the dimensions. In the \code{MultiTheta} method, the shape parameter search is multi-variate, so the magnitude of shape parameter depends on the integrand's magnitude in each dimensions. We have chosen an integrand particularly to demonstrate this aspect \eqref{eqn:fresnels} where we used $d=3$ and the constants $\bm{\upsilon}= (10^{-4}, 1, 10^4)$. The choice of magnitude variations in constants $\bm{\upsilon}$ allows to make the integrand vary significantly across dimensions.
 
-We ran this test for 1000 times. In comparison, both the methods successfully computed integral all the times but the \code{MultiTheta} is slightly faster. The \code{MultiTheta} method used less number of samples $n$ but the integration error is bigger than the \code{OneTheta}. For the same size of $n$ number of samples, \code{OneTheta} method will be much faster since the shape parameter search is easier. The \code{MultiTheta} method is useful in scenarios when we want to use smaller size $n$ and the integrand varies significantly across dimensions.
+We ran this test for 1000 times. In comparison, both the methods successfully computed the integral all the time but \code{MultiTheta} was slightly faster. The \code{MultiTheta} method used less number of samples but the integration error was bigger than the \code{OneTheta}. For the same number of samples, the \code{OneTheta} method will be much faster since the shape parameter search is faster. The \code{MultiTheta} method is useful in scenarios where we want to use smaller size, $n$, and the integrand varies significantly across dimensions.
 
 
 \iffalse
@@ -4056,21 +4051,21 @@ apply our method to Saltelli’s idea, and to the replication procedure.
 
 \Section{Conclusion}
 
-We have developed a fast, automatic Bayesian cubature that estimates the high dimensional integral within a user defined error tolerance  that occur in many scientific computing such as finance, machine learning, or imaging, etc.  The stopping criteria arise from assuming the integrand to be a Gaussian process.  In \secref{sec:stopping_criteria}, we developed three versions:  empirical Bayes, full Bayes, and generalized cross-validation.  Empirical-Bayes uses maximum-likelihood to optimally choose the parameters, where posterior of the parameters given the integrand values is maximized. Alternatively, full-Bayes assumes non-informative prior on the parameters and then computes posterior distribution of the integral $\mu$, which leads to a $t$-distribution to obtain the parameters. Generalized cross-validation extends the concept of cross-validation to construct an objective which in turn maximized.
+We have developed a fast, automatic Bayesian cubature that estimates the high dimensional integral within a user defined error tolerance  that occur in many scientific computing such as finance, machine learning, imaging, etc.  The stopping criteria arise from assuming the integrand to be a Gaussian process.  In \secref{sec:stopping_criteria}, we developed three criteria:  empirical Bayes, full Bayes, and generalized cross-validation.  Empirical-Bayes uses maximum-likelihood to optimally choose the parameters, where posterior of the parameters given the integrand values is maximized. Alternatively, full-Bayes assumes non-informative prior on the parameters and then computes posterior distribution of the integral $\mu$, which leads to a $t$-distribution to obtain the parameters. Generalized cross-validation extends the concept of cross-validation to construct an objective which in turn is maximized.
 
-The computational cost of the automatic Bayesian cubature can be dramatically reduced if the covariance kernel matches the nodes.  We have demonstrated two such matches in practice. The first algorithm was based on rank-1 lattice nodes and shift-invariant kernels where the matrix-vector multiplications can be accomplished using the fast Fourier Transform.  The second algorithm was based on Sobol' points with first order Walsh kernel where the matrix-vector multiplications can be accomplished using the fast Walsh transform. Three integration problems illustrate the performance of our automatic Bayesian cubature.  
+The computational cost of the automatic Bayesian cubature can be dramatically reduced if the covariance kernel matches the nodes.  We have demonstrated two such matches in practice. The first algorithm was based on rank-1 lattice nodes and shift-invariant kernels where the matrix-vector multiplications can be accomplished using the fast Fourier Transform.  The second algorithm was based on Sobol' points with first order Walsh kernel where the matrix-vector multiplications can be accomplished using the fast Walsh transform. Three integration problems illustrate the performance of our automatic Bayesian cubature algorithms.  
 
 % Optimal kernel order selection for the integrand
-For faster computations one could use fixed order kernels in \code{cubBayesLattice\_g}, but for more advanced usage, we have added a kernel variation in \secref{sec:non_integer_kernel_order} that allows one to optimally choose the kernel order without the constraint of being even integer.
+For faster computations one could use fixed order kernels in \code{cubBayesLattice\_g}, but for more advanced usage, we have added a kernel variation in \secref{sec:non_integer_kernel_order} that allows one to optimally choose the kernel order without the constraint of being an even integer.
 
 % Cancellation error
-During the numerical experiments we noticed a computation step that causes inaccuracy due to a cancellation error in the estimation of stopping criterion.
-We have developed a novel technique in \secref{sec:overcome_cancel_error}, to overcome this cancellation error using the inherent structure of the shift invariant kernel used in our algorithm.
+During the numerical experiments, we noticed a computation step that causes inaccuracy due to a cancellation error in the estimation of stopping criterion.
+We have developed a novel technique in \secref{sec:overcome_cancel_error} to overcome this cancellation error using the inherent structure of the shift-invariant kernel used in our algorithm.
 
 % Gradient
 In \secref{sec:deriv_of_kernel}, we have analytically computed the gradient of the objective function and the shift invariant kernel to use with steepest descent in kernel parameters search. 
-Quasi-Monte Carlo cubature methods are efficient \cite{SloWoz98} even if the dimension is high given the effective dimension is low.
-To take advantage of low effective dimension, one should not fix the kernel shape parameter across all the dimensions. In this situation steepest descent method come in handy as one search parameters in multi-dimensions. 
+Quasi-Monte Carlo cubature methods are efficient \cite{SloWoz98} even if the dimension is high given that the effective dimension is low.
+To take advantage of low effective dimension, one should not fix the kernel shape parameter across all the dimensions. In this situation, steepest descent methods come in handy as one searches for parameters in multi-dimensions. 
 
 % 
 
@@ -4133,11 +4128,11 @@ number & number & number \\
 \Section{Future Work}
 %\label{sec:futureWork}
 
-We demonstrated the capability our new Bayesian cubature algorithms to successfully compute the integrals faster within the user defined error tolerances. But there are few potential improvements and new areas of applications.
+We demonstrated the capability of our new Bayesian cubature algorithms to successfully compute the integrals faster within the user defined error tolerances. But there are possibilities for improvements and new areas of applications.
 Some of the improvement ideas are listed here:
 \begin{itemize}
-\item Higher order digital sequences and digital shift and/or scramble invariant kernels \cite{Nuyens2013} \cite{Bald12a}:
-We could improve the computation speed of \code{cubBayesNet\_g} for smoother integrands using higher order digital sequences and matching kernels which have the potential of being another match that satisfies the conditions in Section \ref{sec:fast_BC}.  The fast Bayesian transform would correspond to a fast Walsh transform similar to the second algorithm we demonstrated.  For such kernels and the first order Walsh kernel we demonstrated, periodicity is not assumed, however, special structure of both the sequences and the kernels are required to take advantage of integrand smoothness.
+\item Higher order digital sequences and digital shift invariant kernels \cite{Nuyens2013} \cite{Bald12a}:
+We could improve the computation speed of \code{cubBayesNet\_g} for smoother integrands using higher order digital sequences and matching kernels, which have the potential of being another match that satisfies the conditions in Section \ref{sec:fast_BC}.  The fast Bayesian transform would correspond to a fast Walsh transform similar to the second algorithm we demonstrated.  For such kernels and the first order Walsh kernel we demonstrated, periodicity is not assumed, however, special structure of both the sequences and the kernels are required to take advantage of integrand smoothness.
 
 \item Control variates:
 Hickernell et.al \cite{HicEtal17a} \cite{Li16a} adapted control variates for Quasi-Montro. 
@@ -4154,7 +4149,7 @@ for some choice of vector of functions $\vg = \{g_1, \ldots, g_p\}$, where $\vg 
 h_{\beta}(\vx) := f(\vx) + \vbeta^T
 (\mu_{\vg} - \vg(\vx)).
 \end{align*}
-Here $\vg$ are function on which the QMC method does a good job, integrating it without error. 
+Here $\vg$ are the functions on which the QMC method does a good job of integrating it without error. 
 The goal is to choose an optimal $\vbeta$ to make
 \begin{align*}
 \widehat{\mu}_{\vbeta,n} :=
@@ -4176,16 +4171,16 @@ The efficacy of this approach has not yet been explored.
 The kernels's optimal shape parameter searched using steepest descent with kernels gradient could sometime get into local minima. This needs more understanding and enhancements.
 \JRNote{explain why, any suggestions?}
 
-\item Gaussian diagnosis: We assumed the integrand an instance of a Gaussian process. Is there a way to prove that is a good assumption based on the results we have?
+\item Gaussian diagnosis: We assumed the integrand to be an instance of a Gaussian process. One could attempt to prove if this is a good assumption based on the results we have.
 
 
 \item Parallel Algorithm: 
-For more demanding high performance computing applications where the precision requirements are high, our algorithms will try to use large number samples $n$ leading to longer computation times. One approach to overcome these constraints is to use Parallel computing techniques to speedup the algorithm. Most time consuming parts of our algorithm are shape parameter search and fast Bayesian transform computation. Fast Fourier transform (FFT) and Fast Walsh transform are easily amenable to parallelization, there exist plenty of prior work that can be adapted to work with our algorithms. We use radix-2 FFT, one could use a higher radix FFT to make the computations faster. 
+For more demanding high performance computing applications, where the precision requirements are high, our algorithms will try to use large number samples leading to longer computation time. One approach to overcome this constraint is to use Parallel computing techniques to speedup the algorithm. Most time consuming parts of our algorithm are shape parameter search and fast Bayesian transform computation. Fast Fourier transform (FFT) and Fast Walsh transform are easily amenable to parallelization. There exist plenty of prior work that can be adapted to work with our algorithms. We use radix-2 FFT. One could use a higher radix FFT to make the computations faster. 
 
-Another area of improvement is the parameter search, We explored the steepest descent algorithm but the speedup was not significant. One could explore higher order algorithms such as Newton method which could find the minima faster. 
-Fast Bayesian transforms are repeatedly computed in every step of the parameter search if it can be avoided by interpolation or other techniques could significantly speedup the algorithm.
+Another area of improvement is the parameter search. We explored the steepest descent algorithm but the speedup was not significant. One could explore higher order algorithms such as Newton method,  which could find the minima faster. 
+Fast Bayesian transforms are repeatedly computed in every step of the parameter search if it can be avoided by interpolation or other techniques, this could significantly speedup the algorithm.
 
-One could also GPU to run the whole code of our Bayesian Cubature algorithms or just the FFT/FWHT part of it to get a easier speedup.
+One could also use GPU to run the whole code of our Bayesian Cubature algorithms or just the FFT/FWHT part to get a easier speedup.
 
 
 \end{itemize}
