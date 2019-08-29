@@ -190,7 +190,7 @@
 \newcommand{\rhoCond}{\mathring{\vrho}}
 
 \newcommand{\MVN}{\textup{MVN}}
-\newcommand{\MLE}{\textup{MLE}}
+\newcommand{\MLE}{\textup{EB}}
 \newcommand{\wal}{\textup{wal}}
 \newcommand{\full}{\textup{full}}
 \newcommand{\GCV}{\textup{GCV}}
@@ -293,7 +293,7 @@
 	
 	I would like to also thank the GAIL project collaborators with
 	whom I have worked to add my new algorithms to the GAIL MATLAB toolbox: Professor Sou-Cheng Choi,
-	Yuhan Ding, Lan Jiang, Xin Tong, and Kan Zhang. Especially, Professor Sou-Cheng Choi’s support and guidance as the project leader helped me to focus of my cubature algorithms.
+	Yuhan Ding, Lan Jiang, Xin Tong, and Kan Zhang. Especially, Professor Sou-Cheng Choi's support and guidance as the project leader helped me to focus on my cubature algorithms.
 	
 	My special gratitude also goes to my thesis committee members, Professor Jinqiao Duan,
 	Professor Fred J. Hickernell, Professor Shuwang Li, and Professor Geoffrey Williamson. Above all, I want to thank them because they were flexible and willing to dedicate time to review my work and attend my comprehensive and defense examinations.
@@ -335,30 +335,33 @@ Automatic cubatures approximate multidimensional integrals to user-specified err
 In many real-world integration problems, the analytical solution is either unavailable or difficult to compute.
 To overcome this, one can use numerical algorithms that approximately estimate the value of the integral. 
 
-For high dimensional integrals, usage of quasi-Monte Carlo (QMC) methods are very popular.
+For high dimensional integrals, quasi-Monte Carlo (QMC) methods are very popular.
 QMC methods are equal-weight quadrature rules where the quadrature points are chosen deterministically, unlike Monte Carlo (MC) methods where the points are chosen randomly.
 % \JRNote{add ref} 
 The families of integration lattice nodes and digital nets are the most popular quadrature points used. 
 These methods consider the integrand to be a deterministic function.
 % Section 2.2 describes digital sequences and rank-1 lattice node sequences, two of the most common points used in quasi-Monte Carlo.
-An an alternate approach called, Bayesian cubature methods postulates the integrand to be an instance of a Gaussian stochastic process.  
+An an alternate approach, called Bayesian cubature, postulates the integrand to be an instance of a Gaussian stochastic process.  
 % For high dimensional problems, it makes sense to fix the sampling density but determine the sample size, $n$, automatically.
 
 For high dimensional problems, it is difficult to adaptively change the sampling pattern. But one can automatically determine the sample size, $n$, given a fixed and reasonable sampling pattern. We take this approach using a Bayesian perspective.
 We assume a Gaussian process parameterized by a constant mean and a covariance function defined by a scale parameter and a function specifying how the integrand values at two different points in the domain are related.
 These parameters are estimated from integrand values or are given non-informative priors. This leads to a credible interval for the integral.  The sample size, $n$, is chosen to make the credible interval for the Bayesian posterior error no greater than the desired error tolerance. 
 
-However, the process just outlined typically requires vector-matrix operations  with a computational cost of $O(n^3)$. Our innovation is to pair low discrepancy nodes with matching kernels that lower the computational cost to $O(n \log n)$. 
+However, the process just outlined typically requires vector-matrix operations  with a computational cost of $O(n^3)$. Our innovation is to pair low discrepancy nodes with matching kernels, which lowers the computational cost to $O(n \log n)$. 
 The contributions of this thesis are as follows:
 \begin{itemize}
-	\item Fast Bayesian transform is introduced. This generalizes the techniques that speedup Bayesian cubature when the kernel matches low discrepancy nodes.
-	\item Fast Bayesian transform approach is demonstrated using two methods: 1) rank-1 lattice sequences and shift-invariant kernels, 2) Sobol' sequences and Walsh kernel.
+	\item The fast Bayesian transform is introduced. This generalizes the techniques that speedup Bayesian cubature when the kernel matches low discrepancy nodes.
+	\item The fast Bayesian transform approach is demonstrated using two methods: 1) rank-1 lattice sequences and shift-invariant kernels, and 2) Sobol' sequences and Walsh kernels.
 	These two methods are implemented as fast automatic Bayesian cubature algorithms in the Guaranteed Automatic Integration Library (GAIL).
-	\item We develop additional numerical implementation techniques: 1) to avoid cancellation error that arises in the algorithms, 2) gradient descent for hyperparameter search, 3) non-integer kernel order selection.
+	\item We develop additional numerical implementation techniques: 
+	1) rewriting the covariance kernel to avoid cancellation error, 
+	2) gradient descent for hyperparameter search, and
+	3) non-integer kernel order selection.
 \end{itemize}
-The thesis concludes by applying the fast automatic Bayesian cubature algorithms to integrate three sample integrands, showing that our algorithms are faster than the basic Bayesian cubature.
+The thesis concludes by applying the fast automatic Bayesian cubature algorithms to three sample integration problems. We show that our algorithms are faster than the basic Bayesian cubature and that they provide answers within the error tolerance in most cases.
 
-The Bayesian cubatures, we develop are guaranteed for integrands belonging to cone of functions that belong to the middle of the sample space. The concept of cone of functions is explained in \secref{sec:cone_of_functions}.
+The Bayesian cubatures that we develop are guaranteed for integrands belonging to cone of functions which reside in the middle of the sample space. The concept of a cone of functions is explained in \secref{sec:cone_of_functions}.
 
 %\keywords{Bayesian cubature \and Probabilistic numeric methods \and GAIL}
 % \PACS{PACS code1 \and PACS code2 \and more}
@@ -376,7 +379,8 @@ The Bayesian cubatures, we develop are guaranteed for integrands belonging to co
 
 Cubature is the problem of inferring a numerical value for a definite integral, 
 $ \mu := \int_{\reals^d} g(\vx) \, \dif \vx$, where $\mu$ has no closed form analytic expression. Typically, $g$ is accessible through a black-box function routine. 
-Cubature means numerical multi-variate integration and is a key component of many problems in scientific computing, finance \cite{Gla03}, statistical modeling, Imaging \cite{Keller2013}, uncertainty quantification, machine learning, etc. \cite{Goodfellow-et-al-2016} \JRNote{add references}.  
+Cubature means numerical multi-variate integration and is a key component of many problems in scientific computing, finance \cite{Gla03}, statistical modeling, imaging \cite{Keller2013}, uncertainty quantification, machine learning, etc. \cite{Goodfellow-et-al-2016}.
+%\JRNote{add references}
 
 The integral may often be expressed as
 \begin{equation}
@@ -390,8 +394,7 @@ where $f:[0,1]^d \to \reals$ is the integrand, and $\boldsymbol{X} \sim \mathcal
 \end{equation}
 where the weights, $w_0$, and  $\vw = (w_i)_{i=1}^n \in \reals^n$, and the nodes, $\{\vx_i\}_{i=1}^n \subset [0,1]^d$, are chosen to make the error, $\abs{\mu - \hmu}$, small. The integration domain $[0,1]^d$ is convenient for the low discrepancy node sets that we use.  The nodes are assumed to be deterministic.
 The integral of function $f$ is the same over $[0, 1]^d$ or $(0, 1)^d$ or $[0, 1)^d$. So we use $[0, 1]^d$ or $[0, 1)^d$ depending on the application. Most often $[0, 1)^d$ is preferred especially for extensible node-sets because  it partitions easily into congruent subhypercubes.
-This research focuses on expensive multivariate numerical integrals 
-where the computational cost of evaluating the integrand is a  bottleneck.
+This research focuses on multivariate numerical integrals where the computational cost is a bottleneck. %of evaluating the integrand 
 
 \Section{Stopping Criterion}
 
@@ -414,39 +417,40 @@ Our primary contribution in this research is to demonstrate how the choice of a 
 \Order\bigl(n \$(f) + N_{\opt}[n\$(C) + 
 n \log(n)] \bigr),
 \end{equation} 
-where $\$(f)$ is the cost of one integrand value, $\$(C)$ is the cost of a single covariance kernel value,  $\Order(n \log(n))$ is the cost of a fast Fourier transform, and $N_{\opt}$ is an upper bound on the number of optimization steps required to choose the hyperparameters. If function evaluation is expensive, e.g., the output of a computationally intensive simulation, or if $\$(f) = \Order(d)$ for large $d$, then $\$(f)$ might be similar in magnitude to $N_{\opt} \log(n)$ in practice.  Typically, $\$(C) = \Order(d)$.  Note that the $\Order(n \log(n))$ contribution is $d$ independent.
+where $\$(f)$ is the cost of one integrand value, $\$(C)$ is the cost of a single covariance kernel value,  $\Order(n \log(n))$ is the cost of a fast Bayesian transform, and $N_{\opt}$ is an upper bound on the number of optimization steps required to choose the hyperparameters. If function evaluation is expensive, e.g., the output of a computationally intensive simulation, or if $\$(f) = \Order(d)$ for large $d$, then $\$(f)$ might be similar in magnitude to $N_{\opt} \log(n)$ in practice.  Typically, $\$(C) = \Order(d)$.  Note that the $\Order(n \log(n))$ contribution is $d$ independent.
 
 
 In contrast to our fast algorithm, the typical computational cost for Bayesian cubature is
 \begin{equation} \label{eqn:TheiralgoCost}
 \Order\bigl(n \$(f) + N_{\opt}[n^2\$(C) + n^3] \bigr),
 \end{equation} 
-which is explained in Section \ref{sec:bayes_cubature_algo}. Note that aside from evaluating the integrand, the computational cost in \eqref{eqn:TheiralgoCost} is much larger than that in \eqref{eqn:OuralgoCost}.  
+which is explained in Section \ref{sec:bayes_cubature_algo}. Note that apart from evaluating the integrand, the computational cost in \eqref{eqn:TheiralgoCost} is much larger than that in \eqref{eqn:OuralgoCost}.  
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%55
 
 
 \Section{Low Discrepancy Points}
 
-Low discrepancy points are characterized by how uniformly and randomly the points are distributed which is measured by the \emph{discrepancy} score, especially when the points are projected onto low-dimensions. The goal is to have maximum uniform space filling. The discrepancy measure is defined as below.
-Let $\mathcal{M}$ be the set of all intervals of the form $\prod_{j=1}^{d} [a_j, b_j) = \{ \vx \in \mathbb{R}^d : a_j \le x_j \le b_j, 0 \le a_j \le b_j \le 1 \}$, where $\abs{\mathcal{P}}$ is the cardinality of the set $\mathcal{P}$, and $\lambda_L$ is the Lebesgue measure. Then, the discrepancy of a point set $\mathcal{P}$ is,
+Low discrepancy points are characterized by how uniformly the points are distributed, which is measured by the \emph{discrepancy}. % score, especially when the points are projected onto low-dimensions. 
+The goal is to have maximum uniform space filling. The discrepancy is defined as below.
+Let $\mathcal{M}$ be the set of all intervals of the form $\prod_{\ell=1}^{d} [a_\ell, b_\ell) = \{ \vx \in \mathbb{R}^d : a_\ell \le x_\ell \le b_\ell, 0 \le a_\ell \le b_\ell \le 1 \}$, where $\abs{\mathcal{P}}$ is the cardinality of the set $\mathcal{P}$, and $\lambda_L$ is the Lebesgue measure. Then, the discrepancy of a point set $\mathcal{P}$ is,
 \begin{align*}
 D(\mathcal{P}) := \sup_{M \in \mathcal{M}} 
 \abs{ \frac{\abs{M \cap \mathcal{P}}}{\abs{\mathcal{P}}} - \lambda_L(M) }
 \end{align*}
-The \emph{low discrepancy points} satisfy $D(\mathcal{P}) = \Order(\log n^d/n)$.
-In this work we experiment with two most popular low discrepancy point sets, 1) lattice points, 2) Sobol' points.
+The \emph{low discrepancy points} satisfy $D(\mathcal{P}) = \Order((\log n)^d/n)$.
+In this work we experiment with two most popular low discrepancy point sets, 1) lattice points, and 2) Sobol' points.
 
 \Section{Prior Work}
 
 Hickernell~\cite{Hic17a} compares different approaches to cubature error analysis depending on whether the rule is deterministic or random and whether the integrand is assumed to be deterministic or random.  Error analysis that assumes a deterministic integrand lying in a Banach space leads to an error bound that is typically impractical for deciding how large $n$ must be to satisfy \eqref{eqn:err_crit}.  The deterministic error bound includes a (semi-) norm of the integrand, which is often more complex to compute than the original integral.
 
-Hickernell and Jim\'enez-Rugama~\cite{HicJim16a,JimHic16a} have developed stopping criteria for cubature rules based on low discrepancy nodes by tracking the decay of the discrete Fourier coefficients of the integrand.  The algorithms proposed here also rely on discrete Fourier coefficients, but in a different way.  Although we only explore automatic Bayesian cubature for absolute error tolerances, the recent work by Hickernell, Jim\'enez-Rugama, and Li~\cite{HicEtal17a} suggests how one might accommodate more general error criteria, such as relative error tolerances.
+Hickernell and Jim\'enez-Rugama~\cite{HicJim16a,JimHic16a} have developed stopping criteria for cubature rules based on low discrepancy nodes by tracking the decay of the discrete Fourier coefficients of the integrand.  The algorithms proposed here also rely on discrete Fourier coefficients, but in a different way.  We only discuss automatic Bayesian cubature for absolute error tolerances in this thesis. The recent work by Hickernell, Jim\'enez-Rugama, and Li~\cite{HicEtal17a} suggests how one might accommodate more general error criteria, such as relative error tolerances which has been adapted in our Matlab implementation of our algorithms.
 
-Chapter \ref{sec:BC} explains the Bayesian approach to estimate the posterior cubature error and defines our automatic Bayesian cubature. Although much of this material is known, it is included for completeness.  We end Chapter \ref{sec:BC}  by demonstrating why Bayesian cubature is typically computationally expensive.
+Chapter \ref{sec:BC} explains the Bayesian approach to calculate the posterior cubature error and defines our automatic Bayesian cubature. Although much of this material is known, it is included for completeness.  We end Chapter \ref{sec:BC}  by demonstrating why Bayesian cubature is typically computationally expensive.
 Chapter \ref{sec:fast_BC}  introduces the concept of covariance kernels that match the nodes and expedite the computations required by our automatic Bayesian cubature. 
-Chapter \ref{sec:shift_invariant_kernel} implements this concept for shift invariant kernels and rank-1 lattice nodes. 
-Chapter \ref{sec:sobol_walsh} demonstrates another implementation of matching nodes and kernel using Sobol' points and Walsh kernel. It also develops approaches to build shift-invariant kernels of continuous valued kernel order rather than fixing the kernel order to integer values.
+Chapter \ref{sec:shift_invariant_kernel} implements this concept for shift invariant kernels and rank-1 lattice nodes. It also develops approaches to build shift-invariant kernels of continuous valued kernel order rather than fixing the kernel order to integer values.
+Chapter \ref{sec:sobol_walsh} demonstrates another implementation of matching nodes and kernel using Sobol' points and Walsh kernel. It also shows that the fast Walsh Hadamard as the fast Bayesian transform for this case.
 Chapter \ref{sec:NumImpl} describes how to avoid cancellation error for kernels of product form. 
 It also covers  some of the additional techniques used in the implementation of our Bayesian Cubature algorithms. 
 Numerical examples are provided in Chapter \ref{sec:NumExp} to demonstrate the performance and advantages of our new algorithms.  We conclude with a brief discussion and potential future work.
@@ -472,14 +476,14 @@ We use the terms integrand or function interchangeably to denote the function $f
 
 
 The Bayesian approach for numerical analysis was popularized by Diaconis \cite{Dia88a}. The earliest reference for such kind of approach dates back to Poincar\'e, where, the theory of interpolation was discussed.
-Diaconis motivates the reader by interpreting the most well known numerical methods, 1) Trapezoidal-rule and 2) Splines, from the statistical point of view with whatever is known about the integrand as prior information. 
-For Example, the trapezoidal-rule can be interpreted as a Bayesian method with prior information being modeled as Brownian motion in $\mathcal{C}[0,1]$, the space of continuous functions, with normal prior.
+Diaconis motivates the reader by interpreting the most well known numerical methods, 1) trapezoidal rule and 2) splines, from the statistical point of view with whatever is known about the integrand as prior information. 
+For example, the trapezoidal rule can be interpreted as a Bayesian method with prior information being modeled as a Brownian motion in the sample space $\mathcal{C}[0,1)$, the space of continuous functions. %, with normal prior.
 
-This research is focused on Bayesian approach for numerical integration that is known as Bayesian Cubature as introduced by O'Hagan \cite{OHagen1991}. 
-The Bayesian Cubature returns a probability distribution $\mathbb{P}_f$, that expresses belief about the true value of integral, $\mu(f)$.
-The probability distribution $\mathbb{P}_f$ will be based on a prior that depends on $f$, in our case simply the function values. 
-The $\mathbb{P}_f$ is computed via Bayes' rule using  the \emph{data} contained in the function evaluations. 
-The maximum likelihood estimate of $\mathbb{P}_f$ can be interpreted as a point estimate of the integral \cite{BriEtal18a}. The distribution in general captures numerical uncertainty due to the fact that we have only used a finite number of function values to evaluate the integral.
+This research is focused on the Bayesian approach for numerical integration that is known as Bayesian Cubature as introduced by O'Hagan \cite{OHagen1991}.  % $\mathbb{P}_f$
+Bayesian cubature returns a probability distribution, that expresses belief about the true value of integral, $\mu(f)$.
+This posterior probability distribution is based on a prior that depends on $f$, which is computed via Bayes' rule using the \emph{data} contained in the function evaluations \cite{BriEtal18a}. 
+%The maximum likelihood estimate of $\mathbb{P}_f$ can be interpreted as a point estimate of the integral. 
+The distribution in general captures numerical uncertainty due to the fact that we have only used a finite number of function values to evaluate the integral.
 
 \Section{Bayesian Posterior Error}
 \label{sec:BayesPostErr}
@@ -490,7 +494,7 @@ We assume the integrand, $f$, is an instance of a stochastic Gaussian process, i
  \text{for all } \va \ne 0, \;
  n\in \mathbb{N}, \; \text{distinct} \; \vx_1, \ldots, \vx_n \in [0,1]^d.
 \end{multline}
-The covariance function, $C$, and the Gram matrix, $\mC$ depend implicitly on $\vtheta$, but the notation may omit this for simplicity's sake wherever possible.
+The covariance function, $C$, and the Gram matrix, $\mC$ depend implicitly on $\vtheta$, but the notation may omit this for simplicity's sake.
 Procedures for estimating or integrating out the hyperparameters $m$, $s$, and $\vtheta$ are explained later in this section.
 
 For a Gaussian process, all vectors of linear functionals of $f$ have a multivariate Gaussian distribution. 
@@ -609,7 +613,7 @@ s^2_{\MLE}
 \right)  +  \frac{1}{n} \log(\det(\mC))
 \biggr \}.
 \end{align*}
-The maximum likelihood estimate of $\vtheta$ balances minimizing the covariance scale factor, $s^2_{\MLE}$, against minimizing  $\det(\mC)$. 
+The empirical Bayes estimate of $\vtheta$ balances minimizing the covariance scale factor, $s^2_{\MLE}$, against minimizing  $\det(\mC)$. 
 
 Under these estimates of the parameters, the cubature \eqref{eqn:BayesCub} and the credible interval \eqref{eqn_prob_confidence_interval} simplify to 
 \begin{align*} % \label{eqn:cubMLE}
@@ -630,10 +634,10 @@ Under these estimates of the parameters, the cubature \eqref{eqn:BayesCub} and t
 |\mu-\hmu_\MLE| \leq \err_\MLE \right]  = 99\%.
 \end{align}
 Here $c_0$, $\vc$, and $\mC$ are assumed implicitly to be based on $\vtheta = \vtheta_\MLE$.   
-The empirical Bayes estimate of $\vtheta$ balances minimizing the covariance scale factor, $s^2_{\MLE}$, against minimizing  $\det(\mC)$. 
+% The empirical Bayes estimate of $\vtheta$ balances minimizing the covariance scale factor, $s^2_{\MLE}$, against minimizing  $\det(\mC)$. 
 
 \Subsubsection{Gradient descent to find optimal shape parameter} \label{grad_descent_MLE}
-The equation of $\vtheta_\MLE$ as defined in \eqref{eqn:thetaMLE} does not say how the parameter search can be done. There exists empirical algorithms \cite{Bre73} \cite{For77} one could use to accomplish the same.
+The equation of $\vtheta_\MLE$ as defined in \eqref{eqn:thetaMLE} does not say how the parameter search can be done. There exist empirical algorithms \cite{Bre73} \cite{For77} that one could use to accomplish the same.
 % Searching for $\vtheta_\MLE$ as defined in \eqref{eqn:thetaMLE} is not very efficient. 
 Since the objective function is known we could compute the gradient.
 Using the gradient of $l(s,m,\vtheta | \vy)$, We can apply optimization techniques such as gradient descent to find the optimal value faster. Let us define the objective function for the same purpose by excluding the negative sign, which modifies the problem as minimization
@@ -656,7 +660,7 @@ Taking derivative with respect to $\vtheta_i$
 {(\vy-m_\MLE\vone)^T\mCInv(\vy-m_\MLE\vone)}
 \end{align*}
 where we used some of the results from \cite{Dong2017a}. 
-This can be used with steepest gradient descent as follows,
+This can be used with gradient descent as follows,
 \begin{align}
 \label{eqn:deep_descent}
 \vtheta_i^{(j+1)} = \vtheta_i^{(j+1)} - \nu \frac{\partial}{\partial \vtheta_i} \mathcal{L}(\vtheta | \vy)
@@ -720,14 +724,14 @@ Finally, we simplify the key term:
 \\
 & \propto (z - \widehat{\mu}_{\textup{full}})^2 + (n-1) \sigma_{\textup{full}}^2
 \\
-& \propto \left(1 +  \frac{1}{n-1} \frac{(z - \mu_{\textup{full}})^2}{\widehat{\sigma}_{\textup{full}}^2} \right)
+& \propto \left(1 +  \frac{1}{n-1} \frac{(z - \mu_{\textup{full}})^2}{\widehat{\sigma}_{\textup{full}}^2} \right),
 \end{align*}
 i.e.,
 \begin{align*}
 \alpha \gamma - \beta^2 \propto 
 \left(
-1 +  \frac{(z - \hmu_{\textup{full}})^2}{(n-1)\widehat{\sigma}_{\textup{full}}^2}, 
-\right)
+1 +  \frac{(z - \hmu_{\textup{full}})^2}{(n-1)\widehat{\sigma}_{\textup{full}}^2}
+\right),
 \end{align*}
 where $\hmu_{\textup{full}} = \hmu_{\MLE}$ and 
 \begin{multline*}
@@ -738,7 +742,9 @@ where $\hmu_{\textup{full}} = \hmu_{\MLE}$ and
 - \frac{ \mC^{-1} \vone\vone^T \mC^{-1}}{\vone^T \mC^{-1} \vone}  \right]\vy
 \times  \left[\frac{(1 - \vc^T \mC^{-1} \vone)^2}{\vone^T \mC^{-1} \vone} + (c_0  -\vc ^T \mC^{-1} \vc) \right].
 \end{multline*}
-This means that $\mu \vert (\vf = \vy )$, properly centered and scaled, has a Student's $t$-distribution with $n-1$ degrees of freedom.   The estimated integral is the same as in the empirical Bayes case, $\hmu_{\textup{full}} = \hmu_{\MLE}$, but the confidence interval is wider:
+%This means that $\mu \vert (\vf = \vy )$, properly centered and scaled, has a Student's $t$-distribution with $n-1$ degrees of freedom.   
+% The estimated integral is the same as in the empirical Bayes case, $\hmu_{\textup{full}} = \hmu_{\MLE}$, but the confidence interval is wider:
+The confidence interval is:
 \begin{equation}
 \label{eqn_prob_CI_full}
 \mathbb{P}_f \left[
@@ -769,7 +775,7 @@ Because the shape parameter, $\vtheta$, enters the definition of the covariance 
 
 
 
-\Subsection{Full Bayes with generic prior}
+\Subsection{Full Bayes with general prior}
 Rather than use non-informative, conjugate prior one can use generic prior, namely $\vrho_{m,s^2}(\xi, \lambda) \propto g(\lambda)$, which can generalize to any generic function.
 Then the posterior density for the integral given the data using Bayes theorem is,
 \begin{align*}
@@ -973,8 +979,8 @@ Thus, \eqref{FJH:eq:CVA} may be re-written as
 The \emph{generalized cross-validation} criterion (GCV) replaces the $i^{\text{th}}$ diagonal element of $\mA$ in the denominator by the average diagonal element of $\mA$ \cite{CraWah79a,GolHeaWah79a,Wah90}:
 \begin{align*} 
 \textup{GCV} &
-= \frac{\sum_{i=1}^n\zeta_i^2}{\left(\frac 1n \sum_{i=1}^n a_{ii} \right)^2} \\
-& = \frac{(\vy - m\vone)^T \mC^{-2} (\vy - m \vone)}{\left(\frac 1n \trace(\mC^{-1}) \right)^2}.
+= \frac{\sum_{i=1}^n\zeta_i^2}{\left(\frac 1n \sum_{i=1}^n a_{ii} \right)^2} 
+= \frac{(\vy - m\vone)^T \mC^{-2} (\vy - m \vone)}{\left(\frac 1n \trace(\mC^{-1}) \right)^2}.
 \end{align*}
 
 The loss function $\textup{GCV}$ depends on $m$ and $\vtheta$, but not on $s$.  Minimizing the GCV  yields
@@ -1022,7 +1028,8 @@ The confidence interval based on generalized cross-validation corresponds to \eq
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 The methods developed for hyperparameter estimation from the previous sections are summarized as below:
-\begin{theorem} \label{thm:param} There are at least three approaches to estimating or integrating out the hyperparameters defining the Gaussian process from which the integrand is drawn: empirical Bayes, full Bayes, and generalized cross-\linebreak[4]validation.  Under these three approaches, we have the following:
+\begin{theorem} \label{thm:param} There are at least three approaches to estimating or integrating out the hyperparameters defining the Gaussian process from which the integrand is drawn: empirical Bayes, full Bayes, and generalized cross-validation.  %\linebreak[4]
+Under these three approaches, we have the following:
 	\begin{align}
 	\label{eqn_m_MLE}
 	m_\MLE &= \frac{\vone^T \mCthetaInv \vy }{ \vone^T \mCthetaInv \vone}, \qquad
@@ -1149,7 +1156,7 @@ The previous section presents three credible intervals, \eqref{eqn_prob_CI_MLE},
 
 Our  Bayesian cubature algorithm increases the sample size until the width of the credible interval is small enough.  This is accomplished through successively doubling the sample size.  The steps are detailed in Algorithm \ref{algorithm1}.
 
-We recognize that multiple applications of our credible intervals in one run of the algorithm is not strictly justified.  However, if our integrand comes from the middle of the sample space and not the extremes, we expect our automatic Bayesian cubature to approximate the integral within the desired error tolerance with high probability.  The example in the next section and the examples in chapter \ref{sec:NumExp} support that expectation. We also believe that an important factor contributing to the occasional failure of our algorithm is unreasonable parameterizations of the stochastic process from which the integrand is hypothesized to be drawn.  Overcoming this latter challenge is a topic for future research.
+We recognize that multiple applications of our credible intervals in one run of the algorithm is not strictly justified.  However, if our integrand comes from the middle of the sample space and not the extremes, we expect our automatic Bayesian cubature to approximate the integral within the desired error tolerance with high probability.  The example in the next section and the examples in Chapter \ref{sec:NumExp} support that expectation. We also believe that an important factor contributing to the occasional failure of our algorithm is unreasonable parameterizations of the stochastic process from which the integrand is hypothesized to be drawn.  Overcoming this latter challenge is a topic for future research.
 
 \algnewcommand{\IIf}[1]{\State\algorithmicif\ #1\ \algorithmicthen\ }
 \algnewcommand{\IElse}{\unskip\ \algorithmicelse\ }
@@ -1329,8 +1336,9 @@ We introduce some further notation
 \nonumber
 \mC^p  &= \frac 1n \mV \mLambda^{p} \mV^H, \qquad \forall p \in \integers,
 \end{align}
-where $\mV^H$ is the Hermitian of $\mV$, $\vC_1,\dots,\vC_n$ are columns of $\mC$,  $\vV_1,\dots,\vV_n$ are columns of $\mV$, and $\vv_1,\dots,\vv_n$ are rows of $\mV$.
-In this and later sections, we drop the $\vtheta$ dependence of various quantities for simplicity of notation.  The normalization of $\mV$ assumed in \eqref{eqn:ftk_factor} conveniently allows the first eigenvector, $\vV_1$, to be the vector of ones in \eqref{fastcompAssumpB} below.  The columns of matrix $\mV$ are eigenvectors of $\mC$, and $\mLambda$ is a diagonal matrix of eigenvalues of $\mC$.
+where $\mV^H$ is the Hermitian of $\mV$, $\vC_1,\dots,\vC_n$ are columns of $\mC$,  $\vV_1,\dots,\vV_n$ are columns of $\mV$, and $\vv_1,\dots,\vv_n$ are rows of $\mV$. 
+The columns of matrix $\mV$ are eigenvectors of $\mC$, and $\mLambda$ is a diagonal matrix of eigenvalues of $\mC$.
+In this and later sections, we drop the $\vtheta$ dependence of various quantities for simplicity of notation.  The normalization of $\mV$ assumed in \eqref{eqn:ftk_factor} conveniently allows the first eigenvector, $\vV_1$, to be the vector of ones in \eqref{fastcompAssumpB} below.  
 For any $n \times 1$ vector $\vb$, define the notation  $\widetilde{\vb} := \mV^H \vb$.
 
 We make three assumptions that allow the fast computation:
@@ -1341,10 +1349,10 @@ We make three assumptions that allow the fast computation:
 	\label{fastcompAssumpB}
 	\vv_1 = \vV_1 = \vone, \\
 	\label{fastcompAssumpC}
-	\mV^H \vb  \text{ requires only $\Order(n \log n)$ operations } \forall \vb.
+	\text{ Computing $\mV^H \vb$ requires only $\Order(n \log n)$ operations } \forall \vb.
 	\end{gather}
 \end{subequations}
-We call the transformation $\vb \mapsto \mV^H \vb$ a \emph{fast Bayesian transform} and $C_\vtheta$ a \emph{fast Bayesian transform kernel}.  
+We call the transformation $\vb \mapsto \mV^H \vb$ a \emph{fast Bayesian transform} and $C_\vtheta$ a \emph{fast Bayesian transform kernel} for the matching nodes $\{\vx_i\}_{i=1}^\infty$.  
 
 Under assumptions \eqref{fastcompAssump} the eigenvalues may be identified as the fast Bayesian transform of the first column of $\mC$:
 \begin{align}
@@ -1396,7 +1404,7 @@ which implies that $c_{0 \vtheta} = 1$ and $\vc_{\vtheta} = \vone$.  Under \eqre
 \vc^T\mCInv \vone =
 \vc^T\mCInv \vc = \frac{n}{\lambda_1}.
 \end{equation*}
-We use the fast Bayesian transform to speedup the computation of hyperparameter $\vtheta$, the credible interval width $\err_{\textup{CI}}$, and interval $\hmu$ that we presented in theorem \ref{thm:param} as shown next.
+We use the fast Bayesian transform to speedup the computation of the hyperparameter $\vtheta$, the credible interval width $\err_{\textup{CI}}$, and the integral estimate $\hmu$ that we presented in theorem \ref{thm:param} as shown next.
 
 
 
@@ -1662,56 +1670,56 @@ In this research, we use product kernels in the demonstrations and numerical imp
 \begin{align}
 \label{eqn:prod_kernel}
 C_\vtheta(\vt, \vx) = 
-\prod_{l=1}^d \biggl[ 1 - \eta \; \mathfrak{C}(x_l,t_l) \biggr]
+\prod_{\ell=1}^d \biggl[ 1 - \eta_\ell \; \mathfrak{C}(x_\ell,t_\ell) \biggr]
 \end{align}
 % $ C_\vtheta(\vt, \vx) = \prod_{l=1}^d [ 1 - \eta_l \mathfrak{C}(x_l,t_l) ]$
 where $\eta$ is called shape parameter and $\mathfrak{C}$ is some positive definite function. The derivative of the product kernel can be obtained easily.
 
-\Subsection{Derivative of the product kernel}
+\Subsection{Derivative of the product kernel when $\eta_1=\dots=\eta_d=\eta$}
 \label{sec:deriv_of_kernel}
-It was suggested to use gradient descent to find optimal shape parameter in \secref{grad_descent_MLE}. In this section, we compute the gradient for product kernels. When the $\eta$ is common across the dimensions, the derivative of a product kernel  w.r.t. $\eta$ can be obtained as below,
+It was suggested to use gradient descent to find optimal shape parameter in \secref{grad_descent_MLE}. In this section, we compute the gradient for product kernels. When the $\eta_1=\dots=\eta_d=\eta$, the derivative of a product kernel  w.r.t. $\eta$ can be obtained as below,
 \begin{align*}
 \frac{\partial}{\partial \eta} C_\vtheta(\vt, \vx) 
 & =
 \frac{\partial}{\partial \eta} 
-\prod_{l=1}^d \biggl[
-1 - \eta \mathfrak{C}(x_l,t_l) \biggr], % \quad  \mathfrak{C}(x,t) := (-1)^{r} B_{2r}( |{x-t}| \bmod 1 ) 
+\prod_{j=1}^d \biggl[
+1 - \eta \mathfrak{C}(x_j,t_j) \biggr], % \quad  \mathfrak{C}(x,t) := (-1)^{r} B_{2r}( |{x-t}| \bmod 1 ) 
 \\
 & = 
-\sum_{j=1}^d  
-\prod_{l=1, l \neq j}^d \biggl[
-1 - \eta \mathfrak{C}(x_l,t_l) \biggr]
-\biggl( - \mathfrak{C}(x_j,t_j) \biggr)
+\sum_{\ell=1}^d  
+\prod_{j=1, j \neq \ell}^d \biggl[
+1 - \eta \mathfrak{C}(x_j,t_j) \biggr]
+\biggl( - \mathfrak{C}(x_\ell,t_\ell) \biggr)
 \\
 & =
-\prod_{l=1}^d \biggl[
-1 - \eta \mathfrak{C}(x_l,t_l) \biggr]
-\sum_{j=1}^d 
+\prod_{j=1}^d \biggl[
+1 - \eta \mathfrak{C}(x_j,t_j) \biggr]
+\sum_{\ell=1}^d 
 \frac{
-	\biggl( - \mathfrak{C}(x_j,t_j) \biggr)
+	\biggl( - \mathfrak{C}(x_\ell,t_\ell) \biggr)
 }{
-	1 - \eta \mathfrak{C}(x_j,t_j) 
+	1 - \eta \mathfrak{C}(x_\ell,t_\ell) 
 }
 \\
 & =
 C_\vtheta(\vt, \vx) 
 \frac{1}{\eta}
-\sum_{j=1}^d 
+\sum_{\ell=1}^d 
 \frac{
-	\biggl(1 - \eta \mathfrak{C}({x_j,t_j})  - 1 \biggr)
+	\biggl(1 - \eta \mathfrak{C}({x_\ell,t_\ell})  - 1 \biggr)
 }{
-	1 - \eta \mathfrak{C}(x_j,t_j) 
+	1 - \eta \mathfrak{C}(x_\ell,t_\ell) 
 }
 \\
 & =
 C_\vtheta(\vt, \vx) 
 \frac{1}{\eta}
-\sum_{j=1}^d 
+\sum_{\ell=1}^d 
 \biggl(
 1 - 
 \frac{1
 }{
-	1 - \eta \mathfrak{C}(x_j,t_j) 
+	1 - \eta \mathfrak{C}(x_\ell,t_\ell) 
 }
 \biggr)
 \\
@@ -1719,15 +1727,15 @@ C_\vtheta(\vt, \vx)
 ({d}/{\eta} )
 \underbrace{
 	\left(
-	\prod_{l=1}^d \biggl[
-	1 - \eta \mathfrak{C}(x_l,t_l) \biggr]
+	\prod_{j=1}^d \biggl[
+	1 - \eta \mathfrak{C}(x_j,t_j) \biggr]
 	\right) }_
 { C_\vtheta(\vt, \vx) }
 \biggl(
 1 - 
-\frac{1}{d} \sum_{j=1}^d
+\frac{1}{d} \sum_{\ell=1}^d
 \frac{1}
-{ 1 - \eta \mathfrak{C}(x_j,t_j) }
+{ 1 - \eta \mathfrak{C}(x_\ell,t_\ell) }
 \biggr)
 .
 \end{align*}
@@ -1736,90 +1744,96 @@ Thus,
 \frac{\partial}{\partial \eta} C_\vtheta(\vt, \vx) = ({d}/{\eta} ) C_\vtheta(\vt, \vx) 
 \biggl(
 1 - 
-\frac{1}{d} \sum_{j=1}^d
+\frac{1}{d} \sum_{\ell=1}^d
 \frac{1}
-{ 1 - \eta \mathfrak{C}(x_j,t_j) }
+{ 1 - \eta \mathfrak{C}(x_\ell,t_\ell) }
 \biggr).
 \end{align*}
 
-\Subsubsection{When $\eta_j$ is chosen for each dimension $j$}
-In this case, we will have a vector of length $d$ shape parameters. Derivative of the kernel with respect to dimension $j$ is,
+
+
+\Subsubsection{When $\eta_\ell$ is different for each $\ell = 1,\cdots,d$}
+In this case, we will have a vector of length $d$ shape parameters. Derivative of the kernel with respect to dimension $\ell$ is,
 \begin{align*}
-\frac{\partial}{\partial \eta_j} C_\vtheta(\vt, \vx) 
+\frac{\partial}{\partial \eta_\ell} C_\vtheta(\vt, \vx) 
 & =
-\frac{\partial}{\partial \eta_j} 
-\prod_{l=1}^d \biggl[
-1 - \eta_l \mathfrak{C}(x_l,t_l) \biggr]
+\frac{\partial}{\partial \eta_\ell} 
+\prod_{j=1}^d \biggl[
+1 - \eta_j \mathfrak{C}(x_j,t_j) \biggr], \quad \text{where} \quad \ell = 1, \cdots, d
 \\
 & = 
-\prod_{l=1, l \neq j}^d \biggl[
-1 - \eta_l \mathfrak{C}(x_l,t_l) \biggr]
-\biggl( - \mathfrak{C}(x_j,t_j) \biggr)
+\prod_{j=1, j \neq \ell}^d \biggl[
+1 - \eta_j \mathfrak{C}(x_j,t_j) \biggr]
+\biggl( - \mathfrak{C}(x_\ell,t_\ell) \biggr)
 \\
 & =
-\prod_{l=1}^d \biggl[
-1 - \eta_l \mathfrak{C}(x_l,t_l) \biggr]
+\prod_{j=1}^d \biggl[
+1 - \eta_j \mathfrak{C}(x_j,t_j) \biggr]
 \frac{
-	\biggl( - \mathfrak{C}(x_j,t_j) \biggr)
+	\biggl( - \mathfrak{C}(x_\ell,t_\ell) \biggr)
 }{
-	1 - \eta_j \mathfrak{C}(x_j,t_j) 
+	1 - \eta_\ell \mathfrak{C}(x_\ell,t_\ell) 
 }
 \\
 & =
 C_\vtheta(\vt, \vx) 
-\frac{1}{\eta_j}
+\frac{1}{\eta_\ell}
 \frac{
-	\biggl(1 - \eta_j \mathfrak{C}(x_j,t_j)  - 1 \biggr)
+	\biggl(1 - \eta_\ell \mathfrak{C}(x_\ell,t_\ell)  - 1 \biggr)
 }{
-	1 - \eta_j \mathfrak{C}(x_j,t_j) 
+	1 - \eta_\ell \mathfrak{C}(x_\ell,t_\ell) 
 }
 \\
 & =
 C_\vtheta(\vt, \vx) 
-\frac{1}{\eta_j}
+\frac{1}{\eta_\ell}
 \biggl(
 1 - 
 \frac{1
 }{
-	1 - \eta_j \mathfrak{C}(x_j,t_j) 
+	1 - \eta_\ell \mathfrak{C}(x_\ell,t_\ell) 
 }
 \biggr)
 \\
 & =
-\frac{1}{\eta_j} 
+\frac{1}{\eta_\ell} 
 \underbrace{
 	\left(
-	\prod_{l=1}^d \biggl[
-	1 - \eta \mathfrak{C}(x_l,t_l) \biggr]
+	\prod_{j=1}^d \biggl[
+	1 - \eta \mathfrak{C}(x_j,t_j) \biggr]
 	\right) }_
 { C_\vtheta(\vt, \vx) }
 \biggl(
 1 - 
 \frac{1}
-{ 1 - \eta_j \mathfrak{C}(x_j,t_j) }
+{ 1 - \eta_\ell \mathfrak{C}(x_\ell, t_\ell) }
 \biggr) 
 .
 \end{align*}
 Thus, 
 \begin{align*}
-\frac{\partial}{\partial \eta_j} C_\vtheta(\vt, \vx) = \frac{1}{\eta_j} 
+\frac{\partial}{\partial \eta_\ell} C_\vtheta(\vt, \vx) = \frac{1}{\eta_\ell} 
 { C_\vtheta(\vt, \vx) }
 \biggl(
 1 - 
 \frac{1}
-{ 1 - \eta_j \mathfrak{C}(x_j,t_j) }
+{ 1 - \eta_\ell \mathfrak{C}(x_\ell,t_\ell) }
 \biggr).
 \end{align*}
 Please note the above derivatives do not depend on $\mathfrak{C}(x,t)$ and most importantly these computations are applicable to any product kernel of the form \eqref{eqn:prod_kernel}.
-%$ C_\vtheta(\vt, \vx) = \prod_{l=1}^d [ 1 - \eta_l \mathfrak{C}(x_l,t_l) ]$.
+%$ C_\vtheta(\vt, \vx) = \prod_{j=1}^d [ 1 - \eta_j \mathfrak{C}(x_j,t_j) ]$.
+
+
+
+
 
 \Subsection{Shape parameter search using steepest descent}
 Using the obtained derivative above, one can easily implement the steepest descent search introduced in \secref{grad_descent_MLE} 
 %\eqref{Dong2017a}
 \begin{align*}
-\eta^{(j+1)} = \eta^{(j)} - \nu \frac{\partial}{\partial \eta} \mathcal{L}(\vtheta | \vy).
+\eta^{(j+1)} = \eta^{(j)} - \nu \frac{\partial}{\partial \eta} \mathcal{L}(\vtheta | \vy)
 \end{align*}
-
+where $\nu$ is the step size for the gradient descent, and $j$ is the iteration index. The parameter $\eta$ is usually searched in the whole $\reals$ by using the simple domain transformation as explained in Section \ref{sec:kernel_param_search}.
 
 
 
@@ -3726,6 +3740,7 @@ As mentioned before, this integrand has a kink caused by the $\max$ function, so
 
 
 \Section{Discussion}
+\JRNote{Move this to end of chapter}
 
 As shown in Figures \ref{fig:mvn-guaranteed-MLE} to \ref{fig:Sobol-optprice-guaranteed-GCV}, both the algorithms computed the integral within user specified threshold most of the time except on a few occasions. This is especially the case with option pricing example due to the complexity and high dimension of the integrand. 
 Also notice that the \code{cubBayesLattice\_g} algorithm finished within 10 seconds for Keister and multivariate Gaussian. Option pricing took closer to 70 seconds due to the complexity of the integrand.
