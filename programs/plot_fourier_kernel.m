@@ -17,7 +17,6 @@ if dim==1
   Z = zeros(size(xpts, 1), 4);
   hFig = figure('visible','on');
   set(hFig, 'units', 'inches', 'Position', [4 4 6.5 5.5])
-  hold on
   i=1;
   leg_text = cell(4,1);
   for r = order
@@ -28,7 +27,11 @@ if dim==1
     end
   end
 
-  plot(xpts,Z)
+  hold on
+  line_styles = {'--',':','-.','-'};
+  for i=1:size(Z,2)
+    plot(xpts,Z(:,i),line_styles{i})
+  end
   xlabel('\(x\)')
   ylabel(['\(C_{\theta}(x,' num2str(yVal) ')\)'])
   legend(leg_text, 'Interpreter','latex','location','best')
@@ -37,6 +40,9 @@ if dim==1
 
   figSavePathName = sprintf('fourier_kernel_dim_1.png');
   saveas(hFig, figSavePathName)
+  F = getframe(hFig);
+  imwrite(rgb2gray(F.cdata), 'fourier_kernel_dim_1-gray.png','png')
+  
 end
 
 if dim==2

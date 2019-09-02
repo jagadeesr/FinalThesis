@@ -28,6 +28,13 @@ if dim==1
   end
 
   plot(xpts,Z, '.', 'MarkerSize', 20)
+  % line_styles = {'--',':','-.','-'};
+  % pointShapes = {'p', 'o','h','>','d','^','v','p','h'};
+
+  % for i=1:size(Z,2)
+    % plot(xpts,Z(:,i), pointShapes{i}, 'MarkerSize', 3)
+  % end
+  
   xlabel('\(x\)')
   ylabel('\(C_{\theta}(x,0)\)')
   legend(leg_text, 'Interpreter','latex','location','best')
@@ -35,6 +42,8 @@ if dim==1
 
   figSavePathName = sprintf('walsh_kernel dim_1.png');
   saveas(hFig, figSavePathName)
+  F = getframe(hFig);
+  imwrite(rgb2gray(F.cdata), 'walsh_kernel_dim_1-gray.png', 'png')  
 end
 
 end
