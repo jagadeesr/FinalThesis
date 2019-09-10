@@ -53,7 +53,8 @@ if dim==1
   
   xlabel('\( x \)','Interpreter','latex')
   ylabel('\( f(x) \)', 'Interpreter','latex')
-  legend({'$f_{{nice}}$', '$f_{{peaky}}$', '$f_{{true}}$'},...
+  legend({'$f_{\textup{nice}}$', '$f_{\textup{peaky}}$', ...
+    '$f_{\textup{nice}} = f_{\textup{peaky}}$'},...
     'Interpreter','latex', 'location','best') % R2018a and earlier
   
   saveas(figH3, sprintf('cone_bayes_f_real.png'))
@@ -86,7 +87,7 @@ mu_true = exactInteg;
 gauss = @(x) (1/sqrt(2*pi*s2_MLE))*exp(-((x-m_MLE).^2)/(2*s2_MLE));
 
 % xa = 0:0.001:3;
-xa = -4:0.001:4;
+xa = -4:0.001:6;
 
 figH4 = figure;
 plot(xa, gauss((xa*sqrt(s2_MLE)+m_MLE)), 'k')
@@ -105,7 +106,7 @@ axis tight
 % annotation('textarrow',[xa_norm(mu_nice) xa_norm(mu_nice)],[0 0.25],'String','$\mu_{nice}$')
 % annotation('textarrow',[xa_norm(mu_true) xa_norm(mu_true)],[0 0.5],'String','$\mu_{true}$')
 legend({'$\rho_\mu|_{(\boldmath{f}=\boldmath{y})}$', ...
-  '$\mu_{peaky}$', '$\mu_{nice}$', '$\mu_{true}$'}, ...
+  '$\mu_\textup{peaky}$', '$\mu_\textup{nice}$', '$\hat{\mu}$'}, ...
   'location','best','Interpreter','latex')
 % temp = [{'${\vert\mu-\widehat{\mu} \vert}/{\varepsilon}=1$'}, temp'];
 % legend(temp,'location','best','Interpreter','latex'); axis tight
@@ -114,7 +115,7 @@ legend({'$\rho_\mu|_{(\boldmath{f}=\boldmath{y})}$', ...
 %text(mu_nice,0.2,'$\downarrow\mu_{nice}$','Interpreter','latex')
 %text(exactInteg,0.05,'$\downarrow\mu_{true}$','Interpreter','latex')
 
-% saveas(figH4, sprintf('cone_bayes_mu_pdf.png'))
+saveas(figH4, sprintf('cone_bayes_mu_pdf.png'))
 
 fprintf('')
 end

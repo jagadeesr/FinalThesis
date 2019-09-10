@@ -195,6 +195,11 @@
 \newcommand{\full}{\textup{full}}
 \newcommand{\GCV}{\textup{GCV}}
 \newcommand{\opt}{\textup{opt}}
+\newcommand{\CI}{\textup{CI}}
+\newcommand{\NICE}{\textup{nice}}
+\newcommand{\PEAKY}{\textup{peaky}}
+\newcommand{\NOISE}{\textup{noise}}
+\newcommand{\TRUE}{\textup{true}}
 %\newcommand{\errtol}{\text{tol}}
 \newcommand{\errtol}{\varepsilon}
 \newcommand{\errn}{\text{err}_{n}}
@@ -240,8 +245,8 @@
 %
 
 \newcommand{\FJHNote}[1]{{\textcolor{blue}{FJH: #1}}}
-\newcommand{\JRNote}[1]{{\textcolor{green}{JR: #1}}}
-% \newcommand{\JRNote}[1]{}
+%\newcommand{\JRNote}[1]{{\textcolor{green}{JR: #1}}}
+\newcommand{\JRNote}[1]{}
 
 \newtheorem{theorem}{Theorem}[section]
 \newtheorem{lemma}[theorem]{Lemma}
@@ -341,7 +346,7 @@ QMC methods are equal-weight quadrature rules where the quadrature points are ch
 The families of integration lattice nodes and digital nets are the most popular quadrature points used. 
 These methods consider the integrand to be a deterministic function.
 % Section 2.2 describes digital sequences and rank-1 lattice node sequences, two of the most common points used in quasi-Monte Carlo.
-An an alternate approach, called Bayesian cubature, postulates the integrand to be an instance of a Gaussian stochastic process.  
+An alternate approach, called Bayesian cubature, postulates the integrand to be an instance of a Gaussian stochastic process.  
 % For high dimensional problems, it makes sense to fix the sampling density but determine the sample size, $n$, automatically.
 
 For high dimensional problems, it is difficult to adaptively change the sampling pattern. But one can automatically determine the sample size, $n$, given a fixed and reasonable sampling pattern. We take this approach using a Bayesian perspective.
@@ -349,17 +354,18 @@ We assume a Gaussian process parameterized by a constant mean and a covariance f
 These parameters are estimated from integrand values or are given non-informative priors. This leads to a credible interval for the integral.  The sample size, $n$, is chosen to make the credible interval for the Bayesian posterior error no greater than the desired error tolerance. 
 
 However, the process just outlined typically requires vector-matrix operations  with a computational cost of $O(n^3)$. Our innovation is to pair low discrepancy nodes with matching kernels, which lowers the computational cost to $O(n \log n)$. 
+We begin the thesis by introducing the Bayesian approach to calculate the posterior cubature error and define our automatic Bayesian cubature. Although much of this material is known, it is used to develop the necessary foundations (Chapter~\ref{sec:BC}).
 The contributions of this thesis are as follows:
 \begin{itemize}
-	\item The fast Bayesian transform is introduced. This generalizes the techniques that speedup Bayesian cubature when the kernel matches low discrepancy nodes.
-	\item The fast Bayesian transform approach is demonstrated using two methods: 1) rank-1 lattice sequences and shift-invariant kernels, and 2) Sobol' sequences and Walsh kernels.
+	\item The fast Bayesian transform is introduced. This generalizes the techniques that speedup Bayesian cubature when the kernel matches low discrepancy nodes (Chapter~\ref{sec:fast_BC}).
+	\item The fast Bayesian transform approach is demonstrated using two methods: 1) rank-1 lattice sequences and shift-invariant kernels (Chapter~\ref{sec:shift_invariant_kernel}), and 2) Sobol' sequences and Walsh kernels (Chapter~\ref{sec:sobol_walsh}).
 	These two methods are implemented as fast automatic Bayesian cubature algorithms in the Guaranteed Automatic Integration Library (GAIL).
-	\item We develop additional numerical implementation techniques: 
+	\item We develop additional numerical implementation techniques (Chapter~\ref{sec:NumImpl}): 
 	1) rewriting the covariance kernel to avoid cancellation error, 
 	2) gradient descent for hyperparameter search, and
 	3) non-integer kernel order selection.
 \end{itemize}
-The thesis concludes by applying the fast automatic Bayesian cubature algorithms to three sample integration problems. We show that our algorithms are faster than the basic Bayesian cubature and that they provide answers within the error tolerance in most cases.
+The thesis concludes by applying the fast automatic Bayesian cubature algorithms to three sample integration problems (Chapter~\ref{sec:NumExp}). We show that our algorithms are faster than the basic Bayesian cubature and that they provide answers within the error tolerance in most cases.
 
 The Bayesian cubatures that we develop are guaranteed for integrands belonging to cone of functions which reside in the middle of the sample space. The concept of a cone of functions is explained in \secref{sec:cone_of_functions}.
 
@@ -445,7 +451,7 @@ In this work we experiment with two most popular low discrepancy point sets, 1) 
 
 Hickernell~\cite{Hic17a} compares different approaches to cubature error analysis depending on whether the rule is deterministic or random and whether the integrand is assumed to be deterministic or random.  Error analysis that assumes a deterministic integrand lying in a Banach space leads to an error bound that is typically impractical for deciding how large $n$ must be to satisfy \eqref{eqn:err_crit}.  The deterministic error bound includes a (semi-) norm of the integrand, which is often more complex to compute than the original integral.
 
-Hickernell and Jim\'enez-Rugama~\cite{HicJim16a,JimHic16a} have developed stopping criteria for cubature rules based on low discrepancy nodes by tracking the decay of the discrete Fourier coefficients of the integrand.  The algorithms proposed here also rely on discrete Fourier coefficients, but in a different way.  We only discuss automatic Bayesian cubature for absolute error tolerances in this thesis. The recent work by Hickernell, Jim\'enez-Rugama, and Li~\cite{HicEtal17a} suggests how one might accommodate more general error criteria, such as relative error tolerances which has been adapted in our Matlab implementation of our algorithms.
+Hickernell and Jim\'enez-Rugama~\cite{HicJim16a,JimHic16a} have developed stopping criteria for cubature rules based on low discrepancy nodes by tracking the decay of the discrete Fourier coefficients of the integrand.  The algorithms proposed here also rely on discrete Fourier coefficients, but in a different way.  We only discuss automatic Bayesian cubature for absolute error tolerances in this thesis. The recent work by Hickernell, Jim\'enez-Rugama, and Li~\cite{HicEtal17a} suggests how one might accommodate more general error criteria, such as relative error tolerances which has been adapted in our MATLAB implementation of our algorithms.
 
 Chapter~\ref{sec:BC} explains the Bayesian approach to calculate the posterior cubature error and defines our automatic Bayesian cubature. Although much of this material is known, it is included for completeness.  We end Chapter~\ref{sec:BC}  by demonstrating why Bayesian cubature is typically computationally expensive.
 Chapter~\ref{sec:fast_BC}  introduces the concept of covariance kernels that match the nodes and expedite the computations required by our automatic Bayesian cubature. 
@@ -456,7 +462,7 @@ It also covers  some of the additional techniques used in the implementation of 
 Numerical examples are provided in Chapter~\ref{sec:NumExp} to demonstrate the performance and advantages of our new algorithms.  We conclude with a brief discussion and potential future work.
 
 
-We use the terms integrand or function interchangeably to denote the function $f$ being considered for the numerical integration. Also we use the terms, nodes, points, node-sets, design, and data-sites interchangeably to denote the points $\mathcal{P} := \{\vx_i\}_{i=1}^n \subset [0,1)^d$ used in the cubature.
+We use the terms integrand or function interchangeably to denote the function $f$ being considered for the numerical integration. Also, we use the terms, nodes, points, node-sets, design, and data-sites interchangeably to denote the points $\mathcal{P} := \{\vx_i\}_{i=1}^n \subset [0,1)^d$ used in the cubature.
 
 
 
@@ -472,7 +478,7 @@ We use the terms integrand or function interchangeably to denote the function $f
 
 \Chapter{Bayesian Cubature}
 \label{sec:BC} 
-\JRNote{Briefly explain Bayesian approach using the words of diaconis, poincare work ..}
+% \JRNote{Briefly explain Bayesian approach using the words of diaconis, poincare work ..}
 
 
 The Bayesian approach for numerical analysis was popularized by Diaconis \cite{Dia88a}. The earliest reference for such kind of approach dates back to Poincar\'e, where, the theory of interpolation was discussed.
@@ -579,7 +585,8 @@ The credible interval in \eqref{eqn_prob_confidence_interval} suggests how our a
 Note that $\err_{\textup{CI}}$ has no explicit dependence on the integrand values, even though one would intuitively expect that a larger integrand should imply a larger $\err_{\textup{CI}}$.  This is because the hyperparameters, $m, s$, and $\vtheta$, have not yet been inferred from integrand data.  After inferring the hyperparameters, $\err_{\textup{CI}}$ does reflect the size of the integrand values. This section describes three approaches to hyperparameter estimation.
 
 
-\Subsection{Empirical Bayes}  \label{sec:MLE}
+\Section{Empirical Bayes}  \label{sec:MLE}
+
 The first and a very straight forward approach is to estimate the parameters is via maximum likelihood estimation.  The log-likelihood function of the parameters given the function data $\vy$ is:
 \begin{align*}
 l(s,m,\vtheta | \vy)
@@ -636,26 +643,29 @@ Under these estimates of the parameters, the cubature \eqref{eqn:BayesCub} and t
 Here $c_0$, $\vc$, and $\mC$ are assumed implicitly to be based on $\vtheta = \vtheta_\MLE$.   
 % The empirical Bayes estimate of $\vtheta$ balances minimizing the covariance scale factor, $s^2_{\MLE}$, against minimizing  $\det(\mC)$. 
 
-\Subsubsection{Gradient descent to find optimal shape parameter} \label{grad_descent_MLE}
-The equation of $\vtheta_\MLE$ as defined in \eqref{eqn:thetaMLE} does not say how the parameter search can be done. There exist empirical algorithms \cite{Bre73} \cite{For77} that one could use to accomplish the same.
+
+
+
+\Subsection{Gradient descent to find optimal shape parameter} \label{grad_descent_MLE}
+The equation specifying $\vtheta_\MLE$ as defined in \eqref{eqn:thetaMLE} does not say how the parameter search can be done. There exist empirical algorithms \cite{Bre73, For77} that one could use to accomplish the same.
 % Searching for $\vtheta_\MLE$ as defined in \eqref{eqn:thetaMLE} is not very efficient. 
 Since the objective function is known we could compute the gradient.
-Using the gradient of $l(s,m,\vtheta | \vy)$, We can apply optimization techniques such as gradient descent to find the optimal value faster. Let us define the objective function for the same purpose by excluding the negative sign, which modifies the problem as minimization
+Using the gradient of $l(s,m,\vtheta | \vy)$, one can apply optimization techniques such as gradient descent to find the optimal value faster. Let us define the objective function for the same purpose by excluding the negative sign, which modifies the problem to become a minimization of
 \begin{align*}
 \mathcal{L}(\vtheta | \vy)
 &:= \frac{1}{n} \log(\det\, \mC) +  \log\left( (\vy-m_\MLE\vone)^T\mCInv(\vy-m_\MLE\vone) \right) + \text{constants.}
 \end{align*}
-Taking derivative with respect to $\vtheta_i$
+Taking derivative with respect to $\vtheta_\ell$, for $\ell=1,\cdots,d$
 \begin{align*}
-\frac{\partial}{\partial \vtheta_i} \mathcal{L}(\vtheta | \vy)
-&=  \frac{1}{n} \frac{\partial}{\partial \vtheta_i} \log(\det\, \mC) + \frac{\partial}{\partial \vtheta_i} 
+\frac{\partial}{\partial \vtheta_\ell} \mathcal{L}(\vtheta | \vy)
+&=  \frac{1}{n} \frac{\partial}{\partial \vtheta_\ell} \log(\det\, \mC) + \frac{\partial}{\partial \vtheta_\ell} 
 \log\left((\vy-m_\MLE\vone)^T\mCInv(\vy-m_\MLE\vone) \right)
 \\
-&= \frac 1n \trace{\left( \mCInv \frac{\partial \mC}{\partial \vtheta_i} \right)}
+&= \frac 1n \trace{\left( \mCInv \frac{\partial \mC}{\partial \vtheta_\ell} \right)}
 - 
 \frac
 {\left((\vy-m_\MLE\vone)^T\mCInv\right)^T 
-	\left( \frac{\partial \mC}{\partial \vtheta_i} \right)
+	\left( \frac{\partial \mC}{\partial \vtheta_\ell} \right)
 	((\vy-m_\MLE\vone)^T\mCInv)}
 {(\vy-m_\MLE\vone)^T\mCInv(\vy-m_\MLE\vone)}
 \end{align*}
@@ -663,13 +673,15 @@ where we used some of the results from \cite{Dong2017a}.
 This can be used with gradient descent as follows,
 \begin{align}
 \label{eqn:deep_descent}
-\vtheta_i^{(j+1)} = \vtheta_i^{(j+1)} - \nu \frac{\partial}{\partial \vtheta_i} \mathcal{L}(\vtheta | \vy)
+\vtheta_\ell^{(j+1)} = \vtheta_\ell^{(j)} - \nu \frac{\partial}{\partial \vtheta_\ell} \mathcal{L}(\vtheta | \vy), \quad j=0,1,\cdots
 \end{align}
-where $\nu$ is the stepping constant. 
+where $\nu$ is the step size for the gradient descent. 
 
 
 
-\Subsection{Full Bayes}
+
+\Section{Full Bayes}
+
 Rather than use maximum likelihood to determine $m$ and $s$, one can treat them as hyper-parameters with a non-informative, conjugate prior, namely $\vrho_{m,s^2}(\xi, \lambda) \propto 1/\lambda$. Then the posterior density for the integral given the data using Bayes theorem is,
 \begin{align*}
 \MoveEqLeft[1]{\rho_{\mu}(z | \vf = \vy)} \\
@@ -727,12 +739,13 @@ Finally, we simplify the key term:
 & \propto \left(1 +  \frac{1}{n-1} \frac{(z - \mu_{\textup{full}})^2}{\widehat{\sigma}_{\textup{full}}^2} \right),
 \end{align*}
 i.e.,
-\begin{align*}
+\begin{align}
+\label{eqn:full_bayes_student_short}
 \alpha \gamma - \beta^2 \propto 
 \left(
 1 +  \frac{(z - \hmu_{\textup{full}})^2}{(n-1)\widehat{\sigma}_{\textup{full}}^2}
 \right),
-\end{align*}
+\end{align}
 where $\hmu_{\textup{full}} = \hmu_{\MLE}$ and 
 \begin{multline*}
 %\label{FJH:eq:signmaFull}
@@ -818,14 +831,14 @@ allows us to evaluate the integrals with respect to $\xi$ and $\lambda$:
 & \propto \displaystyle \int_{0}^\infty  \frac{g(\lambda)}{\lambda^{n/2}}  \exp\left( -\frac{  \gamma - \beta^2/\alpha}{2\lambda(c_0  -\vc ^T \mC^{-1} \vc)} \right) \D \lambda 
 .
 \end{align*}
-This can be interpreted as Laplace transform of $g(\lambda)$.
+This can be interpreted as Laplace transform of $g(\lambda)$,
 \begin{align*}
 {\rho_{\mu}(z | \vf = \vy)} 
 & \propto \displaystyle \int_{0}^\infty  \frac{g(\lambda)}{\lambda^{n/2}}  \exp\left( -\frac{  \gamma - \beta^2/\alpha}{2\lambda(c_0  -\vc ^T \mC^{-1} \vc)} \right) \D \lambda 
 \\
 & \propto \int_{0}^\infty \frac{g(\lambda)}{\lambda^{n/2}}
 \exp \left(  - \frac{1}{\lambda} \chi \right)
-\dif{\lambda}, \quad \text{where} \quad \chi = \frac{  \gamma - \beta^2/\alpha}{2(c_0  -\vc ^T \mC^{-1} \vc)}
+\dif{\lambda}, \quad \text{where} \quad \chi = \frac{  \gamma - \beta^2/\alpha}{2(c_0  -\vc ^T \mC^{-1} \vc)}.
 \end{align*}
 Let $\displaystyle \lambda = \frac{1}{w}, \quad \dif{\lambda} = -w^{-2} \dif{w}$ then,
 \begin{align*}
@@ -846,11 +859,20 @@ Let $\displaystyle \lambda = \frac{1}{w}, \quad \dif{\lambda} = -w^{-2} \dif{w}$
 \exp \left(  - w \chi \right)
 \D{w}
 \\
-& = \mathcal{LT} \{ g(1/\chi) \}^{(\frac{n-4}2)'}
+& = \mathcal{LT} \{ g(1/\chi) \}^{(\frac{n-4}2)'},
 \end{align*}
-where $\mathcal{LT}(.)$ denotes the Laplace transform and $(\frac{n-4}2)'$ indicates the derivative taken after the transform.
-Here we used frequency domain derivative property of the Laplace transform. 
-Thus, $\rho_{\mu}(z | \vf = \vy)$  is proportional to $(\frac{n-4}{2})$th derivative of the Laplace transform of $g(1/\chi)$.
+where $\mathcal{LT}(.)$ denotes the Laplace transform and $(\frac{n-4}2)'$ indicates the derivative taken after the transform. Here we used frequency domain derivative property of the Laplace transform. 
+The above result can be further simplified by replacing $\gamma - \beta^2/\alpha$ from  \eqref{eqn:full_bayes_student_short},
+\begin{align*}
+{\rho_{\mu}(z | \vf = \vy)} \propto \mathcal{LT} \{ g(1/\chi) \}^{(\frac{n-4}2)'} 
+& \propto
+\mathcal{LT} \left\{ g 
+\left(
+\frac{1} 
+{ 1 +  \frac{(z - \hmu_{\textup{full}})^2}{(n-1)\widehat{\sigma}_{\textup{full}}^2} }
+\right) \right\}^{(\frac{n-4}2)'} \quad \text{by} \quad \eqref{eqn:full_bayes_student_short}.
+\end{align*}
+Thus, $\rho_{\mu}(z | \vf = \vy)$  is proportional to $(\frac{n-4}{2})$th derivative of the Laplace transform of $g(1/\chi)$, where $\chi \propto { 1 +  \frac{(z - \hmu_{\textup{full}})^2}{(n-1)\widehat{\sigma}_{\textup{full}}^2} } $.
 
 
 If $\displaystyle g(\lambda) = \frac{1}{\lambda}$ then, 
@@ -926,6 +948,7 @@ where
 
 \fi
 
+Our motivation to experiment with the general prior is to show that it may be possible to infer the prior from the integrand samples. We verified it is working for the non-informative working which shows the possibility to compute the prior from function values. Obtaining ar arbitrary prior from the integrand samples is the topic of future work.
 
 
 
@@ -953,7 +976,8 @@ where
 
 
 
-\Subsection{Generalized Cross-Validation} \label{sec:GCV}
+\Section{Generalized Cross-Validation} \label{sec:GCV}
+
 A third parameter optimization technique is \emph{leave-one-out cross-validation} (CV).  Let $\widetilde{y}_i = \Ex[f(\vx_i ) | \vf_{-i} = \vy_{-i}]$, where the subscript $-i$ denotes the vector excluding the $i^{\text{th}}$ component.  This is the conditional expectation of $f(\vx_i )$ given all data but the function value at $\vx_i$.  The cross-validation criterion, which is to be minimized, is sum of squares of the difference between these conditional expectations and the observed values:
 \begin{equation} \label{FJH:eq:CVA}
 \textup{CV} = \sum_{i=1}^n (y_i - \widetilde{y}_i)^2.
@@ -987,11 +1011,11 @@ The loss function $\textup{GCV}$ depends on $m$ and $\vtheta$, but not on $s$.  
 \begin{equation*}
 m_{\textup{GCV}} = \frac{\vone^T \mC^{-2} \vy}{\vone^T \mC^{-2} \vone},\\ 
 \end{equation*}
-\begin{multline*}
+\begin{align*}
 % \label{vthetaGCV}
 \vtheta_{\textup{GCV}} = \argmin_\vtheta \biggl\{\log \left(  \vy^T \left[\mC^{-2} - \frac{\mC^{-2} \vone \vone^T \mC^{-2}}{\vone^T \mC^{-2} \vone}  \right] \vy \right)  
 - 2 \log \left ( \trace(\mC^{-1}) \right ) \biggr\} .
-\end{multline*}
+\end{align*}
 Plugging this value of $m$ into \eqref{eqn:BayesCub} yields
 \begin{equation*}
 % \label{eqn:muCV}
@@ -1003,15 +1027,14 @@ An estimate for $s$ may be obtained by noting that by Lemma \ref{thrm:condDist},
 \begin{align*}
 \var[f(\vx_i ) | \vf_{-i} = \vy_{-i}] = s^2 a_{ii}^{-1}.
 \end{align*}
-Thus, we may estimate `$s$' using an argument similar to that used in deriving the GCV and then substituting $m_{\textup{GCV}}$ for $m$:
+Thus, we may estimate $s_\GCV$ using an argument similar to that used in deriving the GCV and then substituting $m_{\textup{GCV}}$ for $m$:
 \begin{align*}
 s^2 &= \var[f(\vx_i ) | \vf_{-i} = \vy_{-i}] a_{ii} \\ 
-& \approx \frac 1n \sum_{i=1}^n (y_i - \widetilde{y}_i)^2a_{ii} \\
-& = \frac 1n \sum_{i=1}^n \frac{\zeta_i^2}{a_{ii}} \\ 
-& \approx \frac{ \frac 1n \sum_{i=1}^n \zeta_i^2}{\frac 1n \sum_{i=1}^n a_{ii} } \\
-& = \frac{(\vy - m\vone)^T \mC^{-2} (\vy - m \vone)}{ \trace(\mC^{-1}) } \quad = \quad s^2_{\textup{GCV}}, \\
- \intertext{where}
- s^2_{\textup{GCV}} & : = \vy^T \left[\mC^{-2} - \frac{\mC^{-2} \vone \vone^T \mC^{-2}}{\vone^T \mC^{-2} \vone}  \right] \vy  \left[ \trace(\mC^{-1}) \right]^{-1}. 
+& \approx \frac 1n \sum_{i=1}^n (y_i - \widetilde{y}_i)^2a_{ii}  = \frac 1n \sum_{i=1}^n \frac{\zeta_i^2}{a_{ii}} \\ 
+& \approx \frac{ \frac 1n \sum_{i=1}^n \zeta_i^2}{\frac 1n \sum_{i=1}^n a_{ii} } 
+ = \frac{(\vy - m\vone)^T \mC^{-2} (\vy - m \vone)}{ \trace(\mC^{-1}) } \quad =: \quad s^2_{\textup{GCV}}. \\
+% \intertext{where}
+% s^2_{\textup{GCV}} & : = \vy^T \left[\mC^{-2} - \frac{\mC^{-2} \vone \vone^T \mC^{-2}}{\vone^T \mC^{-2} \vone}  \right] \vy  \left[ \trace(\mC^{-1}) \right]^{-1}. 
 \end{align*}
 
 The confidence interval based on generalized cross-validation corresponds to \eqref{eqn_prob_confidence_interval} with the GCV estimates for $m$, $s$, and $\vtheta$:
@@ -1098,9 +1121,32 @@ In the theorem above, note that if the original covariance kernel, $C$, is repla
 \Section{Cone of Functions and the Credible interval} % Functions, F must be captial -- Fred
 \label{sec:cone_of_functions}
 
-%\JRNote{Done: Revise $f_{nice}$ using kernel approximation}
+%\JRNote{Done: Revise $f_{\NICE}$ using kernel approximation}
 
-In this research we assume that the integrand belongs to a cone of well-behaved functions, $\mathscr{C}$, to make the computations bounded in terms of function data. The concept of cone in general for cubature error analysis can be stated using the error bound definition. Given the data driven error bound $\err_{\textup{CI}} = \err_{\textup{CI}}(f(x_1),\dots,f(x_n))$,
+In this research we assume that the integrand belongs to a cone of well-behaved functions, $\mathscr{C}$, to make the computations bounded in terms of function data. The concept of cone in general for cubature error analysis can be stated using the error bound definition. 
+Suppose that 
+\begin{align}
+\label{eqn:cone-homogenity}
+\abs{\mu(f) - \hmu_n(f)} \le \err_{\textup{CI}} (f(x_1), \cdots, f(x_n))
+\end{align}
+for some $f$, which it is 99\% of the time under our hypothesis. Also note that our $\err_{\textup{CI}}$ is a positively homogeneous function, meaning, 
+\begin{align*}
+\err_{\textup{CI}} (a y_1, \cdots, a y_n) = \abs{a} \err_{\textup{CI}} ( y_1, \cdots,  y_n).
+\end{align*}
+Thus if $f$ satisfies \eqref{eqn:cone-homogenity}, then
+\begin{align*}
+\abs{\mu(af) - \hmu_n(af)} &= \abs{a} \abs{\mu(f) - \hmu_n(f)} \\
+& \le \abs{a} \err_{\textup{CI}} (f(x_1), \cdots, f(x_n) ) \\
+& = \err_{\textup{CI}} (a f(x_1), \cdots, a f(x_n))
+\end{align*}
+for all real $a$. Thus the set of all $f$ satisfies \eqref{eqn:cone-homogenity} is a \emph{cone}, $\mathscr{C}$. Cone of functions satisfy the property that if $f \in \mathscr{C}$ then $af \in \mathscr{C}$.
+
+
+
+
+
+\iffalse
+Given the data driven error bound $\err_{\textup{CI}} = \err_{\textup{CI}}(f(x_1),\dots,f(x_n))$,
 \begin{align*}
 \abs{\mu(f) - \hmu_n(f)} \le \err_{\textup{CI}} (f(x_1), \dots, f(x_n)), \quad \forall f \in \mathscr{C}
 \end{align*}  
@@ -1116,6 +1162,9 @@ This is due to the fact that the error bound $\err_{\textup{CI}}$ is homogeneous
 \err_{\textup{CI}}(a f(x_1),\dots, a f(x_n)) = \abs{a} \err_{\textup{CI}}(f(x_1),\dots, f(x_n)).
 \end{align*}
 If the integrand is multiplied by a constant, say $a=45$, then the integral error is also multiplied by the same constant $a=45$, but the factor $\err_{\textup{CI}}$ which depends on the characteristic of $f$ does not change.
+\fi
+
+
 In the context of Bayesian cubature, one can explain the cone concept beginning with the definition of credible interval \eqref{eqn_prob_confidence_interval}. 
 Let $f \sim \mathcal{GP}$, be an instance of a Gaussian stochastic process:
 \begin{align*}
@@ -1124,7 +1173,11 @@ Let $f \sim \mathcal{GP}$, be an instance of a Gaussian stochastic process:
 \end{align*}
 This can be interpreted as $|\mu(f)-\hmu_n(f)| \leq \err_{\textup{CI}}(f)$ with 99\% confidence. If $f$ is in the 99\% middle of the sample space such that $f(x_i) = y_i$ then $af$ is also in the middle 99\%.
 
-We demonstrate the credible interval using the following example. For this purpose, choose a smooth and periodic integrand $f_{nice}(\vx) = \exp(\sum_{j=1}^{d} \cos(2\pi x_j)) + a_{nice} f_{noise}$ and another integrand $f_{peaky}(\vx) = f_{nice} + a_{peaky} f_{noise}$ where $a_{peaky} >> a_{nice}$. Here the function $f_{noise}(\vx) = (1 - \exp(2\pi i \sqrt{-1} \vx^T \vzeta))$ is chosen to be zero at the sampling nodes $\{ \vx_i\}_{i=1}^n$, where $a \in \mathbb{R}$ is some constant, $\vzeta \in \mathbb{R}^d$ is some $d$-dimensional vector belonging to the dual space of the lattice nodes, $\{ \vx_i\}_{i=1}^n$, chosen to sample the integrand. This helps to satisfy $f_{nice}(\vx_i) = f_{real}(\vx_i) $ at the sampling nodes $\{ \vx_i\}_{i=1}^n$.
+We demonstrate the credible interval using the following example. For this purpose, choose a smooth and periodic integrand $f_{\TRUE}(\vx) = \exp(\sum_{\ell=1}^{d} \cos(2\pi x_\ell))$ and another integrand $f_{\PEAKY}(\vx) = f_{\TRUE} + a_{\PEAKY} f_{\NOISE}$ where $a_{\PEAKY} \in \reals$. 
+% Here $a_{\PEAKY} \in \reals, a_{\NICE} \in \reals$, and 
+Here $f_{\NOISE}(\vx) = (1 - \exp(2\pi \sqrt{-1} \vx^T \vzeta))$ is chosen to be zero at the sampling nodes $\{ \vx_i\}_{i=1}^n$, where $\vzeta \in \reals^d$ is some $d$-dimensional vector belonging to the dual space of the lattice nodes, $\{ \vx_i\}_{i=1}^n$, chosen to sample the integrand. 
+The $f_{\NICE}$ is obtained by kernel interpolation of the $n$ samples of $f_\TRUE$ at $\{ \vx_i\}_{i=1}^n$. We chose mat\'ern kernel \eqref{eqn:matern_kernel} for the interpolation.
+Please note that $f_{\PEAKY}(\vx_i) = f_{\NICE}(\vx_i) = f_{\TRUE}(\vx_i) $ for $i=1, \cdots, n$.
 
 
 \begin{figure}[ht]
@@ -1132,7 +1185,7 @@ We demonstrate the credible interval using the following example. For this purpo
 	%\begin{subfigure}[h]{0.48\linewidth}
 	\includegraphics[width=0.9\linewidth]{cone_bayes_f_real}
 	%\end{subfigure}
-	\caption{Example integrands 1) $f_{nice}$, a smooth function, 2) $f_{peaky}$, a peaky function, and samples from $f_{true}$, the true integrand. All have the same values at $\{\vx_i\}_{i=1}^n$.}
+	\caption{Example integrands 1) $f_{\NICE}$, a smooth function, 2) $f_{\PEAKY}$, a peaky function, and samples from $f_{\TRUE}$, the true integrand. All have the same values at $\{\vx_i\}_{i=1}^n$.}
 	\label{fig:cone_bayes_functions}
 \end{figure}
 \begin{figure}[ht]
@@ -1140,14 +1193,14 @@ We demonstrate the credible interval using the following example. For this purpo
 	%\begin{subfigure}[h]{0.48\linewidth}
 	\includegraphics[width=0.9\linewidth]{cone_bayes_mu_pdf}
 	%\end{subfigure}
-	\caption{Probablity distributions showing the relative position integral of a smooth and a peaky function. $f_{nice}$ lies within the center 99\% of the confidence interval, and $f_{peaky}$ lies on the outside of 99\% of  the confidence interval.}
+	\caption{Probablity distributions showing the relative position integral of a smooth and a peaky function. $f_{\NICE}$ lies within the center 99\% of the confidence interval, and $f_{\PEAKY}$ lies on the outside of 99\% of  the confidence interval.}
 	\label{fig:cone_bayes_posterior}
 \end{figure}
-% Done: \JRNote{Use standard deviation $\sigma$ in x-axis.  $f_{nice}$ using kernel approximation} 
+% Done: \JRNote{Use standard deviation $\sigma$ in x-axis.  $f_{\NICE}$ using kernel approximation} 
 
-As shown in \figref{fig:cone_bayes_functions}, the sampled function values, $\{f_{true}(\vx_i)\}_{i=1}^n$ from a smooth integrand $f_{true}$ are shown as dots. One can imagine these samples $\{f(\vx_i)\}_{i=1}^n$ were obtained from $f_{nice}$, a moderately smoother function or from $f_{peaky}$, a highly oscillating function.
+As shown in \figref{fig:cone_bayes_functions}, the sampled function values, $\{f_{\TRUE}(\vx_i)\}_{i=1}^n$ from a smooth integrand $f_{\TRUE}$ are shown as dots. One can imagine these samples $\{f(\vx_i)\}_{i=1}^n$ were obtained from $f_{\NICE}$, a moderately smoother function or from $f_{\PEAKY}$, a highly oscillating function. In this example, we used $a_{\PEAKY} = 2$.
 
-When using $n=16$ rank-1 lattice points, and $r=1$ shift-invariant kernel, we get the posterior distribution of $\mu$ as shown in \figref{fig:cone_bayes_posterior}. The true integral value is shown as $\mu_{true}$ which is at the center of the plot. The integral of the peaky function $f_{peaky}$ almost lies outside of the 99\% of the credible interval given by \eqref{eqn_prob_CI_MLE}, whereas the $\mu_{nice}$ falls within.
+When using $n=16$ rank-1 lattice points, and $r=1$ shift-invariant kernel, we get the posterior distribution of $\mu$ as shown in \figref{fig:cone_bayes_posterior}. The true integral value is shown as $\mu_{\TRUE}$ which is at the center of the plot. The integral of the peaky function $f_{\PEAKY}$ almost lies outside of the 99\% of the credible interval given by \eqref{eqn_prob_CI_MLE}, whereas the $\mu_{\NICE}$ falls within.
 
 Our Bayesian Cubature algorithms compute the approximate integral using only the samples of the integrand. 
 Estimated integral value of our algorithm closely matches the integral of a smooth function that falls within the middle of the confidence interval. If the true integrand were to resemble the smooth approximate function then the estimated integral will be accurate.  
@@ -1212,9 +1265,10 @@ As we see in the example in the next section, the cost increases quickly as the 
 \Section{Example with the Mat\'ern Kernel} \label{MVN_example}
 
 To demonstrate automatic Bayesian cubature consider a Mat\'ern covariance kernel:
-\begin{align*}
-C_{\theta}(\vx, \vt) = \prod_{k=1}^d \exp(-\theta|\vx_k-\vt_k|)(1+\theta |\vx_k-\vt_k|).
-\end{align*}
+\begin{align}
+\label{eqn:matern_kernel}
+C_{\theta}(\vx, \vt) = \prod_{\ell=1}^d \exp(-\theta|\vx_\ell-\vt_\ell|)(1+\theta |\vx_\ell-\vt_\ell|).
+\end{align}
 Also, consider the integration problem of evaluating  \emph{multivariate Gaussian probabilities}:
 \begin{equation}
 \label{eqn:GaussDef}
@@ -1228,27 +1282,27 @@ Genz \cite{Gen93} introduced a variable transformation to transform \eqref{eqn:G
 &\qquad
 \beta_1 = \Phi(b_1),
 \\
-\alpha_j(x_1,...,x_{j-1}) &= 
+\alpha_\ell(x_1,...,x_{\ell-1}) &= 
 \Phi
 \left(
-\frac{1}{l_{jj}} 
+\frac{1}{l_{\ell \ell}} 
 \left(
-a_j - \sum_{k=1}^{j-1} l_{jk} \Phi^{-1}(\alpha_k + x_k(\beta_k-\alpha_k))
+a_\ell - \sum_{k=1}^{\ell-1} l_{\ell k} \Phi^{-1}(\alpha_k + x_k(\beta_k-\alpha_k))
 \right)
-\right), \quad j=2,...,d,
+\right), \quad \ell=2,...,d,
 \\
-\beta_j(x_1,...,x_{j-1}) &= 
+\beta_\ell(x_1,...,x_{\ell-1}) &= 
 \Phi
 \left(
-\frac{1}{l_{jj}} 
+\frac{1}{l_{\ell\ell}} 
 \left(
-b_j - \sum_{k=1}^{j-1} l_{jk} \Phi^{-1}(\alpha_k + x_k(\beta_k-\alpha_k))
+b_\ell - \sum_{k=1}^{\ell-1} l_{\ell k} \Phi^{-1}(\alpha_k + x_k(\beta_k-\alpha_k))
 \right)
-\right), \quad j=2,...,d,
+\right), \quad \ell=2,...,d,
 \end{align*}
 \begin{align}
 \label{eqn:fGenzdef}
-f_{\text{Genz}}(\vx) = \prod_{j=1}^d [\beta_j(\vx) - \alpha_j(\vx)].
+f_{\text{Genz}}(\vx) = \prod_{\ell=1}^d [\beta_\ell(\vx) - \alpha_\ell(\vx)].
 \end{align}
 where $\Phi$ is the cumulative standard normal distribution function.
 Then, $$\mu = \int_{[0,1]^{d-1}} f_{\text{Genz}}(\vx) \, \dvx.$$
@@ -1321,11 +1375,99 @@ So, Algorithm~\ref{algorithm1} in its current form is impractical when $n$ must 
 
 
 The generic automatic Bayesian cubature algorithm described in the previous section requires $\Order\bigl(n \$(f) +  N_{\opt} [n^2 \$(C_\vtheta) + n^3]\bigr)$ operations to compute the cubature. Now we explain how to speed up the calculations. A key is to choose covariance kernels that match the nodes, $\{\vx_i\}_{i=1}^n$, so that the vector-matrix operations required by Bayesian cubature can be accomplished using \emph{fast Bayesian transforms} at a computational cost of $\Order\bigl(n \$(f) + N_{\opt} [n \$(C_\vtheta)  + n \log(n)] \bigr)$.
+We develop the concept of fast Bayesian transform and show how matching kernels and nodes with three key assumptions are used. % First we establish the necessary foundations.
 
 
+
+\Section{Fast Bayesian Transform Kernel}
+
+We make some assumptions about the relationship between the covariance kernel and the nodes. 
+In Chapter~\ref{sec:shift_invariant_kernel} these assumptions are shown to hold  for rank-1 lattices and shift-invariant kernels and again in Chapter~\ref{sec:sobol_walsh} to hold for Sobol' nodes and Walsh kernels.  Although the integrands and covariance kernels are real, it is convenient to allow related vectors and matrices to be complex.  A relevant example is the fast Fourier transform (FFT) of a real-valued vector, which is a complex-valued vector.
+
+We introduce some further notation
+\begin{align}
+\nonumber
+\mC = \mCtheta &= \Big(C_\vtheta(\vx_i,\vx_j)\Big)_{i,j=1}^n  = (\vC_1,...,\vC_n) 
+\\
+\label{eqn:ftk_factor}
+&= \frac 1n \mV \mLambda \mV^H , 
+\quad \quad \mV^H = n \mV^{-1}, \\
+\nonumber
+\mV &= (\vv_1,...,\vv_n)^T = (\vV_1,...,\vV_n) \\
+\nonumber
+\mC^p  &= \frac 1n \mV \mLambda^{p} \mV^H, \qquad \forall p \in \integers,
+\end{align}
+where $\mV^H$ is the Hermitian of $\mV$, $\vC_1,\dots,\vC_n$ are columns of $\mC$,  $\vV_1,\dots,\vV_n$ are columns of $\mV$, and $\vv_1,\dots,\vv_n$ are rows of $\mV$. 
+The columns of matrix $\mV$ are eigenvectors of $\mC$, and $\mLambda$ is a diagonal matrix of eigenvalues of $\mC$.
+In this and later sections, we drop the $\vtheta$ dependence of various quantities for simplicity of notation.  The normalization of $\mV$ assumed in \eqref{eqn:ftk_factor} conveniently allows the first eigenvector, $\vV_1$, to be the vector of ones in \eqref{fastcompAssumpB} below.  
+For any $n \times 1$ vector $\vb$, define the notation  $\widetilde{\vb} := \mV^H \vb$.
+
+We make three assumptions that allow the fast computation:
+\begin{subequations} \label{fastcompAssump}
+	\begin{gather}
+	\label{fastcompAssumpA}
+	\mV \text{ may be identified analytically}, \\
+	\label{fastcompAssumpB}
+	\vv_1 = \vV_1 = \vone, \\
+	\label{fastcompAssumpC}
+	\text{ Computing $\mV^H \vb$ requires only $\Order(n \log n)$ operations } \forall \vb.
+	\end{gather}
+\end{subequations}
+We call the transformation $\vb \mapsto \mV^H \vb$ a \emph{fast Bayesian transform} and $C_\vtheta$ a \emph{fast Bayesian transform kernel} for the matching nodes $\{\vx_i\}_{i=1}^\infty$.  
+
+Under assumptions \eqref{fastcompAssump} the eigenvalues may be identified as the fast Bayesian transform of the first column of $\mC$:
+\begin{align}
+\nonumber
+\vlambda 
+& = \begin{pmatrix}
+\lambda_1 \\ \vdots \\ \lambda_n
+\end{pmatrix} = \mLambda \vone = \mLambda \vv_1^* 
+= \underbrace{\left( \frac 1n \mV^H  \mV \right) }_{\mathsf{I}} \mLambda \vv_1^* \\
+&= \mV^H \left( \frac 1n \mV \mLambda \vv_1^* \right)
+= \mV^H \vC_1 =  \widetilde{\vC}_1,
+\label{eqn:fast_transform_to_eigvalues}
+\end{align}
+where $\mathsf{I}$ is the identity matrix and $\vv_1^*$ is the complex conjugate of the first row of $\mV$. 
+Also note that the fast Bayesian transform of $\vone$ has a simple form
+\begin{align*} 
+\widetilde{\vone}
+& = \mV^H \vone = \mV^H \vV_1 = \begin{pmatrix}n \\ 0 \\ \vdots \\ 0 \end{pmatrix}.
+\label{eqn:fast_transform_one}
+\end{align*}
+
+Many of the terms that arise in the calculations in  Algorithm~\ref{algorithm1} take the form $\va^T\mC^{p}\vb$ for real $\va$ and $\vb$ and integer $p$.  These can be calculated via the transforms $\widetilde{\va} = \mV^H \va$ and $\widetilde{\vb} = \mV^H \vb$ as 
+\begin{equation*}
+\va^T\mC^p\vb = \frac 1n \va^T \mV \mLambda^p \mV^H \vb
+= \frac 1n \widetilde{\va}^H\mLambda^p \widetilde{\vb}
+= \frac 1n \sum_{i=1}^n \lambda_i^p \widetilde{a}_i^* \widetilde{b}_i, 
+\end{equation*}
+Note that $\widetilde{\va}^*$ appears on the right side of this equation because $\va^T \mV = (\mV^H \va)^* = \widetilde{\va}^*$. In particular,
+\begin{align*}
+\vone^T\mC^{-p}\vone & = \frac{n}{\lambda_1^p},
+&
+\vone^T\mC^{-p}\vy &= \frac{\widetilde{y}_1}{\lambda_1^p},
+\\
+\vy^T\mC^{-p} \vy &= \frac 1n \sum_{i=1}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^p},
+&
+\vc^T\mCInv \vone &= \frac{\widetilde{c}_1}{\lambda_1},\\
+\vc^T\mCInv \vy &= \frac 1n \sum_{i=1}^n \frac{\widetilde{c}_i^* \widetilde{y}_i}{\lambda_i}, & 
+\vc^T\mCInv \vc &= \frac 1n \sum_{i=1}^n \frac{\abs{\widetilde{c}_i}^2}{\lambda_i},
+\end{align*}
+where $\widetilde{\vy} = \mV^H \vy$ and 
+$\widetilde{\vc} = \mV^H \vc$.  For any real $\vb$, with $\widetilde{\vb} = \mV^H\vb$, it follows that $\widetilde{b}_1$ is real since the first row of $\mV^H$ is $\vone$.
+
+The covariance kernel used in practice also may satisfy an additional assumption:
+\begin{equation} \label{addAssump}
+\int_{[0,1]^d} C(\vt,\vx) \, \D \vt = 1 \qquad \forall \vx \in [0,1]^d,
+\end{equation}
+which implies that $c_{0 \vtheta} = 1$ and $\vc_{\vtheta} = \vone$.  Under \eqref{addAssump}, the expressions above may be further simplified:
+\begin{equation*}
+\vc^T\mCInv \vone =
+\vc^T\mCInv \vc = \frac{n}{\lambda_1}.
+\end{equation*}
+We use the fast Bayesian transform to speedup the computation of the hyperparameter $\vtheta$, the credible interval width $\err_{\textup{CI}}$, and the integral estimate $\hmu$ that we presented in Theorem~\ref{thm:param} as shown next.
 \iftrue
-
-We develop the concept of fast Bayesian transform and show how matching kernels and nodes with three key assumptions are used. The assumptions and derivations in this chapter lead to the following theorem.
+The assumptions and results in this chapter lead to the following theorem.
 
 \begin{theorem} \label{thm:fastparam}
 	Under assumptions \eqref{fastcompAssump}, the parameters and credible interval half-widths in Theorem~\ref{thm:param} may be expressed in terms of the fast Bayesian transforms of the integrand data, the first column of the Gram matrix, $c_0$, and $\vc$ as follows:
@@ -1423,98 +1565,11 @@ We develop the concept of fast Bayesian transform and show how matching kernels 
 	\end{subequations}
 	In the formulas for the credible interval half-widths and $\vlambda$ depends on $\vtheta$, and  $\vtheta$ is assumed to take on the values $\vtheta_{\MLE}$ or $\vtheta_{\GCV}$ as appropriate.
 \end{theorem}
-The remaining part of the chapter proves this theorem. First we establish the necessary foundations.
+The remaining part of the chapter proves this theorem. We apply the fast Bayesian transform to speedup empirical Bayes, full Bayes and Generalized cross validation stopping criteria.
+
 
 \fi
 
-
-\Section{Fast Bayesian Transform Kernel}
-
-We make some assumptions about the relationship between the covariance kernel and the nodes. 
-In Chapter~\ref{sec:shift_invariant_kernel} these assumptions are shown to hold  for rank-1 lattices and shift-invariant kernels and again in Chapter~\ref{sec:sobol_walsh} to hold for Sobol' nodes and Walsh kernels.  Although the integrands and covariance kernels are real, it is convenient to allow related vectors and matrices to be complex.  A relevant example is the fast Fourier transform (FFT) of a real-valued vector, which is a complex-valued vector.
-
-We introduce some further notation
-\begin{align}
-\nonumber
-\mC = \mCtheta &= \Big(C_\vtheta(\vx_i,\vx_j)\Big)_{i,j=1}^n  = (\vC_1,...,\vC_n) 
-\\
-\label{eqn:ftk_factor}
-&= \frac 1n \mV \mLambda \mV^H , 
-\quad \quad \mV^H = n \mV^{-1}, \\
-\nonumber
-\mV &= (\vv_1,...,\vv_n)^T = (\vV_1,...,\vV_n) \\
-\nonumber
-\mC^p  &= \frac 1n \mV \mLambda^{p} \mV^H, \qquad \forall p \in \integers,
-\end{align}
-where $\mV^H$ is the Hermitian of $\mV$, $\vC_1,\dots,\vC_n$ are columns of $\mC$,  $\vV_1,\dots,\vV_n$ are columns of $\mV$, and $\vv_1,\dots,\vv_n$ are rows of $\mV$. 
-The columns of matrix $\mV$ are eigenvectors of $\mC$, and $\mLambda$ is a diagonal matrix of eigenvalues of $\mC$.
-In this and later sections, we drop the $\vtheta$ dependence of various quantities for simplicity of notation.  The normalization of $\mV$ assumed in \eqref{eqn:ftk_factor} conveniently allows the first eigenvector, $\vV_1$, to be the vector of ones in \eqref{fastcompAssumpB} below.  
-For any $n \times 1$ vector $\vb$, define the notation  $\widetilde{\vb} := \mV^H \vb$.
-
-We make three assumptions that allow the fast computation:
-\begin{subequations} \label{fastcompAssump}
-	\begin{gather}
-	\label{fastcompAssumpA}
-	\mV \text{ may be identified analytically}, \\
-	\label{fastcompAssumpB}
-	\vv_1 = \vV_1 = \vone, \\
-	\label{fastcompAssumpC}
-	\text{ Computing $\mV^H \vb$ requires only $\Order(n \log n)$ operations } \forall \vb.
-	\end{gather}
-\end{subequations}
-We call the transformation $\vb \mapsto \mV^H \vb$ a \emph{fast Bayesian transform} and $C_\vtheta$ a \emph{fast Bayesian transform kernel} for the matching nodes $\{\vx_i\}_{i=1}^\infty$.  
-
-Under assumptions \eqref{fastcompAssump} the eigenvalues may be identified as the fast Bayesian transform of the first column of $\mC$:
-\begin{align}
-\nonumber
-\vlambda 
-& = \begin{pmatrix}
-\lambda_1 \\ \vdots \\ \lambda_n
-\end{pmatrix} = \mLambda \vone = \mLambda \vv_1^* 
-= \underbrace{\left( \frac 1n \mV^H  \mV \right) }_{\mathsf{I}} \mLambda \vv_1^* \\
-&= \mV^H \left( \frac 1n \mV \mLambda \vv_1^* \right)
-= \mV^H \vC_1 =  \widetilde{\vC}_1,
-\label{eqn:fast_transform_to_eigvalues}
-\end{align}
-where $\mathsf{I}$ is the identity matrix and $\vv_1^*$ is the complex conjugate of the first row of $\mV$. 
-Also note that the fast Bayesian transform of $\vone$ has a simple form
-\begin{align*} 
-\widetilde{\vone}
-& = \mV^H \vone = \mV^H \vV_1 = \begin{pmatrix}n \\ 0 \\ \vdots \\ 0 \end{pmatrix}.
-\label{eqn:fast_transform_one}
-\end{align*}
-
-Many of the terms that arise in the calculations in  Algorithm~\ref{algorithm1} take the form $\va^T\mC^{p}\vb$ for real $\va$ and $\vb$ and integer $p$.  These can be calculated via the transforms $\widetilde{\va} = \mV^H \va$ and $\widetilde{\vb} = \mV^H \vb$ as 
-\begin{equation*}
-\va^T\mC^p\vb = \frac 1n \va^T \mV \mLambda^p \mV^H \vb
-= \frac 1n \widetilde{\va}^H\mLambda^p \widetilde{\vb}
-= \frac 1n \sum_{i=1}^n \lambda_i^p \widetilde{a}_i^* \widetilde{b}_i, 
-\end{equation*}
-Note that $\widetilde{\va}^*$ appears on the right side of this equation because $\va^T \mV = (\mV^H \va)^* = \widetilde{\va}^*$. In particular,
-\begin{align*}
-\vone^T\mC^{-p}\vone & = \frac{n}{\lambda_1^p},
-&
-\vone^T\mC^{-p}\vy &= \frac{\widetilde{y}_1}{\lambda_1^p},
-\\
-\vy^T\mC^{-p} \vy &= \frac 1n \sum_{i=1}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^p},
-&
-\vc^T\mCInv \vone &= \frac{\widetilde{c}_1}{\lambda_1},\\
-\vc^T\mCInv \vy &= \frac 1n \sum_{i=1}^n \frac{\widetilde{c}_i^* \widetilde{y}_i}{\lambda_i}, & 
-\vc^T\mCInv \vc &= \frac 1n \sum_{i=1}^n \frac{\abs{\widetilde{c}_i}^2}{\lambda_i},
-\end{align*}
-where $\widetilde{\vy} = \mV^H \vy$ and 
-$\widetilde{\vc} = \mV^H \vc$.  For any real $\vb$, with $\widetilde{\vb} = \mV^H\vb$, it follows that $\widetilde{b}_1$ is real since the first row of $\mV^H$ is $\vone$.
-
-The covariance kernel used in practice also may satisfy an additional assumption:
-\begin{equation} \label{addAssump}
-\int_{[0,1]^d} C(\vt,\vx) \, \D \vt = 1 \qquad \forall \vx \in [0,1]^d,
-\end{equation}
-which implies that $c_{0 \vtheta} = 1$ and $\vc_{\vtheta} = \vone$.  Under \eqref{addAssump}, the expressions above may be further simplified:
-\begin{equation*}
-\vc^T\mCInv \vone =
-\vc^T\mCInv \vc = \frac{n}{\lambda_1}.
-\end{equation*}
-We use the fast Bayesian transform to speedup the computation of the hyperparameter $\vtheta$, the credible interval width $\err_{\textup{CI}}$, and the integral estimate $\hmu$ that we presented in Theorem~\ref{thm:param} as shown next.
 
 
 
@@ -1577,55 +1632,58 @@ Thus, in this  case $\hmu$ is simply the sample mean.
 
 
 \Subsection{Gradient of the objective function using fast Bayesian transform} \label{deriv_obj_func_MLE} 
-In the previous chapter, we discussed about using gradient descent for hyperparameter search but the computational cost is of $\Order(N_{\opt} n^3)$.
-If $\mV$ does not depend on $\vtheta$ then one can fast compute the derivative of Gram matrix $\mC$. Starting from the definition \eqref{eqn:ftk_factor} and taking derivative w.r.t. $\theta_j$, 
-\begin{align*}
-\displaystyle \frac{\partial \mC}{\partial \theta_j} 
-& = \frac 1n \mV \frac{\partial {\mLambda}}{\partial \theta_j} \mV^H
-= \frac 1n \mV \bar{\mLambda}_{(j)} \mV^H,
+We refer back to Section~\ref{grad_descent_MLE}, where we discussed about using gradient descent for hyperparameter search but the computational cost is of $\Order(N_{\opt} n^3)$. Here we develop a techniques to speed up the computation.
+If $\mV$ does not depend on $\vtheta$ then one can fast compute the derivative of Gram matrix $\mC$. Starting from the definition \eqref{eqn:ftk_factor} and taking derivative w.r.t. $\theta_\ell$, 
+\begin{align}
+\nonumber
+\displaystyle \frac{\partial \mC}{\partial \theta_\ell} 
+& = \frac 1n \mV \frac{\partial {\mLambda}}{\partial \theta_\ell} \mV^H
+= \frac 1n \mV \bar{\mLambda}_{(\ell)} \mV^H,
 \\
-& \text{where} \quad \bar{\mLambda}_{(j)} = \diag(\bar{\vlambda}_{(j)}), \quad \text{and}
+\nonumber
+& \text{where} \quad \bar{\mLambda}_{(\ell)} = \diag(\bar{\vlambda}_{(\ell)}), \quad \text{and}
 \\
-&  \quad \bar{\vlambda}_{(j)} = \frac{\partial \vlambda}{\partial \theta_j} = \left( \frac{\partial \lambda_i}{\partial \theta_j} \right)_{i=1}^n 
- = \left( \frac{\partial }{\partial \theta_j} \mV^H {\vC_1} \right)
- = \mV^H \left( \frac{\partial }{\partial \theta_j} {C_\vtheta(\vx_1,\vx_i)} \right)_{i=1}^n.
-\end{align*}
+\label{eqn:deriv_eigenval_gram_matrix}
+&  \quad \bar{\vlambda}_{(\ell)} = \frac{\partial \vlambda}{\partial \theta_\ell} = \left( \frac{\partial \lambda_i}{\partial \theta_\ell} \right)_{i=1}^n 
+= \left( \frac{\partial }{\partial \theta_\ell} \mV^H {\vC_1} \right)
+= \mV^H \left( \frac{\partial }{\partial \theta_\ell} {C_\vtheta(\vx_1,\vx_i)} \right)_{i=1}^n,
+\end{align}
 where we used the fast Bayesian transform property \eqref{eqn:fast_transform_to_eigvalues}.
-We use the notation $\bar{\vlambda}_{(j)} = \mV^H \bar{\vC_1}_{(j)}$,  where $\bar{\vC}_{1(j)}$ denotes the first row of the gram matrix after taking the derivative, i.e.
+We use the notation $\bar{\vlambda}_{(\ell)} = \mV^H \bar{\vC_1}_{(\ell)}$ to denote the derivative of the eigenvalue ${\vlambda}_{(\ell)}$,  where $\bar{\vC}_{1(\ell)}$ denotes the first row of the gram matrix after taking the derivative in the $\ell$th variable, i.e.
 \begin{align*}
-\bar{\vC}_{1{(j)}} = \left(\frac{\partial }{\partial{\theta}_j} C_\vtheta(\vx_1,\vx_i) \right)_{i=1}^n.
+\bar{\vC}_{1{(\ell)}} = \left(\frac{\partial }{\partial{\theta}_\ell} C_\vtheta(\vx_1,\vx_i) \right)_{i=1}^n.
 \end{align*}
-The goal is to find derivative of the objective function. First, let's rewrite the objective function from \eqref{eqn_MLE_loss_func_optimized_2} in two parts
+The goal is to compute the derivative of the objective function faster. First, let's rewrite the objective function from \eqref{eqn_MLE_loss_func_optimized_2} in two parts
 \begin{align*}
-\mathcal{L}(\vtheta | \vy) &= 
+\mathcal{L}(\vtheta | \vy)_{\MLE} &= 
 \underbrace{\frac{1}{n}  \log(\det\, \mC)}_{\mathcal{L}_{\abs{\mC}}} + \underbrace{\log\left((\vy-m_\MLE\vone)^T\mCInv(\vy-m_\MLE\vone) \right)}_{\mathcal{L}_{\vy}},
 \\ &=: \mathcal{L}_{\abs{\mC}} + \mathcal{L}_{\vy}.
 \end{align*}
 Now, take the derivative:
 \begin{align*}
-\frac{\partial}{\partial \theta_j} \mathcal{L}(\vtheta | \vy)
-&=  \frac{\partial}{\partial \theta_j} \mathcal{L}_{\abs{\mC}} + \frac{\partial}{\partial \theta_j} \mathcal{L}_{\vy} \;.
+\frac{\partial}{\partial \theta_\ell} \mathcal{L}(\vtheta | \vy)
+&=  \frac{\partial}{\partial \theta_\ell} \mathcal{L}_{\abs{\mC}} + \frac{\partial}{\partial \theta_\ell} \mathcal{L}_{\vy} \;.
 \end{align*}
-Let's tackle the individual terms,
+Now we tackle the individual terms,
 \begin{align*}
-\frac{\partial}{\partial \theta_j} \mathcal{L}_{\abs{\mC}} &= \frac{\partial}{\partial \theta_j}  \frac{1}{n} \log(\det\, \mC) ,
-\\ & = \frac 1n \trace{\left( \mCInv \frac{\partial \mC}{\partial \vtheta_j} \right)}
- = \frac{1}{n}
+\frac{\partial}{\partial \theta_\ell} \mathcal{L}_{\abs{\mC}} &= \frac{\partial}{\partial \theta_\ell}  \frac{1}{n} \log(\det\, \mC) ,
+\\ & = \frac 1n \trace{\left( \mCInv \frac{\partial \mC}{\partial \vtheta_\ell} \right)}
+= \frac{1}{n}
 \trace{\left( \mV {\mLambda}^{-1} \mV^H
-\frac 1n \mV \overline{\mLambda}_{(j)} \mV^H
-\right)},
+	\frac 1n \mV \overline{\mLambda}_{(\ell)} \mV^H
+	\right)},
 \\
 & = \frac{1}{n}
 \trace{\left(
-	 \mV {\mLambda}^{-1}  \overline{\mLambda}_{(j)} \mV^H
+	\mV {\mLambda}^{-1}  \overline{\mLambda}_{(\ell)} \mV^H
 	\right)}, \quad \text{where we used } \; \mV^H \mV = n,
 \\
 & =\frac{1}{n}
 \trace{\left(
-	 \mV \;
-	\diag\left( \frac{\overline{\lambda}_{i(j)}}{\lambda_i} \right)_{i=1}^n \mV^H
+	\mV \;
+	\diag\left( \frac{\overline{\lambda}_{i(\ell)}}{\lambda_i} \right)_{i=1}^n \mV^H
 	\right)}
-= \frac{1}{n} \sum_{i=1}^{n} \frac{\overline{\lambda}_{i(j)}}{\lambda_i},
+= \frac{1}{n} \sum_{i=1}^{n} \frac{\overline{\lambda}_{i(\ell)}}{\lambda_i},
 \end{align*}
 where we used the fact from \cite{Hig08},
 \begin{align*}
@@ -1637,36 +1695,55 @@ Part of the $\mathcal{L}_{\vy}$ was already simplified using the fast Bayesian t
 \end{align*}
 Using the above result,
 \begin{align*}
-\frac{\partial}{\partial \theta_j} \mathcal{L}_{\vy} 
-&= \frac{\partial}{\partial \vtheta_j} \log\left(\frac{1}{n} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i} \right) ,
+\frac{\partial}{\partial \theta_\ell} \mathcal{L}_{\vy} 
+&= \frac{\partial}{\partial \vtheta_\ell} \log\left(\frac{1}{n} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i} \right) ,
 \\ 
 &= \left(\frac{1}{n} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i}\right)^{-1}
 \;
-\frac{\partial}{\partial \vtheta_j} \left(\frac{1}{n} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i} \right) ,
+\frac{\partial}{\partial \vtheta_\ell} \left(\frac{1}{n} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i} \right) ,
 \\ &= \left(
 \frac{1}{n} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i} \right)^{-1} \frac{1}{n} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2}
-\left( -\frac{\partial \lambda_i}{\partial \vtheta_j} \right),
+\left( -\frac{\partial \lambda_i}{\partial \vtheta_\ell} \right),
 \\ &= -\left(
 \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i} \right)^{-1} 
-\left( \sum_{i=2}^n \abs{\widetilde{y}_i}^2 \frac{ \bar{ \lambda}_{i(j)} }{\lambda_i^2}
- \right).
+\left( \sum_{i=2}^n \abs{\widetilde{y}_i}^2 \frac{ \bar{ \lambda}_{i(\ell)} }{\lambda_i^2}
+\right).
 \end{align*}
 Finally, using the above results,
-\begin{align*}
-\frac{\partial}{\partial \theta_j} \mathcal{L}(\vtheta | \vy) 
-&=  \frac 1n \sum_{i=1}^{n} \frac{\bar{\lambda}_{i(j)}}{\lambda_i}
-- \left({ \sum_{i=2}^n \frac{\abs{\tvy_i}^2 \bar{\lambda}_{i(j)}}{\lambda_i^2}}\right)
-\left( {\sum_{i=2}^n \frac{\abs{\tvy_i}^2}{\lambda_j}} \right)^{-1}.
-\end{align*}
+\begin{align}
+\label{eqn:deriv_obj_func_MLE}
+\frac{\partial}{\partial \theta_\ell} \mathcal{L}(\vtheta | \vy)_{\MLE}
+&=  \frac 1n \sum_{i=1}^{n} \frac{\bar{\lambda}_{i(\ell)}}{\lambda_i}
+- \left({ \sum_{i=2}^n \frac{\abs{\tvy_i}^2 \bar{\lambda}_{i(\ell)}}{\lambda_i^2}}\right)
+\left( {\sum_{i=2}^n \frac{\abs{\tvy_i}^2}{\lambda_\ell}} \right)^{-1},
+\end{align}
+where $\bar{\lambda}_{i(\ell)}$ is the derivative of the $i$th eigenvalue of $\mC$ in the $\ell$th variable. A technique to compute this faster is discussed in Section \ref{sec:product_kernel}. 
+
+
+
+
+
+
 \iffalse
 If $m=0$ assumption can be made,
 \begin{align*}
-\frac{\partial}{\partial \theta_j} \mathcal{L}(\vtheta | \vy) 
-&=  \frac 1n \sum_{i=1}^{n} \frac{\bar{\lambda}_{i(j)}}{\lambda_i}
-- \left({ \sum_{i=1}^n \frac{\abs{\tvy_i}^2 \bar{\lambda}_{i(j)}}{\lambda_i^2}}\right)
-\left( {\sum_{i=1}^n \frac{\abs{\tvy_i}^2}{\lambda_j}} \right)^{-1}.
+\frac{\partial}{\partial \theta_\ell} \mathcal{L}(\vtheta | \vy)_{\MLE} 
+&=  \frac 1n \sum_{i=1}^{n} \frac{\bar{\lambda}_{i(\ell)}}{\lambda_i}
+- \left({ \sum_{i=1}^n \frac{\abs{\tvy_i}^2 \bar{\lambda}_{i(\ell)}}{\lambda_i^2}}\right)
+\left( {\sum_{i=1}^n \frac{\abs{\tvy_i}^2}{\lambda_\ell}} \right)^{-1}.
 \end{align*}
 \fi 
+
+
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \Section{Full Bayes}
 
@@ -1695,12 +1772,12 @@ t_{n_j-1,0.995}
 \Section{Generalized Cross-Validation}
 
 GCV yields a different cubature, which nevertheless can also be computed quickly using the fast Bayesian transform.  Under assumptions \eqref{fastcompAssump}:
-\begin{align*}
+\begin{align}
 \nonumber
 m_{\textup{GCV}} & = m_\MLE =  \frac{\widetilde{y}_1}{n} = \frac 1n \sum_{i=1}^n y_i,\\
 \nonumber 
 s^2_{\textup{GCV}} & : =  \frac 1{n} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2}  \left [ \sum_{i=1}^n \frac{1}{\lambda_i} \right]^{-1}, \\
-%\label{thetaGCV}
+\label{eqn:thetaGCV_fast}
 \vtheta_{\GCV} 
 &= \argmin_\vtheta \left[ \log \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2} 
 \right) -2\log\left( \sum_{i=1}^n \frac{1}{\lambda_i} \right)
@@ -1714,7 +1791,7 @@ s^2_{\textup{GCV}} & : =  \frac 1{n} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}
 \frac{2.58}{n}\left\{\sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2}  \left [ \frac 1n \sum_{i=1}^n \frac{1}{\lambda_i} \right]^{-1}  \times
 \left( c_0 - \frac 1n \sum_{i=1}^n \frac{\abs{\widetilde{c}_i}^2}{\lambda_i} \right) 
 \right\}^{1/2}.
-\end{align*}
+\end{align}
 Moreover, under further assumption \eqref{addAssump} it follows that 
 \begin{align*}
 \nonumber %\label{muhatGCV-FB-MLE-Simple}
@@ -1748,35 +1825,54 @@ In this case too, $\hmu$ is simply the sample mean.
 
 
 \Subsection{Gradient of the objective function}
-Using the results obtained from the Section \secref{deriv_obj_func_MLE} with empirical Bayes, one can reduce the computational cost of the derivative of the loss function,
+Using the results obtained from the Section \secref{deriv_obj_func_MLE} with empirical Bayes, one can reduce the computational cost of the derivative of the objective function in \eqref{eqn:thetaGCV_fast},
 \begin{align*}
 \mathcal{L}(\vtheta | \vy)_\GCV
 &= \log \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2} 
-\right) -2\log\left( \sum_{i=1}^n \frac{1}{\lambda_i} \right)
+\right) -2\log\left( \sum_{i=1}^n \frac{1}{\lambda_i} \right).
 \end{align*}
-Using the similar techniques from \secref{deriv_obj_func_MLE}
+Using the similar techniques from \secref{deriv_obj_func_MLE}, the derivative of the objective function w.r.t $\theta_\ell$:
 \begin{align*}
-& \frac{\partial}{\partial \theta_j}  \mathcal{L}(\vtheta | \vy)_\GCV
+& \frac{\partial}{\partial \theta_\ell}  \mathcal{L}(\vtheta | \vy)_\GCV
 \\
 &= \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2} \right)^{-1}
-\frac{\partial}{\partial \theta_j} \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2} \right)
- -2 \left( \sum_{i=1}^n \frac{1}{\lambda_i} \right)^{-1}
-\frac{\partial}{\partial \theta_j} \left( \sum_{i=1}^n \frac{1}{\lambda_i} \right)
+\frac{\partial}{\partial \theta_\ell} \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2} \right)
+-2 \left( \sum_{i=1}^n \frac{1}{\lambda_i} \right)^{-1}
+\frac{\partial}{\partial \theta_\ell} \left( \sum_{i=1}^n \frac{1}{\lambda_i} \right)
 \\
 &= \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2} \right)^{-1}
- \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^3} (-2) \frac{\partial\lambda_i}{\partial \theta_j}  \right)
+\left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^3} (-2) \frac{\partial\lambda_i}{\partial \theta_\ell}  \right)
 \\ & \hspace{4cm} 
 -2 \left( \sum_{i=1}^n \frac{1}{\lambda_i} \right)^{-1}
-\left( \sum_{i=1}^n \frac{1}{\lambda_i^2} (-1)\frac{\partial \lambda_i}{\partial \theta_j}  \right)
+\left( \sum_{i=1}^n \frac{1}{\lambda_i^2} (-1)\frac{\partial \lambda_i}{\partial \theta_\ell}  \right)
 \\
 &= -2 \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2} \right)^{-1}
-\left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2 \bar{\lambda}_{i(j)} }{\lambda_i^3}    \right)
+\left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2 \bar{\lambda}_{i(\ell)} }{\lambda_i^3}    \right)
 + 2 \left( \sum_{i=1}^n \frac{1}{\lambda_i} \right)^{-1}
-\left( \sum_{i=1}^n \frac{\bar{\lambda}_{i(j)} }{\lambda_i^2}  \right).
+\left( \sum_{i=1}^n \frac{\bar{\lambda}_{i(\ell)} }{\lambda_i^2}  \right).
 \end{align*}
+Thus,
+\begin{multline}
+\frac{\partial}{\partial \theta_\ell}  \mathcal{L}(\vtheta | \vy)_\GCV
+\label{eqn:deriv_obj_func_full}
+= -2 \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2} \right)^{-1}
+\left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2 \bar{\lambda}_{i(\ell)} }{\lambda_i^3}    \right) \\
++ 2 \left( \sum_{i=1}^n \frac{1}{\lambda_i} \right)^{-1}
+\left( \sum_{i=1}^n \frac{\bar{\lambda}_{i(\ell)} }{\lambda_i^2}  \right),
+\end{multline}
+where $\bar{\lambda}_{i(\ell)}$ is the derivative of the $i$th eigenvalue of the Gram matrix, $\mC$, in the $\ell$th variable. We discuss a technique to compute $\bar{\lambda}_{i(\ell)}$ in the next section below.
 
 
-\Section{Product kernels}
+
+
+
+
+
+
+
+
+\Section{Product Kernels}
+\label{sec:product_kernel}
 
 In this research, we use product kernels in the demonstrations and numerical implementations. They got nice properties which are helpful to obtain analytical results easily. Product kernels in $d$ dimensions are of the form,
 \begin{align}
@@ -1785,7 +1881,7 @@ C_\vtheta(\vt, \vx) =
 \prod_{\ell=1}^d \biggl[ 1 - \eta_\ell \; \mathfrak{C}(x_\ell,t_\ell) \biggr]
 \end{align}
 % $ C_\vtheta(\vt, \vx) = \prod_{l=1}^d [ 1 - \eta_l \mathfrak{C}(x_l,t_l) ]$
-where $\eta_\ell, \ell=1,\cdots,d$ are called shape parameters and $\mathfrak{C}$ is some positive definite function. The derivative of the product kernel can be obtained easily.
+where $\eta_\ell$ is called shape parameter in the $\ell$th variable for $\ell=1,\cdots,d$, and $\mathfrak{C}$ is some positive definite function. Our goal is to compute $\bar{\lambda}_{i(\ell)}$ for which the kernel derivative is necessary. The derivative of the product kernels can be obtained easily. Please note that $\vtheta$ denotes all the hyper parameters of the kernel $C$ where $\eta$ is one of them and called the shape parameter.
 
 \Subsection{Derivative of the product kernel when $\eta_1=\dots=\eta_d=\eta$}
 \label{sec:deriv_of_kernel}
@@ -1934,18 +2030,19 @@ Thus,
 \end{align*}
 Please note the above derivatives do not depend on $\mathfrak{C}(x,t)$ and most importantly these computations are applicable to any product kernel of the form \eqref{eqn:prod_kernel}.
 %$ C_\vtheta(\vt, \vx) = \prod_{j=1}^d [ 1 - \eta_j \mathfrak{C}(x_j,t_j) ]$.
+The $\bar{\lambda}_{i(\ell)}$ can be computed now using \eqref{eqn:deriv_eigenval_gram_matrix} with the computed kernel derivative, $\frac{\partial}{\partial \eta_\ell} C_\vtheta$.
 
 
 
 
 
 \Subsection{Shape parameter search using steepest descent}
-Using the obtained derivative above, one can easily implement the steepest descent search introduced in \secref{grad_descent_MLE} 
+Using the obtained derivative of the eigenvalues, $\bar{\lambda}_{i(\ell)}$, one can easily compute the gradient of the objective function \eqref{eqn:deriv_obj_func_MLE} or \eqref{eqn:deriv_obj_func_full}. This can be further used to implement the steepest descent search as introduced in \secref{grad_descent_MLE} 
 %\eqref{Dong2017a}
 \begin{align*}
-\eta^{(j+1)} = \eta^{(j)} - \nu \frac{\partial}{\partial \eta} \mathcal{L}(\vtheta | \vy)
+\eta^{(j+1)}_\ell = \eta^{(j)}_\ell - \nu \frac{\partial}{\partial \eta_\ell} \mathcal{L}(\vtheta | \vy), \quad j=0,\cdots, \infty; \quad \ell = 1, \cdots, d
 \end{align*}
-where $\nu$ is the step size for the gradient descent, and $j$ is the iteration index. The parameter $\eta$ is usually searched in the whole $\reals$ by using the simple domain transformation as explained in Section~\ref{sec:kernel_param_search}.
+where $\nu$ is the step size for the gradient descent, $j$ is the iteration index, and $\frac{\partial}{\partial \eta_\ell} \mathcal{L}(\vtheta | \vy)$ is either \eqref{eqn:deriv_obj_func_MLE} or \eqref{eqn:deriv_obj_func_full} depending on the choice of the hyperparameter search method. The parameter $\eta_\ell$ is usually searched in the whole $\reals$ by using the simple domain transformation as explained in Section~\ref{sec:kernel_param_search}.
 
 
 
