@@ -22,7 +22,7 @@ if dim==1
   for r = order
     for sh = shape_param
       Z(:,i) = kernel(xpts, 2*r, sh, yVal);
-      leg_text{i} = sprintf('$r=%d,\\gamma=%1.1f$', r, sh);
+      leg_text{i} = sprintf('$r=%d,\\eta=%1.1f$', r, sh);
       i=i+1;
     end
   end

@@ -95,6 +95,7 @@
 \newcommand{\valpha}{{\bm{\alpha}}}
 \newcommand{\vbeta}{{\bm{\beta}}}
 \newcommand{\vDelta}{{\boldsymbol{\Delta}}}
+\newcommand{\veta}{{\bm{\eta}}}
 \newcommand{\vlambda}{{\bm{\lambda}}}
 \newcommand{\vgamma}{{\bm{\gamma}}}
 \newcommand{\vphi}{{\bm{\phi}}}
@@ -365,7 +366,7 @@ The contributions of this thesis are as follows:
 	2) gradient descent for hyperparameter search, and
 	3) non-integer kernel order selection.
 \end{itemize}
-The thesis concludes by applying the fast automatic Bayesian cubature algorithms to three sample integration problems (Chapter~\ref{sec:NumExp}). We show that our algorithms are faster than the basic Bayesian cubature and that they provide answers within the error tolerance in most cases.
+The thesis concludes by applying the fast automatic Bayesian cubature algorithms to three sample integration problems (Chapter~\ref{sec:NumExp}). We show that our algorithms are faster than the basic Bayesian cubature and that they provide answers within the error tolerance in most cases. A major portion of this thesis comprising an automatic Bayesian cubature algorithm using lattice sequences and shift-invariant kernels was published in \cite{JagHic09a}.
 
 The Bayesian cubatures that we develop are guaranteed for integrands belonging to cone of functions which reside in the middle of the sample space. The concept of a cone of functions is explained in \secref{sec:cone_of_functions}.
 
@@ -449,7 +450,7 @@ In this work we experiment with two most popular low discrepancy point sets, 1) 
 
 \Section{Prior Work}
 
-Hickernell~\cite{Hic17a} compares different approaches to cubature error analysis depending on whether the rule is deterministic or random and whether the integrand is assumed to be deterministic or random.  Error analysis that assumes a deterministic integrand lying in a Banach space leads to an error bound that is typically impractical for deciding how large $n$ must be to satisfy \eqref{eqn:err_crit}.  The deterministic error bound includes a (semi-) norm of the integrand, which is often more complex to compute than the original integral.
+Hickernell~\cite{Hic17a} compares different approaches to cubature error analysis depending on whether the rule is deterministic or random and whether the integrand is assumed to be deterministic or random.  Error analysis that assumes a deterministic integrand lying in a Banach space leads to an error bound that is typically impractical for deciding how large $n$ must be to satisfy \eqref{eqn:err_crit}.  The deterministic error bound includes a (semi-)norm of the integrand, which is often more complex to compute than the original integral.
 
 Hickernell and Jim\'enez-Rugama~\cite{HicJim16a,JimHic16a} have developed stopping criteria for cubature rules based on low discrepancy nodes by tracking the decay of the discrete Fourier coefficients of the integrand.  The algorithms proposed here also rely on discrete Fourier coefficients, but in a different way.  We only discuss automatic Bayesian cubature for absolute error tolerances in this thesis. The recent work by Hickernell, Jim\'enez-Rugama, and Li~\cite{HicEtal17a} suggests how one might accommodate more general error criteria, such as relative error tolerances which has been adapted in our MATLAB implementation of our algorithms.
 
@@ -2065,7 +2066,7 @@ where $\nu$ is the step size for the gradient descent, $j$ is the iteration inde
 
 The preceding sections lay out an automatic Bayesian cubature algorithm whose computational cost is drastically reduced.  However, this algorithm relies on covariance kernel functions, $C_{\vtheta}$ and node sets, $\{\vx_i\}_{i=1}^n$ that satisfy assumptions \eqref{fastcompAssump}.  
 In this chapter, we demonstrate such a covariance kernel and matching design.
-When periodic shift-invariant kernels are combined with rank-1 lattice nodes, the resulting Gram matrix is symmetric circulant. 
+When periodic shift-invariant kernels are combined with rank-1 lattice nodes, the resulting Gram matrix is symmetric and circulant. 
 This combination also satisfies assumption \eqref{addAssump}.  To conveniently facilitate the fast Bayesian transform, it is assumed in this section and the next that $n$ is power of $2$.  
 
 
@@ -2094,11 +2095,11 @@ n\phi:\{0, \ldots, n-1 \} \to \{0, \ldots, n-1\} \quad
 assuming $n$ is a power of $2$.
 
 These node sets are called shifted rank-1 lattice node sets.
-A random shift  $\vDelta$ is added to $\{\vx_{i}\}_{i=1}^n$ to avoid zero at the origin in the node sets. However, this shift does not disturb the discrepancy properties of $\{\vx_{i}\}_{i=1}^n$. 
+A random shift $\vDelta$ is added to $\vh \phi(i-1)$ to get $\{\vx_{i}\}_{i=1}^n$ which is to avoid zero at the origin in the node sets. However, this shift does not disturb the discrepancy properties of $\{\vx_{i}\}_{i=1}^n$. 
 The rank-1 lattices with the modulo one addition have a very desirable group structure that helps to satisfy fast Bayesian transform kernel assumptions.
 
 
-An example of $64$ nodes is given in Figure~\ref{latticefig}.  The even coverage of the unit cube is ensured by a well chosen generating vector.  The choice of generating vector is typically done offline by computer search.  See \cite{DicEtal14a} and \cite{HicNie03a} for more on extensible integration lattices. Lattice rules are designed to integrate the class of certain sinusoidal functions without error.
+An example of $64$ nodes is given in Figure~\ref{latticefig}.  The even coverage of the unit cube is ensured by a well chosen generating vector $\vh$.  The choice of generating vector is typically done offline by computer search.  See \cite{DicEtal14a} and \cite{HicNie03a} for more on extensible integration lattices. Lattice rules are designed to integrate the class of certain sinusoidal functions without error.
 \begin{figure}[htp]
 	\centering
 	\includegraphics[width=0.8\linewidth]{ShiftedLatticePoints}
@@ -2113,8 +2114,8 @@ C_{\vtheta}(\vt,\vx) = K_{\vtheta}(\vt - \vx \bmod \vone).
 \end{equation}
 This is called a \emph{shift invariant kernel} because shifting both arguments of the covariance function by the same amount leaves the value unchanged.   By a proper scaling of the kernel $K_{\vtheta}$ it follows that assumption \eqref{addAssump} is satisfied. 
 % Of course, $K_{\vtheta}$ is periodic and must be of the form that ensures 
-Here, $K_{\vtheta}$ is continuous and periodic to ensure
-that $C_{\vtheta}$ is symmetric and positive definite, as assumed in \eqref{FJH:eq:CondPosDef}. 
+Here, $K_{\vtheta}$ is chosen such that to ensure
+$C_{\vtheta}$ is symmetric and positive definite, as assumed in \eqref{FJH:eq:CondPosDef}. 
 
 A family of shift invariant kernels is constructed via even degree Bernoulli polynomials. Symmetric, periodic, positive definite kernels of this form appear in  \cite{DicEtal14a} and \cite{Hic96a}:
 \begin{align*}
@@ -2122,11 +2123,15 @@ C_\vtheta(\vx, \vt) := &  \sum_{\vk \in \mathbb{Z}^d} \alpha_{\vk,\vtheta}  e^{2
 e^{-2 \pi\sqrt{-1} \vk^T\vt}, \quad \alpha_{-\vk,\vtheta} = \alpha_{\vk,\vtheta}
 \end{align*}
 where $d$ is the number of dimensions and $\alpha_{\vk}$ is a positive scalar. The Gram matrix formed by this kernel is symmetric and positive definite. 
-The \textit{shape parameter} $\eta$ changes the kernel's shape, so that the function space spanned by the kernel contains the integrand. 
+The \textit{shape parameter} $\eta_\ell$ changes the kernel's shape, so that the function space spanned by the kernel contains the integrand. 
 %This form of the kernel is very convenient to use in any analytical derivations, but not suitable for use with finite precision computers as this involves infinite sum. 
 If the coefficients are chosen as 
+%\begin{align*}
+%\alpha_{\vk,\vtheta} := & \prod_{\ell=1, k_\ell \ne 0}^d %\frac{1}{\max(\frac{|k_\ell|^r}{\eta_\ell},1)}  \;,  \quad \text{with} \; %{\alpha}_{\bm{0},\vtheta} = 1, r \in \naturals, % {\eta_\ell \leq 1},
+%\end{align*}
 \begin{align*}
-\alpha_{\vk,\vtheta} := & \prod_{\ell=1}^d \frac{1}{\max(\frac{|k_\ell|^r}{\eta_\ell},1)}  \;,  \quad \text{with} \; {\alpha}_{\bm{0},\vtheta} = 1, {\eta_\ell \leq 1},
+\alpha_{\vk,\vtheta} := & \prod_{\ell=1, k_\ell \ne 0}^d 
+\frac{{\eta_\ell}}{{|k_\ell|^r}}  \;,  \quad \text{with} \; {\alpha}_{\bm{0},\vtheta} = 1, \; r \in \naturals, % {\eta_\ell \leq 1},
 \end{align*}
 then there exists a simpler closed form expression.
 \begin{multline}
@@ -2134,9 +2139,9 @@ then there exists a simpler closed form expression.
 K_\vtheta(\vx) =
 \prod_{\ell=1}^d \biggl[
 1 - (-1)^{r} \eta_\ell B_{2r}( {x_\ell} ) \biggr],  \\
-\forall \vx \in [0,1]^d,   \vtheta := (r,\eta), \ r \in \naturals, \ \eta_\ell > 0. \qquad \qquad
+\forall \vx \in [0,1]^d,   \vtheta := (r,\veta), \ r \in \naturals, \ \eta_\ell > 0. \qquad \qquad
 \end{multline}
-Larger $r$ implies a greater degree of smoothness of the kernel.  Larger $\eta$ implies greater fluctuations of the output with respect to the input.  
+Larger $r$ implies a greater degree of smoothness of the kernel.  Larger $\eta_\ell$ implies greater fluctuations of the output with respect to the input $x_\ell$.  
 The Bernoulli polynomials $B_{r}(x)$ are described in \cite[Chapter 24]{OlvEtal10a}
 \begin{align*}
 %\label{dlmf_bernoulli_24_8_3}
@@ -2149,7 +2154,7 @@ B_{r}(x) = \frac{-r!}{(2 \pi \sqrt{-1})^{r}}
 \text{for} \;\; r=2,3,\hdots \;\; 0 \leq x \leq 1
 \end{cases}
 \end{align*}
-Plots of $C(\cdot, 0.3)$ are given in \figref{fig:fourierkernel-dim1} for various $r$ and $\eta$ values.
+Plots of $C(\cdot, 0.3)$ are given in \figref{fig:fourierkernel-dim1} for $d=1$ and for various $r$ and $\eta$ values.
 
 \begin{figure}
 	\centering  % , decodearray={0.2989, 0.5870,  0.1140}
@@ -2161,13 +2166,14 @@ Lattice cubature rules are known to have convergence rates that depend on the sm
 
 
 \Subsection{Eigenvectors}
-For general shift-invariance covariance functions the Gram matrix takes the form
+For general shift-invariance covariance functions the Gram matrix %takes the form
 \begin{align}
 \label{shInvKernGramMatrix}
 \mC_\vtheta &= \bigl ( C_\vtheta(\vx_i, \vx_j) \bigr)_{i, j = 1}^n 
- = \Bigl ( K_\vtheta(\vh(\phi(i-1) - \phi(j-1)) \bmod \vone ) \Bigr)_{i, j = 1}^n.
+% = \Bigl ( K_\vtheta(\vh(\phi(i-1) - \phi(j-1)) \bmod \vone ) \Bigr)_{i, j = 1}^n.
 \end{align}
-We now demonstrate that the eigenvector matrix for $\mC$ is 
+% We now demonstrate the
+can be shown that to have the eigenvector matrix %for $\mC$ is 
 \begin{equation} \label{latticeVdef}
 \mV = \Bigl ( \me^{2 \pi n \sqrt{-1} \phi(i-1)\phi(j-1)} \Bigr)_{i = 1}^n.
 \end{equation}
@@ -2209,14 +2215,15 @@ This establishes $\mV^H \mC \mV$ as a diagonal matrix whose diagonal elements ar
 \fi
 
 One can interpret the sequence reordering from $\{\phi(i-1)\}_{i=1}^n$ to $(0, \ldots, 1-1/n)$, for $n$ a power of $2$, as a permutation. %, consequently as a permutation matrix acting upon $\mC$ in \eqref{shInvKernGramMatrix}. 
-With out the sequence reordering, the matrix $\Bigl ( K(\vh((i-1) - (j-1)) \bmod \vone ) \Bigr)_{i, j = 1}^n$ is nothing but a circulant matrix.
+%With out the sequence reordering, the matrix $\Bigl ( K(\vh((i-1) - (j-1)) \bmod \vone ) \Bigr)_{i, j = 1}^n$ is nothing but a circulant matrix.
 % One can see the sequence $0, \ldots, 1-1/n$ in combination with modulo 1 in \eqref{eq:shInv}.
-Thus it can be shown that the Gram matrix $\mC$ is the permutation of a circulant matrix.
-By the properties of $\phi$ in \eqref{phiprop}, it follows that
+% Thus it can be shown that the Gram matrix $\mC$ is the permutation of a circulant matrix.
+% By the properties of $\phi$ in \eqref{phiprop}, it follows that 
+Let
 \begin{equation} \label{PermMat}
 \mP = \bigl( \delta_{n\phi(i-1), j-1}  \bigr)_{i,j=1}^n
 \end{equation}
-is a permutation matrix, where $\delta_{\cdot,\cdot}$ is the Kronecker delta function.  Then,
+be a permutation matrix, where $\delta_{\cdot,\cdot}$ is the Kronecker delta function.  Then,
 \begin{align}
 \nonumber
 \mC_\vtheta &= \bigl ( C_\vtheta(\vx_i, \vx_j) \bigr)_{i, j = 1}^n \\
@@ -2229,21 +2236,30 @@ is a permutation matrix, where $\delta_{\cdot,\cdot}$ is the Kronecker delta fun
 K_\vtheta \bigl (\vh (i'-j')/n \bmod \vone \bigr )
 \delta_{j'-1,n\phi(j-1)} 
 \biggr)_{i,j=1}^n \\
-& = \mP \mK_{\vtheta}  \mP^T,  \label{shInvKernGramMatrixPermut} 
+& = \mP \mK_{\vtheta}  \mP^T, \quad \text{by \eqref{PermMat}} \label{shInvKernGramMatrixPermut} 
 \intertext{where } 
 \mK_{\vtheta} &= \bigl ( K_\vtheta \bigl (\vh (i-j)/n \bmod \vone \bigr ) \bigr)_{i, j = 1}^n.
 \end{align}
-
 Because $\mK_\vtheta$ is circulant, we know the form of it's eigenvector-eigenvalue decomposition:
 \begin{equation} \label{Keig}
-\mK_{\vtheta} = \frac 1n \mW \mLambda_\vtheta \mW^H, \; \ \mW =  \Bigl ( \me^{2 \pi \sqrt{-1} (i-1)(j-1)/n} \Bigr)_{i,j = 1}^n.
+\mK_{\vtheta} = \frac 1n \mW \mLambda_\vtheta \mW^H, \quad \text{where} \quad \mW =  \Bigl ( \me^{2 \pi \sqrt{-1} (i-1)(j-1)/n} \Bigr)_{i,j = 1}^n
 \end{equation}
+where $\mLambda_\vtheta$ is a diagonal matrix.
 By \eqref{shInvKernGramMatrixPermut} we then have the eigenvector-eigenvalue decomposition for $\mC_{\vtheta}$ assumed in \eqref{eqn:ftk_factor}, namely
-\begin{equation} \label{Clateig}
+\begin{align*} 
+\mC_{\vtheta} &= \mP \mK_\vtheta \mP^T \\
+&= \frac 1n  \mP \mW \mLambda_\vtheta \mW^H \mP^T 
+= \frac 1n  \underbrace{\mP \mW \mP^T} \mLambda_\vtheta \underbrace{\mP \mW^H \mP^T} 
+\\
+&= \frac 1n \mV \mLambda_\vtheta \mV^H .
+\end{align*}
+Thus
+\begin{equation}
+\label{Clateig}
 \mC_{\vtheta} = \frac 1n \mV \mLambda_\vtheta \mV^H , \qquad \mV = \mP \mW,
 \end{equation}
 where the eigenvalues of  $\mC_{\vtheta}$ and $\mK_{\vtheta}$ are identical.
-This can be performed in $\Order(n \log(n))$ operations by the FFT. 
+This can be performed in $\Order(n \log n)$ operations using the FFT. 
 
 %Fast Bayesian transform assumptions \eqref{fastcompAssumpA} and \eqref{fastcompAssumpB} can be verified by \eqref{PermMat}, \eqref{Keig}, and \eqref{Clateig}.  Assumption \eqref{fastcompAssumpC} is satisfied because $\mV^H \vb = \mW^H \mP^T \vb$ is just the discrete Fourier transform of a vector whose rows have been permuted.  
 % A proper scaling of the kernel $K_\vtheta$, such as the one given by \eqref{the_kernel_eqn_bernoulli},  ensures that assumption \eqref{addAssump} is satisfied. 
@@ -2313,23 +2329,140 @@ The computational cost to compute $\mV^{(2n)H}\vb$ is then twice the cost of com
 
 \JRNote{Need better and more convincing motivation}
 
-In the previous sections, we assumed that the shift-invariant kernel's order is an even valued integer and also fixed. It requires the practitioner to be aware of the integrand's smoothness to precisely handpick the kernel order to match the integrand's smoothness. However, It is not possible to know the integrand's smoothness in most of the practical applications. The constraint to have integer-valued kernel order also limits the ability to continuously vary the kernel's smoothness to match the integrand like the shape parameter is varied to match. 
+In the previous sections, we assumed that the shift-invariant kernel's order is an even valued integer and also fixed. It requires the practitioner to be aware of the integrand's smoothness to precisely handpick the kernel order to match the integrand's smoothness. However, it is not possible to know the integrand's smoothness in most of the practical applications. The constraint to have an integer-valued kernel order also limits the ability to continuously vary the kernel's smoothness to match the integrand like the shape parameter is varied to match. 
 
-The integer kernel order is not suitable to optimally search by any optimization algorithm.
+The integer kernel order is not suitable to optimally search by standard optimization algorithm.
 As a consequence, one usually ends up choosing a higher kernel order when the integrand is not  smooth or lower kernel order when the integrand is very smooth.
 Often it leads to longer computation time or poor accuracy in the numerical integration.
-Here we explore two alternative forms of the kernel which allow the kernel order to be positive continuous value greater than one or a continuous value in the range $(0,1)$. Let us recollect the infinite series expression that was used to construct the kernel\eqref{the_kernel_eqn_bernoulli},
+Here we explore two alternative forms of the kernel which allow the kernel order to be positive continuous value greater than one or a continuous value in the range $(0,1)$. Let us recall the infinite series expression that was used to construct the kernel \eqref{the_kernel_eqn_bernoulli}:
 \begin{align*}
 C_\vtheta(\vx, \vt) := &  \sum_{\vk \in \mathbb{Z}^d} \alpha_{\vk,\vtheta}  e^{2 \pi\sqrt{-1} \vk^T\vx}
-e^{-2 \pi\sqrt{-1} \vk^T\vt}, \quad \text{where} \; \alpha_{\vk,\vtheta} = \prod_{l=1}^d \frac{1}{\max(\frac{|k_l|}{\eta_l},1)^r_{\eta_l\leq 1}} 
+e^{-2 \pi\sqrt{-1} \vk^T\vt}, \quad \text{where} \; 
+\alpha_{\vk,\vtheta} = \prod_{l=1}^d \frac{\eta_l}{{|k_l|}^r} 
 \end{align*}
-and $\theta = (\eta, r)$.  This form is convenient for analytical derivations.
+and $\vtheta = (r, \veta)$.  This form is convenient for analytical derivations.
 To make the derivations easier to follow, we fix the dimension $d=1$,
 \begin{align*}
 C_\vtheta(x, t) = & 1 + \eta \sum_{k \in \mathbb{Z}, k \neq 0 } \frac{1}{\abs{k}^r} 
 e^{ 2 \pi\sqrt{-1} k x}
-e^{-2 \pi\sqrt{-1} k t}
+e^{-2 \pi\sqrt{-1} k t}.
 \end{align*}
+
+
+
+
+
+
+
+
+
+
+\Subsection{Truncated series kernel}
+\label{sec:trunc_series_kernel}
+The following variation to the infinite series kernel \eqref{the_kernel_eqn_bernoulli} has the kernel order in the interval $(1, \infty)$. This kernel provides algebraic decay but it is more robust in the hyperparameter search.
+We reuse the original definition of the infinite kernel \eqref{the_kernel_eqn_bernoulli} but truncate to a finite length. This allows the kernel order $r$ continuous valued so that it does not have to be an even integer,  which was a constraint previously. 
+For $d=1$,
+\begin{align*}
+C_\vtheta(x, t) = & 1 + \eta \sum_{k \in \mathbb{Z}, k \neq 0 } \frac{1}{\abs{k}^r} 
+e^{ 2 \pi\sqrt{-1} k (x-t)},
+\end{align*}
+where $\theta = (r, \eta)$. 
+Since the infinite sum cannot be used directly, we truncate to length $n$,
+\begin{align*}
+C_{\vtheta, n}(x, t) = & 1 + \eta \sum_{k = - n/2 }^{n/2 - 1} \frac{1}{\abs{k}^r} 
+e^{ 2 \pi\sqrt{-1} k (x-t)}.
+\end{align*}
+The Gram matrix is written as 
+\begin{align*}
+\mC_{\vtheta, n} = & \biggl( C_{\vtheta, n}(\vx_i, \vx_j) \biggr)_{i,j=1}^n
+\end{align*}
+where $n$ is the number of samples. 
+The reason for having the truncation length and the number of sample to $n$ will be obvious as we proceed further.
+The first column of the Gram matrix is
+\begin{align*}
+\vC_{\vtheta, n} &= \biggl( C_{\vtheta, n}(\vx_i, \vx_1) \biggr)_{i=1}^n
+\\
+&= \left( \prod_{\ell=1}^d \left[ 1 + \eta_\ell \sum_{k = - n/2, k \neq 0 }^{n/2 - 1} \frac{1}{\abs{k_l}^r} 
+e^{ 2 \pi\sqrt{-1} k_l (x_{i\ell}-x_{1\ell})}\right] \right)_{i=1}^n, 
+\end{align*}
+where $d$ is the number of dimensions. 
+However the direct computation involves $n^2$ computations since we have chosen the truncation length to $n$. We can reduce the computations to $\Order(n\log n)$ using the FFT.
+Define
+\begin{align*}
+\mathfrak{C}_r(t) &:= \sum_{k = - n/2, k \neq 0 }^{n/2 -1} \frac{1}{\abs{k}^r} 
+e^{ 2 \pi\sqrt{-1} k\, t}.
+\end{align*}
+Using the $\mathfrak{C}_r$, rewrite
+\begin{align}
+\label{eqn:trunc_series_kernel}
+\vC_{\vtheta, n}
+&= \left( \prod_{l=1}^d \left[ 1 + \eta \mathfrak{C}_r( \abs{x_{il} - x_{1l}})\right] \right)_{i=1}^n.
+\end{align}
+By the definition of lattice points from \eqref{eqn:lattice_def}, we can observe
+$\abs{x_{i\ell}-x_{1\ell}} \in \lbrace 0, \frac 1n, \frac 2n, \dots \frac{n-1}{n}  \rbrace$. This can be used to rewrite $\mathfrak{C}_r$ in a much simpler form,
+\begin{align*}
+\mathfrak{C}_r \left(\frac jn \right) &= \sum_{k = - n/2, k \neq 0 }^{n/2 - 1} \frac{1}{\abs{k}^r} 
+e^{ 2 \pi\sqrt{-1} k (\frac jn)}, \quad \text{where} \;  j=0,1,\dots n-1.
+\end{align*}
+This notation is very convenient to show that $\widetilde{\mathfrak{C}}_r$,  the discrete Fourier transform of $\mathfrak{C}_r$, can be computed analytically
+\begin{align*}
+\widetilde{\mathfrak{C}}_r(m) &= \sum_{j=0}^{n-1} \mathfrak{C}_r (j/n) e^{- 2 \pi\sqrt{-1} jm/n} 
+\\
+% &= \sum_{k = - n/2, k \neq 0 }^{n/2-1} 
+% \sum_{j=0}^{n-1} \frac{1}{\abs{k}^r} 
+% e^{ 2 \pi\sqrt{-1} k  j/n} e^{- 2 \pi\sqrt{-1} jm/n} 
+% \\
+&= \sum_{k = - n/2, k \neq 0 }^{n/2-1} 
+\sum_{j=0}^{n-1} \frac{1}{\abs{k}^r} e^{ 2 \pi\sqrt{-1} (k-m)  j/n} , \quad \text{by \eqref{eqn:dft_delta_fact}}
+\\
+&= \sum_{k = - n/2, k \neq 0  }^{n/2-1} \frac{n}{\abs{k}^r} \; \delta_{k-m \bmod n, 0} \; .
+\end{align*}
+This is the reason we have chosen the truncation length to $n$. 
+Based on the above result, it is evident that $\widetilde{\mathfrak{C}}_r$ can be computed analytically,
+\begin{align} \label{dft_of_g}
+\widetilde{\mathfrak{C}}_r(m) &= 
+\begin{cases}
+0, & \text{for} \quad m=0 \\
+\frac{n}{\abs{m}^r}, & \text{for} \quad m=1,\dots,n/2-1 \\
+\frac{n}{\abs{n-m}^r}, & \text{for} \quad m=n/2,\dots,n-1
+\end{cases}
+\end{align}
+where we used the fact,
+\begin{align}
+\label{eqn:dft_delta_fact}
+\sum_{i=0}^{n-1} e^{2 \pi \sqrt{-1} i j /n} = 
+\begin{cases}
+\frac{1 - e^{2\pi \sqrt{-1} j n /n}}{1 - e^{2\pi \sqrt{-1} j /n}} = 0, &j \ne 0 \bmod n
+\\
+n, & j = 0 \bmod n.
+\end{cases}
+\end{align}
+Having these results, we can easily back-compute $\mathfrak{C}$ using inverse discrete Fourier transform. It can be shown that inverse DFT of $\widetilde{\mathfrak{C}}_{r}$ returns $\mathfrak{C}$,
+\begin{align*}
+\frac{1}{n} &\sum_{m=0}^{n-1} \widetilde{\mathfrak{C}}_{r} (m) e^{2 \pi\sqrt{-1} lm/n} \\
+& = \frac{1}{n} \sum_{m=0}^{n-1} 
+\sum_{j=0}^{n-1} \mathfrak{C}_{r} (j/n) e^{- 2 \pi\sqrt{-1} jm/n}
+e^{2 \pi\sqrt{-1} lm/n}, \quad \text{by \eqref{eqn:dft_delta_fact}}  \\
+% & = \frac{1}{n} \sum_{j=0}^{n-1} \mathfrak{C}_{r} (j/n) \sum_{m=0}^{n-1} e^{2 \pi\sqrt{-1} (l-j)m/n} \\
+& = \frac{1}{n}  \sum_{j=0}^{n-1} \mathfrak{C}_{r} (j/n) n \delta_{(l-j) \bmod n, 0} \\
+& = \mathfrak{C}_{r} (l/n), \quad \text{for} \quad l=0,\dots,n-1
+\end{align*}
+This implies that to compute $n$ values of $\biggl( C_{\vtheta, n}(\vx_i, \vx_1) \biggr)_{i=1}^n$, we need to have the number of samples and the truncation length the same. 
+The above results are summarized as an algorithm to compute $\mathfrak{C}$ using FFT in Algorithm~\ref{algorithm-cont-val-kernel-order}.
+\begin{algorithm}
+	\caption{The kernel with continuous valued order}\label{algorithm-cont-val-kernel-order}
+	\begin{algorithmic}[1]
+	
+	\Require
+	Number of points to use, $n$; 
+
+	\State Analytically compute $\left(\widetilde{\mathfrak{C}}_{r}(m)\right)_{m=0}^{n-1}$, the discrete Fourier coefficients of $\left(\mathfrak{C}_r(j/n)\right)_{j=0}^{n-1}$ using \eqref{dft_of_g}
+	\State Take the inverse FFT of $\left(\widetilde{\mathfrak{C}}_{r}(m)\right)_{m=0}^{n-1}$ to get $\left(\mathfrak{C}_r(j/n)\right)_{j=0}^{n-1}$
+	\end{algorithmic}
+
+\end{algorithm}
+
+In Algorithm \ref{algorithm-cont-val-kernel-order}, the computational cost is $\Order(n \log n)$ instead of $\Order(n^2)$. Plugging-in the values of $\mathfrak{C}$ in \eqref{eqn:trunc_series_kernel} gives the kernel. Another major benefit is that the FFT approach is numerically more stable than the direct sum approach. These kernels obtain algebraic order decay. The infinite series kernel with little modification can be enhanced to obtain exponential decay as shown next.
 
 
 
@@ -2341,12 +2474,12 @@ e^{-2 \pi\sqrt{-1} k t}
 
 \Subsection{Exponentially decaying kernel}
 \label{sec:exp_decay_kernel}
-We propose the following alternative form of the kernel. This kernel can also provide exponential decay,
+We propose the following alternative form of the kernel. This kernel can provide exponential decay,
 \begin{align*}
 C_\vtheta(x, t) = & 1 + \eta \sum_{k \in \mathbb{Z}, k \neq 0 } q^{\abs{k}}  
 e^{ 2 \pi\sqrt{-1} k (x-t)}, \quad \text{with} \quad 0 < q < 1
 \end{align*}
-where $q$ is the kernel order. This can be rewritten as
+where $q$ is used to denote the kernel order to distinguish it from the notation in \eqref{eqn:trunc_series_kernel}. This can be rewritten as
 \begin{align*}
 C_\vtheta(x, t) = & 1 + \eta \sum_{k \in \mathbb{Z}, k \neq 0 } 
 e^{ 2 \pi\sqrt{-1} k (x-t) + \abs{k} \log(q)}
@@ -2445,114 +2578,6 @@ One disadvantage of this kernel is that it is very sensitive to the changes in k
 
 
 
-
-\Subsection{Truncated series kernel}
-\label{sec:trunc_series_kernel}
-There is another form to the infinite series kernel, which has the kernel order in the interval $(1, \infty)$, making it more robust in the hyperparameter search.
-By using the original definition of the kernel, we could make the kernel order $r$ continuous valued such that it does not have to be an even integer. %, which was the constraint previously. 
-For $d=1$,
-\begin{align*}
-C_\vtheta(x, t) = & 1 + \eta \sum_{k \in \mathbb{Z}, k \neq 0 } \frac{1}{\abs{k}^r} 
-e^{ 2 \pi\sqrt{-1} k (x-t)}
-\end{align*}
-where $\theta = (\eta, r)$. 
-Since the infinite sum cannot be used directly, we truncate to length $N$,
-\begin{align*}
-C_{\vtheta, N}(x, t) = & 1 + \eta \sum_{k = - N/2 }^{N/2 - 1} \frac{1}{\abs{k}^r} 
-e^{ 2 \pi\sqrt{-1} k (x-t)}
-\end{align*}
-The Gram matrix is written as 
-\begin{align*}
-\mC_{\vtheta, N} = & \biggl( C_{\vtheta, N}(\vx_i, \vx_j) \biggr)_{i,j=1}^n.
-\end{align*}
-The first column of the Gram matrix is
-\begin{align*}
-\vC_{\vtheta, N} &= \biggl( C_{\vtheta, N}(\vx_i, \vx_1) \biggr)_{i=1}^n
-\\
-&= \left( \prod_{l=1}^d \left[ 1 + \eta_l \sum_{k = - N/2, k \neq 0 }^{N/2 - 1} \frac{1}{\abs{k_l}^r} 
-e^{ 2 \pi\sqrt{-1} k_l (x_{il}-x_{1l})}\right] \right)_{i=1}^n, 
-\end{align*}
-where $d$ is the number of dimensions and $n$ is the number of points. 
-However the direct computation involves $nN$ computations, or $n^2$ computations if $N \approx n$. We can reduce the computations to $\Order(n\log n)$ using the FFT.
-Define
-\begin{align*}
-\mathfrak{C}_r(t) &:= \sum_{k = - N/2, k \neq 0 }^{N/2 -1} \frac{1}{\abs{k}^r} 
-e^{ 2 \pi\sqrt{-1} k\, t}.
-\end{align*}
-Using the $\mathfrak{C}_r$, rewrite
-\begin{align}
-\label{eqn:trunc_series_kernel}
-\vC_{\vtheta, N}
-&= \left( \prod_{l=1}^d \left[ 1 + \eta \mathfrak{C}_r( \abs{x_{il} - x_{1l}})\right] \right)_{i=1}^n.
-\end{align}
-By the definition of lattice points from \eqref{eqn:lattice_def}, we can observe
-$x_{il}-x_{1l} \in \lbrace 0, \frac 1n, \frac 2n, \dots \frac{n-1}{n}  \rbrace$. This can be used to rewrite $\mathfrak{C}_r$ in a much simpler form,
-\begin{align*}
-\mathfrak{C}_r \left(\frac jN \right) &= \sum_{k = - N/2, k \neq 0 }^{N/2 - 1} \frac{1}{\abs{k}^r} 
-e^{ 2 \pi\sqrt{-1} k (\frac jN)}, \quad \text{where} \;  j=0,1,\dots N-1.
-\end{align*}
-This notation is very convenient to show that $\widetilde{\mathfrak{C}}_r$,  the discrete Fourier transform of $\mathfrak{C}_r$, can be computed analytically
-\begin{align*}
-\widetilde{\mathfrak{C}}_r(m) &= \sum_{j=0}^{N-1} \mathfrak{C}_r (j/n) e^{- 2 \pi\sqrt{-1} jm/N} 
-\\
-% &= \sum_{k = - N/2, k \neq 0 }^{N/2-1} 
-% \sum_{j=0}^{N-1} \frac{1}{\abs{k}^r} 
-% e^{ 2 \pi\sqrt{-1} k  j/N} e^{- 2 \pi\sqrt{-1} jm/N} 
-% \\
-&= \sum_{k = - N/2, k \neq 0 }^{N/2-1} 
-\sum_{j=0}^{N-1} \frac{1}{\abs{k}^r} e^{ 2 \pi\sqrt{-1} (k-m)  j/N} , \quad \text{by \eqref{eqn:dft_delta_fact}}
-\\
-&= \sum_{k = - N/2, k \neq 0  }^{N/2-1} \frac{N}{\abs{k}^r} \; \delta_{k-m \bmod N, 0} \; .
-\end{align*}
-Based on the above result, it is evident that $\widetilde{\mathfrak{C}}_r$ can be computed analytically,
-\begin{align} \label{dft_of_g}
-\widetilde{\mathfrak{C}}_r(m) &= 
-\begin{cases}
-0, & \text{for} \quad m=0 \\
-\frac{N}{\abs{m}^r}, & \text{for} \quad m=1,\dots,N/2-1 \\
-\frac{N}{\abs{N-m}^r}, & \text{for} \quad m=N/2,\dots,N-1
-\end{cases}
-\end{align}
-where we used the fact,
-\begin{align}
-\label{eqn:dft_delta_fact}
-\sum_{i=0}^{N-1} e^{2 \pi \sqrt{-1} i j /N} = 
-\begin{cases}
-\frac{1 - e^{2\pi \sqrt{-1} j N /N}}{1 - e^{2\pi \sqrt{-1} j /N}} = 0, &j \ne 0 \bmod N
-\\
-N, & j = 0 \bmod N.
-\end{cases}
-\end{align}
-Having these results, we can easily back-compute $\mathfrak{C}$ using inverse discrete Fourier transform. It can be shown that inverse DFT of $\widetilde{\mathfrak{C}}_{r}$ returns $\mathfrak{C}$,
-\begin{align*}
-\frac{1}{N} &\sum_{m=0}^{N-1} \widetilde{\mathfrak{C}}_{r} (m) e^{2 \pi\sqrt{-1} lm/N} \\
-& = \frac{1}{N} \sum_{m=0}^{N-1} 
-\sum_{j=0}^{N-1} \mathfrak{C}_{r} (j/n) e^{- 2 \pi\sqrt{-1} jm/N}
-e^{2 \pi\sqrt{-1} lm/N}, \quad \text{by \eqref{eqn:dft_delta_fact}}  \\
-% & = \frac{1}{N} \sum_{j=0}^{N-1} \mathfrak{C}_{r} (j/n) \sum_{m=0}^{N-1} e^{2 \pi\sqrt{-1} (l-j)m/N} \\
-& = \frac{1}{N}  \sum_{j=0}^{N-1} \mathfrak{C}_{r} (j/n) N \delta_{(l-j) \bmod N, 0} \\
-& = \mathfrak{C}_{r} (l/n), \quad \text{for} \quad l=0,\dots,N-1
-\end{align*}
-This implies that to compute $n$ values of $\biggl( C_{\vtheta, N}(\vx_i, \vx_1) \biggr)_{i=1}^n$, we need to have $N=n$. 
-The above results are summarized as an algorithm to compute $\mathfrak{C}$ using FFT in Algorithm~\ref{algorithm-cont-val-kernel-order}.
-\begin{algorithm}
-	\caption{The kernel with continuous valued order}\label{algorithm-cont-val-kernel-order}
-	\begin{algorithmic}[1]
-	
-	\Require
-	Number of points to use, $n$; 
-
-	\State Analytically compute $\left(\widetilde{\mathfrak{C}}_{r}(m)\right)_{m=0}^{N-1}$, the discrete Fourier coefficients of $\left(\mathfrak{C}_r(j/N)\right)_{j=0}^{N-1}$ using \eqref{dft_of_g}
-	\State Take the inverse FFT of $\left(\widetilde{\mathfrak{C}}_{r}(m)\right)_{m=0}^{N-1}$ to get $\left(\mathfrak{C}_r(j/N)\right)_{j=0}^{N-1}$
-	\end{algorithmic}
-
-\end{algorithm}
-
-where the computational cost is $\Order(n \log n)$ instead of $\Order(n^2)$. Plugging-in the values of $\mathfrak{C}$ in \eqref{eqn:trunc_series_kernel} gives the kernel. Another major benefit is that the FFT approach is numerically more stable than the direct sum approach.
-
-
-
-
 \Section{Summary}
 
 We summarize the results of this and the previous chapter as a theorem below. 
@@ -2592,7 +2617,7 @@ Variable transformation or periodization transform techniques are typically used
 
 Suppose that the original integral has been expressed as 
 \begin{equation*}
-\mu := \int_{[0,1]^d} g(\vt) \, \dif \vt
+\mu := \int_{[0,1]^d} g(\vt) \, \dif \vt,
 \end{equation*}
 where $g$ has sufficient smoothness, but lacks periodicity.  
 The goal is to transform the integral above to the form of \eqref{eqn:defn_mu}, where the integrand $f$---and perhaps its derivatives---are  periodic.  
@@ -2709,11 +2734,13 @@ The $(t,m, d)$-nets in base $b$, introduced by Niederreiter,
 whose quality is governed by $t$. Lower values of $t$ correspond to $(t,m, d)$-nets of higher quality \cite{Bald10a}.
 
 \begin{defn}
+	\label{defn:tmd_net}
 	Let $\mathcal{A}$ be the set of all elementary intervals $\mathcal{A} \subset [0, 1)^d$ where
 	$\mathcal{A} = \prod_{\ell=1}^d [\alpha_\ell b^{-\gamma_\ell} , (\alpha_\ell + 1) b^{-\gamma_\ell})$, 
-	with integers $d \ge 1, b \ge 2, 
-	\gamma_\ell \ge 0$, and $b^{\gamma_\ell}
-	> \alpha_\ell \ge 0$. For $m \ge t \ge 0$, the point set $\mathcal{P}_m \in [0, 1)^d$ with $n = b^m$ points is a $(t, m, d)$ -- net in base $b$ if every $\mathcal{A}$ with volume $b^{t-m}$ contains $b^t$ points of $\mathcal{P}_m$.
+	% with integers $d \ge 1, b \ge 2, \gamma_\ell \ge 0$,
+	with $d,b,\gamma_\ell \in \naturals, b \ge 2$ 
+	and $b^{\gamma_\ell}
+	> \alpha_\ell \ge 0$. For $m,t \in \naturals, m \ge t \ge 0$, the point set $\mathcal{P}_m \in [0, 1)^d$ with $n = b^m$ points is a $(t, m, d)$ -- net in base $b$ if every $\mathcal{A}$ with volume $b^{t-m}$ contains $b^t$ points of $\mathcal{P}_m$.
 \end{defn}
 
 Digital $(t,m, d)$-nets are a special case of $(t,m, d)$-nets, constructed using matrix-vector multiplications over finite fields. Digital sequences are infinite length digital nets, i.e., the first $n=b^m$ points of a digital sequence comprise a digital net for all integer $m \in \naturals_0$.
@@ -2731,6 +2758,7 @@ The digital sequence in \textup{base} $b$ is $\{\vz_0, \vz_1, \vz_2, \dots\}$, w
 \begin{align*}
 \vec{z}_{i\ell} = \mathsf{G}_{\ell} \, \vec{\imath}, \quad \ell = 1, \dots, d, \quad i = 0, 1, \dots \;.
 \end{align*}
+The value of $t$ as mentioned in Definition \ref{defn:tmd_net} depends on the choice of $\mathsf{G}_{\ell}$.
 \end{defn}
 
 
@@ -2767,7 +2795,7 @@ where
 
 Let $\{\vz_i\}_{i=0}^{b^m-1}$ be a digital net. Then
 \begin{align*}
-\forall i_1, i_2 \in \{0,\cdots,2^m-1\}, \quad \vz_{j_1} \oplus \vz_{i_2} = \vz_{i_3}, \quad \text{for some} \; i_3 \in \{0,\cdots,b^m-1\}.
+\forall i_1, i_2 \in \{0,\cdots,b^m-1\}, \quad \vz_{j_1} \oplus \vz_{i_2} = \vz_{i_3}, \quad \text{for some} \; i_3 \in \{0,\cdots,b^m-1\}.
 \end{align*}
 
 The following very useful result, which will be further used to obtain the fast Bayesian transform, arises from the fundamental property of digital nets.
@@ -2795,7 +2823,7 @@ Then,
 
 \begin{proof}
 
-The proof can be obtained from the definition of digital nets which stated that the digital nets are obtained using generator matrices, $\vec{z}_{i \ell} = \mG_{\ell} \, \vec{\imath} \bmod 2$. Rewriting the subtraction using the generating matrix provides the result,
+The proof can be obtained from the definition of digital nets which stated that the digital nets are obtained using generator matrices, $\vec{z}_{i \ell} = \mG_{\ell} \, \vec{\imath} \bmod b$. Rewriting the subtraction using the generating matrix provides the result,
 \begin{align*}
 \vec{z}_{i \ell} - \vec{z}_{j\ell} \bmod b & = (\mG_{\ell} \vec{\imath} \bmod b) - (\mG_{\ell} \vec{\jmath} \bmod b) \\
 & = (\mG_{\ell} \vec{\imath} - \mG_{\ell} \vec{\jmath} ) \bmod b \\
@@ -2845,7 +2873,7 @@ e^{2\pi \sqrt{-1} {\vec{k}}^T{\vec{x}}/b},
 \end{align}
 for $x \in [0,1)$ and $k \in \naturals_0$ and the unique base $b$ expansions 
 $x = \sum_{j \ge 1} x_j b^{-i} = (0.x_1 x_2 \cdots)_b$, $\vec{x} =  (x_1,x_2,\cdots )^T$
-$k = \sum_{j \ge 0} k_j b^{j} = ( \cdots k_1 k_0)_b$, $\vec{k} =  (k_0,k_1,\cdots )^T$, and $x_1 k_0 + x_2 k_1 + \cdots$
+$k = \sum_{j \ge 0} k_j b^{j} = ( \cdots k_1 k_0)_b$, $\vec{k} =  (k_0,k_1,\cdots )^T$, and ${\vec{k}}^T{\vec{x}} = x_1 k_0 + x_2 k_1 + \cdots$
 where the number of digits used in \eqref{eqn:walsh_func} are limited to the length required to represent $x$ or $k$, i.e., $\max \left( {\ceil{ -\log_b{x}}, \ceil{\log_b{k}}  } \right)$.
 % with $n$ at least as large as the number of digits to represent $x$ or $k$.
 Multivariate Walsh functions are defined as the product of the one-dimensional Walsh functions,
@@ -2864,6 +2892,7 @@ certain Walsh functions without error. Functions that are well approximated by s
 
 % \JRNote{separate paragraph}
 In this research we use Sobol' nodes which are digital nets with base $b=2$. So here afterwards base $b=2$ is assumed. % if not specified or the notation is dropped.  
+In this case, the Walsh function is simply $$\textup{wal}_{2,\vk} (\vx) = (-1)^{\vec{\vk}^T \vec{\vx}}.$$
 
 \Subsection{Walsh kernels}
 Consider the covariance kernels of the form,
@@ -2872,12 +2901,12 @@ Consider the covariance kernels of the form,
 C_{\vtheta}(\vx, \vt) = K_{\vtheta} (\vx \ominus \vt) 
 \end{align}
 where $\ominus$ is bitwise subtraction.
-This is called a \emph{digitally shift invariant kernel} because shifting both arguments of the covariance function by the same amount leaves the value unchanged. By a proper scaling of the kernel $K_{\vtheta}$, it follows that assumption \eqref{addAssump} is satisfied. $K_{\vtheta}$ must be of the form that ensures that $C_{\vtheta}$ is symmetric and positive definite, as assumed in \eqref{FJH:eq:CondPosDef}. We drop the ${\vtheta}$ sometimes to make the notation simpler.
+This is called a \emph{digitally shift invariant kernel} because shifting both arguments of the covariance function by the same amount leaves the value unchanged. By a proper scaling of the function $K_{\vtheta}$, it follows that assumption \eqref{addAssump} is satisfied. The function $K_{\vtheta}$ must be of the form that ensures that $C_{\vtheta}$ is symmetric and positive definite, as assumed in \eqref{FJH:eq:CondPosDef}. We drop the ${\vtheta}$ sometimes to make the notation simpler.
 The Walsh kernels are of the form,
 \begin{align}
 \label{eqn:walsh_kernel}
 K_{\vtheta} (\vx \ominus \vt) =  
-\prod_{\ell=1}^d  1 + \eta \omega_{r} (x_\ell \ominus t_\ell), \quad \vtheta = (r, \eta)
+\prod_{\ell=1}^d  1 + \eta_\ell \omega_{r} (x_\ell \ominus t_\ell), \quad \vtheta = (r, \eta_1, \cdots, \eta_d)
 \end{align}
 where $r$ is the kernel order, $\eta$ is the kernel shape parameter, and
 \begin{align*}
@@ -2930,20 +2959,22 @@ The WHT involves multiplications by $2^m \times 2^m$ Walsh-Hadamard matrices, wh
 1 & -1 & -1 & 1 \\
 \end{pmatrix}, \\
 \nonumber
-& \vdots
+& \qquad \vdots
 \\
 \label{eqn:hadamard_matrix}
-\mH^{({m+1})} &= 
+\mH^{(m)} &= 
 \begin{pmatrix}
-\mH^{(m)} & \mH^{(m)} \\ \mH^{(m)} & -\mH^{(m)}
-\end{pmatrix} = \mH^{(1)} \bigotimes \mH^{(m)}
+\mH^{(m-1)} & \mH^{(m-1)} \\ \mH^{(m-1)} & -\mH^{(m-1)}
+\end{pmatrix} 
+= \underbrace{\mH^{(1)} \bigotimes \cdots \bigotimes \mH^{(1)}}_{m \ \text{times}} 
+= \mH^{(1)} \bigotimes \mH^{(m-1)}
 \end{align}
 where $\bigotimes$ is Kronecker product. Alternatively for base $b=2$, these matrices can be  directly obtained by,
 \begin{align*}
 \mH^{(m)} % = \bigg(\exp(\pi \sqrt{-1} \vec{\imath}_m^T\vec {j}_m) \bigg)_{i,j=0}^{n-1}  
-= \bigg((-1)^{(\vec{\imath}_m^T \vec{j}_m)} \bigg)_{i,j=0}^{n-1},
+= \bigg((-1)^{(\vec{\imath}^T \vec{j})} \bigg)_{i,j=0}^{2^m-1},
 \end{align*}
-where the notation $\vec{\imath}_m^T \vec{j}_m$ indicates the bitwise dot product. 
+where the notation $\vec{\imath}^T \vec{j}$ indicates the bitwise dot product. 
 
 \iffalse
 An example of Walsh matrix of length $n=8$ is given in Table~\ref{tab:hadamard_matrix}. 
@@ -2986,9 +3017,9 @@ Let $\left(\vx_i\right)_{i=0}^{n-1}$ be digitally shifted Sobol' nodes and $K$ b
 % positive definite kernel function such as \eqref{eqn:omega1} which matches Sobol' nodes.
 The Gram matrix,
 \begin{align*}
-\mCtheta = \bigl(C(\vx_i, \vx_j)\bigr)_{i,j=0}^{n-1} &= \bigl(K(\vx_i \ominus \vx_j)\bigr)_{i,j=0}^{n-1},  \\ & \text{where} \quad C(\vx, \vt) = K(\vx \ominus \vt) \quad \vx, \vt \in [0,1)^d, \qquad
+\mCtheta = \bigl(C(\vx_i, \vx_j)\bigr)_{i,j=0}^{n-1} &= \bigl(K(\vx_i \ominus \vx_j)\bigr)_{i,j=0}^{n-1},   \\ & \text{where} \quad \quad n=2^m, \quad C(\vx, \vt) = K(\vx \ominus \vt), \quad  \vx, \vt \in [0,1)^d, \qquad
 \end{align*}
-is a block-Toeplitz matrix and all the sub-blocks and their sub-sub-blocks are also block-Toeplitz. 
+is a $2\times 2$ block-Toeplitz matrix and all the sub-blocks and their sub-sub-blocks, etc. are also $2\times 2$ block-Toeplitz. 
 \end{theorem}
 
 %\Subsubsection
@@ -2996,7 +3027,7 @@ is a block-Toeplitz matrix and all the sub-blocks and their sub-sub-blocks are a
 	
 
 %\textbf{Proof of Theorem \ref{thrm:block-toeplitz}}: 
-We prove this theorem by induction.
+We prove this theorem by induction. Let $\mC_{\vtheta}^{(m)}$ denote the Gram matrix of size $2^m \times 2^m$.
 The relation between sub-block matrices can be deciphered using the properties of digital nets.
 To help with the proof of block-Toeplitz structure, consider the digital net properties \eqref{eqn:digital_shift_prop},  \eqref{eqn:digital_net_symmetric_prop},
 %\begin{align*}
@@ -3012,7 +3043,7 @@ K({\vz_{i} \ominus \vz_{j}})
 =
 \begin{pmatrix}
 K({\vz_{i \ominus j}})
-\end{pmatrix}_{i,j=0}^{2^{m}-1},
+\end{pmatrix}_{i,j=0}^{2^{m}-1}, \quad m=1,2,\cdots,
 \\
 \mK^{(m,q)} &:= 
 \begin{pmatrix}
@@ -3020,11 +3051,15 @@ K({\vz_{i \ominus j + q 2^m}})
 \end{pmatrix}_{i,j=0}^{2^{m}-1},
 \quad 
  q = 0,1,\cdots .
-\end{align*}
-These two notations are related by, $\mK^{(m)} = \mK^{(m,0)}$. Since the digitally shift invariant kernel are used in this research, it is sufficient to prove $\mK$ as a block-Toeplitz. 
+\end{align*} 
+These two notations are related by, $\mK^{(m)} = \mK^{(m,0)}$. 
+Please note that $\mC_{\vtheta}^{(m)} = \mK^{(m,0)}$.
+% Since the digitally shift invariant kernel are used in this research. %, it is sufficient to prove $\mK^{(m,q)}$ as a $2\times 2$ block-Toeplitz. 
+We will prove $\mK^{(m,q)}$ is a $2\times 2$ block-toeplitz matrix.
 
 % This notation is convenient for the proof as shown below.
 
+\iffalse
 As the first step, we verify the property holds for $m=0$,
 \begin{align*}
 \mK^{(0,q)} &= \begin{pmatrix}
@@ -3034,18 +3069,22 @@ K(\vz_{0 \ominus 0 + q 2^0})
 K(\vz_{q})
 \end{pmatrix}, \quad \text{by \eqref{eqn:digital_shift_prop}},
 \end{align*} thus by definition $\mK^{(0,q)}$ is a block-Toeplitz.
+\fi 
 
-\iffalse
+\iftrue
+As the first step, we verify the property holds for $m=1$,
 \begin{align*}
-\mC^{(1)} &= \begin{pmatrix}
-K(\vz_{0 \ominus 0}) & K(\vz_{1 \ominus 0})  \\
-K(\vz_{0 \ominus 1}) & K(\vz_{1 \ominus 1})  
+\mK^{(1, q)} &= \begin{pmatrix}
+K(\vz_{0 \ominus 0 + q 2^1}) & K(\vz_{1 \ominus 0 + q 2^1})  \\
+K(\vz_{0 \ominus 1 + q 2^1}) & K(\vz_{1 \ominus 1 + q 2^1})  
 \end{pmatrix} = 
 \begin{pmatrix}
-K(\vz_{0}) & K(\vz_{1}) \\ K(\vz_{1}) & K(\vz_{0})
+K(\vz_{2q}) & K(\vz_{1 + 2q}) \\ K(\vz_{1 + 2q}) & K(\vz_{2q})
 \end{pmatrix}, \quad \text{by \eqref{eqn:digital_shift_prop}}
-\end{align*} has diagonal elements repeated, thus it is a block-Toeplitz.
-	
+\end{align*} has diagonal elements repeated. Thus by definition, it is a $2\times 2$ block-Toeplitz.
+\fi 
+
+\iffalse
 Similarly, the property can be verified for $\mC^{(2)}$, 
 \begin{align*}
 \mC^{(2)} &= 
@@ -3091,12 +3130,12 @@ is a block-Toeplitz as it is obvious from the block structure depicted.
 % Where the matrix $\mC^{(1,1)}$ is obtained using the following shift operation.
 
 Now assume that $\mK^{(m,q)}$ is block-Toeplitz.
-Please note if $\mK^{(m,0)}$ is block-Toeplitz then $\mK^{(m,q)}$ is also a block-Toeplitz for all $q \in \naturals_0$. 
-This is due to the fact that $i \oplus 2^m \ominus j = i \ominus j \ominus 2^m = i \ominus j \oplus 2^m $ for $i,j=0,\cdots,2^{m-1}$ since $i \ominus j < 2^{m-1}$.
-Assuming $\mK^{(m, q)}$ is a block-Toeplitz, we need to prove $\mK^{(m+1, q)}$ is also a block-Toeplitz. Let $n=2^m$,
+% Please note if $\mK^{(m,0)}$ is block-Toeplitz then $\mK^{(m,q)}$ is also a block-Toeplitz for all $q \in \naturals_0$. 
+% This is due to the fact that $i \oplus 2^m \ominus j = i \ominus j \ominus 2^m = i \ominus j \oplus 2^m $ for $i,j=0,\cdots,2^{m-1}$ since $i \ominus j < 2^{m-1}$.
+% Assuming $\mK^{(m, q)}$ is a block-Toeplitz, 
+We need to prove $\mK^{(m+1, q)}$ is also a $2\times 2$ block-Toeplitz. Let $n=2^m$,
 \begin{align*}
-\mK^{(m+1)} 
-& =
+\mK^{(m+1)} &= 
 \begin{pmatrix}
 K(\vz_{0    \ominus 0}) & \hdots & K(\vz_{0    \ominus n-1}) & K(\vz_{0    \ominus n}) & \hdots & K(\vz_{0    \ominus 2n-1}) \\
 \vdots             & \vdots &             \vdots          &           \vdots      & \vdots &             \vdots         \\
@@ -3138,7 +3177,8 @@ K(\vz_{ n-1  }) & \hdots & K(\vz_{ 0 })
 \mK^{(m)} & \mK^{(m,1)} \\ \mK^{(m,1)} & \mK^{(m)}
 \end{pmatrix}
 \end{align*}
-is a block-Toeplitz, where we used the properties  \eqref{eqn:digital_shift_prop}, \eqref{eqn:digital_net_symmetric_prop} and facts $2n-1 \ominus n = n-1$, $2n-1 \ominus n-1 = n$, and $n \ominus n-1 = 2n-1$.
+is a $2\times 2$ block-Toeplitz, where we used the properties  \eqref{eqn:digital_shift_prop}, \eqref{eqn:digital_net_symmetric_prop} and facts $2n-1 \ominus n = n-1$, $2n-1 \ominus n-1 = n$, and $n \ominus n-1 = 2n-1$. 
+Thus $\mK^{(m+1)}$ is a $2\times2$ block-Toeplitz. 
 Similarly 
 \begin{align*}
 \mK^{(m+1,q)} 
@@ -3147,8 +3187,9 @@ Similarly
 \mK^{(m,q)} & \mK^{(m,q+1)} \\ \mK^{(m,q+1)} & \mK^{(m,q)}
 \end{pmatrix}
 \end{align*}
+ is a $2\times2$ block-Toeplitz. 
 %\end{itemize}
-Thus $\mC$ of size $2^m$, for $m \in \naturals$, is a block-Toeplitz and every block and it's sub-blocks of size $2^p, \; p \in \naturals, \; p \le m$ are also block-Toeplitz.
+Thus $\mC_{\vtheta}^{(m)}$ of size $2^m\times 2^m$, for $m \in \naturals$, is a $2\times2$ block-Toeplitz and every block and it's sub-blocks of size $2^p, \; p \in \naturals, \; p \le m$ are also $2\times2$ block-Toeplitz.
 \end{proof}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -3210,7 +3251,7 @@ is a block-Toeplitz. Where we used the facts
  = 2^{l}(2s+1)-1 \ominus 2^{l+1}q.
 \end{align*}
 
-Thus $\mC$ is a block-Toeplitz and every block its and sub-blocks are also block-Toeplitz.
+Thus $\mCtheta^{(m)}$ is a block-Toeplitz and every block its and sub-blocks are also block-Toeplitz.
 
 
 \end{itemize}
@@ -3218,13 +3259,17 @@ Thus $\mC$ is a block-Toeplitz and every block its and sub-blocks are also block
 
 
 \begin{theorem}
-	\label{thrm:hadamard_eigenvector}
-The Walsh-Hadamard matrix $\mH$ diagonalizes $\mC$ so the columns of Walsh-Hadamard matrix are the eigenvectors of $\mC$.
+\label{thrm:hadamard_eigenvector}
+The Walsh-Hadamard matrix $\mH^{(m)}$ factorizes $\mC_{\vtheta}^{(m)}$ so the columns of Walsh-Hadamard matrix are the eigenvectors of $\mC_{\vtheta}^{(m)}$, i.e.,
+\begin{align*}
+\mH^{(m)} \mC_{\vtheta}^{(m)}  = \Lambda^{(m)} \mH^{(m)}, \quad m \in \naturals. 
+\end{align*}
 \end{theorem}
 
 \begin{proof}
 	
-Again we use proof-by-induction technique to show that the Walsh-Hadamard matrix diagonalizes $\mC$.
+Again we use the proof-by-induction technique to show that the Walsh-Hadamard matrix factorizes $\mK^{(m,q)}$.
+\iffalse
 We can easily see the Hadamard matrix $\mH^{(0)}$ diagonalizes $\mC^{(0)}$,
 \begin{align*}
 \mH^{(0)} \mC^{(0)} &= 
@@ -3248,32 +3293,60 @@ K(\vz_{0})
 &= \Lambda^{(0)} \mH^{(0)},
 \end{align*}
 where $\Lambda^{(0)}$ is a diagonal matrix, thus $\mH^{(0)}$ diagonalizes $\mC^{(0)}$.
-Now assume $\mH^{(m)}$ diagonalizes $\mC^{(m)}$, so $\mH^{(m)} \mC^{(m)} = \Lambda^{(m)} \mH^{(m)}$ where $\Lambda^{(m)}$ is diagonal, we need to prove $\mH^{(m+1)}$ diagonalizes $\mC^{(m+1)}$,
+\fi
+We can easily see the Hadamard matrix $\mH^{(1)}$ diagonalizes $\mK^{(1,q)}$,
 \begin{align*}
-\mH^{(m+1)} \mC^{(m+1)} &= 
+\mH^{(1)} \mK^{(1,q)} &= 
+\begin{pmatrix}
+1 &  1 \\ 1 & -1
+\end{pmatrix}
+\begin{pmatrix}
+K(\vz_{0 + q2^1}) & K(\vz_{1 + q2^1}) \\ K(\vz_{1 + q2^1}) & K(\vz_{0 + q2^1})
+\end{pmatrix}, \quad \text{by Theorem \ref{thrm:block-toeplitz}} 
+\\
+& = \begin{pmatrix} K(\vz_{2q})+K(\vz_{2q+1}) & K(\vz_{2q})+K(\vz_{2q+1}) \\ K(\vz_{2q})-K(\vz_{2q+1}) & K(\vz_{2q+1})-K(\vz_{2q}) \end{pmatrix} \\ 
+& = \begin{pmatrix} K(\vz_{2q})+K(\vz_{2q+1}) & 0 \\ 0 & K(\vz_{2q})-K(\vz_{2q+1}) \end{pmatrix} 
+\begin{pmatrix}
+1 &  1 \\ 1 & -1
+\end{pmatrix} \\
+&= \Lambda^{(1,q)} \mH^{(1)},
+\end{align*}
+where $\Lambda^{(1,q)}$ is a diagonal matrix, thus $\mH^{(1)}$ factorizes $\mK^{(1,q)}$.
+
+Now assume $\mH^{(m)}$ factorizes $\mK^{(m,q)}$, so $\mH^{(m)} \mK^{(m,q)} = \Lambda^{(m,q)} \mH^{(m)}$ where $\Lambda^{(m,q)}$ is diagonal. We need to prove $\mH^{(m+1)}$ factorizes $\mK^{(m+1,q)}$,
+\begin{align*}
+\mH^{(m+1)} \mK^{(m+1,q)} &= 
 \begin{pmatrix}
 \mH^{(m)} & \mH^{(m)} \\ \mH^{(m)} & -\mH^{(m)}
 \end{pmatrix}
 \begin{pmatrix}
-\mC^{(m)} & \mC^{(m,1)} \\ \mC^{(m,1)} & \mC^{(m)}
-\end{pmatrix}
+\mK^{(m,q)} & \mK^{(m,q+1)} \\ \mK^{(m,q+1)} & \mK^{(m,q)}
+\end{pmatrix}, \quad \text{by Theorem \ref{thrm:block-toeplitz}}
 \\
-% & = \begin{pmatrix}
-% \mH^{(m)}\mC^{(m)} + \mH^{(m)}\mC^{(m,m)} & \mH^{(m)}\mC^{(m)} + \mH^{(m)}\mC^{(m,m)} \\ 
-% \mH^{(m)}\mC^{(m)} - \mH^{(m)}\mC^{(m,m)} & \mH^{(m)}\mC^{(m,m)} - \mH^{(m)}\mC^{(m)} 
-% \end{pmatrix}, \\ 
+& = \begin{pmatrix}
+\mH^{(m)}\mK^{(m,q)}   + \mH^{(m)}\mK^{(m,q+1)} & 
+\mH^{(m)}\mK^{(m,q)}   + \mH^{(m)}\mK^{(m,q+1)} \\ 
+\mH^{(m)}\mK^{(m,q)}   - \mH^{(m)}\mK^{(m,q+1)} & 
+\mH^{(m)}\mK^{(m,q+1)} - \mH^{(m)}\mK^{(m,q)} 
+\end{pmatrix} \\ 
+& = \begin{pmatrix}
+\Lambda^{(m,q)} \mH^{(m)} + \Lambda^{(m,q+1)} \mH^{(m)} & 
+\Lambda^{(m,q)} \mH^{(m)} + \Lambda^{(m,q+1)} \mH^{(m)} \\ 
+\Lambda^{(m,q)} \mH^{(m)} - \Lambda^{(m,q+1)} \mH^{(m)} & 
+\Lambda^{(m,q+1)} \mH^{(m)} - \Lambda^{(m,q)} \mH^{(m)}
+\end{pmatrix} \\ 
 & = 
 \begin{pmatrix}
-\mC^{(m)} + \mC^{(m,1)} & 0 \\ 0 & \mC^{(m)} - \mC^{(m,1)}
+\Lambda^{(m,q)} + \Lambda^{(m,q+1)} & 0 \\ 0 & \Lambda^{(m,q)} - \Lambda^{(m,q+1)}
 \end{pmatrix}
 \begin{pmatrix}
 \mH^{(m)} & \mH^{(m)} \\ \mH^{(m)} & -\mH^{(m)}
 \end{pmatrix}
 \\ 
 % & = \begin{pmatrix} \mC^{(m)} + \mC^{(m,m)} & 0 \\ 0 & \mC^{(m)} - \mC^{(m,m)} \end{pmatrix} \mH^{(m+1)} \\
-& = \Lambda^{(m+1)} \mH^{(m+1)} .
+& = \Lambda^{(m+1,q)} \mH^{(m+1)} .
 \end{align*}
-Thus, $\mH^{(m+1)}$ diagonalizes $\mC^{(m+1)}$ and $\Lambda^{(m+1)}$ is diagonal. Here we used the fact that both $\mH$ and $\mC$ are symmetric positive definite.
+Thus, $\mH^{(m+1)}$ factorizes $\mK^{(m+1,q)}$ and $\Lambda^{(m+1,q)}$ is diagonal. This implies $\mH^{(p)}$ factorizes $\mC_\vtheta^{(p)}$ for $p \in \naturals$. Please recall $\mC_\vtheta^{(p)} = \mK^{(p,0)}$.  Here we used the fact that both $\mH$ and $\mK$ are symmetric positive definite. 
 \end{proof}
 
 \iffalse
@@ -3310,7 +3383,7 @@ We have implemented a fast adaptive Bayesian cubature algorithm using the kernel
 
 \Subsection{Iterative Computation of Walsh Transform}
 In every iteration of our algorithm, we double the number of function values. Using the technique described here, we have to only compute the Walsh transform for the newly added function values.
-Unlike lattice points, Sobol' points are extensible by definition. This property is used in our algorithm to improve the integration accuracy till the required error tolerance is met. Sobol' nodes can be combined with Hadamard matrices as demonstrated here for iterative computation. Using the same notations as in \secref{sec:iter_fft}, let $\widetilde{\vy} = \mH^{(m+1)} {\vy}$ for some arbitrary $\vy \in \reals^{2n}$, $n = 2^m$. Define, 
+Similar to the lattice points, Sobol' points are extensible by definition. This property is used in our algorithm to improve the integration accuracy till the required error tolerance is met. Sobol' nodes can be combined with Hadamard matrices as demonstrated here for iterative computation. Using the same notations as in \secref{sec:iter_fft}, let $\widetilde{\vy} = \mH^{(m+1)} {\vy}$ for some arbitrary $\vy \in \reals^{2n}$, $n = 2^m$. Define, 
 \begin{gather*}
 \vy = \begin{pmatrix} y_1 \\ \vdots \\ y_{2n} \end{pmatrix}, \quad 
 \vy^{(1)} = \begin{pmatrix} y_1 \\ \vdots \\ y_{n} \end{pmatrix}, \quad 
@@ -3350,7 +3423,7 @@ We want to emphasize that quasi-Monte Carlo rules based on these point sets can 
 Higher order digital nets are constructed using matrix-vector multiplications over finite
 fields. 
 
-One could develop matching digitally shift invariant kernels to formulate the fast Bayesian cubature. Bayesian cubatures using higher order digital nets are the topic for future research.
+One could develop matching digitally shift invariant kernels to formulate the fast Bayesian cubature. Bayesian cubatures using higher order digital nets are a topic for future research.
 
 
 
@@ -3371,7 +3444,7 @@ One could develop matching digitally shift invariant kernels to formulate the fa
 \label{sec:overcome_cancel_error}
 
 We now refer back to general setting for the fast automatic Bayesian cubature in Section~\ref{sec:fast_BC}.
-For the covariance kernels used in our computation, it may happen that $n/\lambda_1$ is close to $1$.  Thus, the term $1-n/\lambda_1$, which appears in the credible interval widths, $\err_{\MLE}$, $\err_{\textup{full}}$, and $\err_{\textup{GCV}}$  \eqref{errSimple}, may suffer from cancellation error.  We can avoid this cancellation error by modifying how we compute the Gram matrix and its eigenvalues.
+For the covariance kernels used in our computation, it often happens that $n/\lambda_1$ is close to $1$, especially for larger $n$.  Thus, the term $1-n/\lambda_1$, which appears in the credible interval widths, $\err_{\MLE}$, $\err_{\textup{full}}$, and $\err_{\textup{GCV}}$  \eqref{errSimple}, may suffer from cancellation error.  We can avoid this cancellation error by modifying how we compute the Gram matrix and its eigenvalues.
 
 Any shift-invariant or digital shift-invariant covariance kernel satisfying \eqref{addAssump} can be written as $C_\vtheta = 1 + \rC_\vtheta$, where $\rC_\vtheta$ is also symmetric and positive definite.
 The associated Gram matrix for $\rC_\vtheta$ is then $\rmC_\vtheta = \mC_\vtheta - \vone \vone^T$, and the eigenvalues of $\rmC_\vtheta$ are $\rlambda_1 = \lambda_1 - n, \lambda_2, \ldots, \lambda_n$, which follows because $\vone$ is the first eigenvector of both $\mC_\vtheta$ and $\rmC_\vtheta$. Note that $\rC_\vtheta$ inherits the shift-invariant properties of $C_\vtheta$. Then,
@@ -3522,7 +3595,7 @@ However hyperparameters need to live in a domain that is bounded or semi-bounded
 There are some simple domain transformations available to achieve this.
 
 \Subsection{Positive kernel shape parameter}
-The following parameter map is used to ensure that the shape parameter values are positive real numbers. For $\eta$ in 
+The following parameter map is used to ensure that the shape parameter values are positive real numbers. For $\eta$ in Section \ref{sec:deriv_of_kernel}, let
 % We need to have $\eta > 0$ and $ 0 < b < 1$ while searching for the optimum value, so we use the following transformations
 \begin{align*}
 \eta{(t_1)} = & \quad e^{t_1}, & \eta : (-\infty, \infty) \to (0, \infty).
@@ -3540,26 +3613,64 @@ The optimal value $t_{1, \textup{opt}}$ can be transformed back to the $(0, \inf
 \Subsection{Kernel order $1 < r < \infty$}
 The following map is used to ensure that the kernel order values are positive real number and greater than one, i.e., in the $(1, \infty)$ interval as required in \secref{sec:trunc_series_kernel},
 \begin{align*}
-r(t) = & \quad {1 + e^{-t_2}}, & r:  (-\infty, \infty) \to (1,\infty).
+r(t) = & \quad {1 + e^{t_2}}, & r:  (-\infty, \infty) \to (1,\infty).
 \end{align*}
 So one may search for the optimal $t_2 = -\log(r-1)$ in the whole real line $\reals$.
 The optimal value $t_{2, \textup{opt}}$ can be transformed back to the desired interval $(0,1)$ using 
 \begin{align*}
-r_{\textup{opt}} = 1+ e^{-t_{2, \textup{opt}}}.
+r_{\textup{opt}} = 1+ e^{t_{2, \textup{opt}}}.
 \end{align*}
+
+
+
+
 
 \Subsection{Kernel order $0 < q < 1$}
-The following map is used to ensure that the kernel order values are positive real and less than one, i.e., in the $(0,1)$ interval to use with exponentially decaying kernel, as introduced in \secref{sec:exp_decay_kernel},
+The following multivariate map is used to ensure that the kernel order values are positive real and less than one, i.e., in the $(0,1)$ interval to use with exponentially decaying kernel, as introduced in \secref{sec:exp_decay_kernel},
 \begin{align*}
-q(t) = & \quad \frac{1}{1 + e^{-t}}, & q: (-\infty, \infty) \to (0, 1).
+q(t) = & \quad \frac{1}{1 + e^{t}}, & q: (-\infty, \infty) \to (0, 1).
 \end{align*}
-So one may search for the optimal $t_3 = -\log(q^{-1}-1)$ in the whole real line $\reals$.
+So one may search for the optimal $t_3 = \log(q^{-1}-1)$ in the whole real line $\reals$.
 The optimal value $t_{3, \textup{opt}}$ can be transformed back to the desired interval $(0,1)$ by using
 \begin{align*}
-q_{\textup{opt}} = \frac{1}{1 + e^{-t_{3, \textup{opt}}}}.
+q_{\textup{opt}} = \frac{1}{1 + e^{t_{3, \textup{opt}}}}.
 \end{align*}
 
 
+
+
+\Subsection{Combined searching of kernel order $r$ and shape parameter $\veta$}
+Instead of searching $\veta$ and $r$ separately one would prefer to search them together so that the most optimal values can be obtained, where $\veta = (\eta_1, \cdots, \eta_d)$ such that $\eta_l \ne \eta_k$,  for $l \ne k$.
+We can combine parameter maps used above to ensure that the kernel order values in $(1, \infty)$ and shape parameter $\veta$ in $(0,\infty)^d$ as required in \secref{sec:trunc_series_kernel},
+\begin{align*}
+\vtheta(\vt) = 
+\begin{pmatrix}
+r(t_{1}) \\ \eta(t_2) \\ \vdots \\ \eta(t_{d+1}) 
+\end{pmatrix} =
+\begin{pmatrix}
+1 + e^{t_1} \\ e^{t_2} \\ \vdots \\ e^{t_{d+1}}
+\end{pmatrix}, 
+\quad
+\vtheta: \reals^{d+1} \to (1,\infty) \times (0,\infty)^d .
+\end{align*}
+So instead of searching for $\vtheta_{\textup{opt}}$ in $(1,\infty) \times (0,\infty)^d$, one may search for the optimal 
+$$
+\vt = \vt^{-1} (\vtheta) = 
+\begin{pmatrix}
+\log(r-1) \\ \log(\eta_1) \\ \vdots \\ \log(\eta_d)
+\end{pmatrix}
+$$ in the whole real line $\reals^{d+1}$.
+The optimal value $\vt_{\textup{opt}}$ can be transformed back to the desired interval $(1,\infty) \times (0,\infty)^d$ using 
+\begin{align*}
+\vtheta_{\textup{opt}} = 
+\begin{pmatrix}
+1 + e^{t_{1, \textup{opt}}} \\
+e^{t_{2, \textup{opt}}} \\
+\vdots \\
+e^{t_{d+1, \textup{opt}}} \\
+\end{pmatrix}.
+\end{align*}
+Similarly one can map the kernel order $q \in (0,1)$ and $\veta$ in to a multivariate hyperparameter search.
 
 \clearpage
 
@@ -3597,11 +3708,11 @@ Periodization variable transforms are used in the examples with \\ \allowbreak \
 
 \Section{Multivariate Gaussian Probability}
 
-This example is introduced in Section~\ref{MVN_example}, where we use the Mat\'ern covariance kernel.  We reuse $f_{\textup{Genz}}$ \eqref{eqn:fGenzdef} and apply periodization transform to obtain $f_{\textup{GenzP}}$ when required.
+This example is introduced in Section~\ref{MVN_example}, where we use the Mat\'ern covariance kernel.  We reuse $f_{\textup{Genz}}$ \eqref{eqn:fGenzdef} and apply a periodization transform to obtain $f_{\textup{GenzP}}$ when required.
 
 \Subsection{Using \code{cubBayesLattice\_g}}
 As required by the algorithm, we apply Sidi's $C^2$  periodization to $ f_{\textup{Genz}}$ \eqref{eqn:fGenzdef}, and chose $d=3$ and $r=2$. The simulation results for this example integrand  are summarized in Figures \ref{fig:mvn-guaranteed-MLE}, \ref{fig:mvn-guaranteed-FB}, and \ref{fig:mvn-guaranteed-GCV}.  In all cases, $\code{cubBayesLattice\_g}$ returns an approximation within the prescribed error tolerance. We used the same setting as before with generic slow Bayesian cubature in \secref{MVN_example} for comparision. For error threshold $\varepsilon=10^{-5}$ with empirical stopping criterion, our fast algorithm takes 0.001 seconds as shown in \figref{fig:mvn-guaranteed-MLE} whereas the basic algorithm takes 30 seconds as shown in \figref{fig:MVN_Metern_d2b2}. 
-Amongst the three stopping criteria, GCV achieved the results faster than others. 
+Amongst the three stopping criteria, GCV achieved the results faster than others but it is less conservative. 
 One can also observe from the figures that the credible intervals are wider, causing true error much smaller than requested.
 This could be due to the periodization transformed integrand, $f_\textup{GenzP}$, being smoother than the $r=2$ kernel approximation. Using a kernel of matching smoothness could produce right credible intervals.
 
@@ -3634,11 +3745,11 @@ Here we use $ f_{\textup{Genz}}$ \eqref{eqn:fGenzdef} without any periodization,
 {\code{cubBayesNet\_g} uses fast Walsh transform which is slower in MATLAB due to the way it was implemented. This is reason it takes more longer the {\code{cubBayesLattice\_g}. 
 But comparing the number of samples, $n$, used for integration provides more insight which directly relates to the alogrithm's computational cost. The {\code{cubBayesLattice\_g} used $n=16384$ samples whereas {\code{cubBayesNet\_g} used $n=32768$ samples even with $r=1$ order kernel.
 
-Amongst the three stopping criteria, GCV achieved the results faster than others. 
+Amongst the three stopping criteria, GCV achieved the results faster than others but it is less conservative. 
 One can also observe from the figures that the credible intervals are narrower than in \figref{fig:mvn-guaranteed-MLE}.
 This shows that {\code{cubBayesNet\_g} with $r=1$ kernel more accurately approximates the integrand.
 
-\begin{figure}]
+\begin{figure}
 \centering
 %d=3 problem transformed into d=2
 \includegraphics[width=0.95\linewidth]{"Sobol/Sobol_MVN_guaranteed_time_MLE__d2_r1_2019-Sep-1"}
@@ -3736,12 +3847,12 @@ I_s(j) &= \frac{(j-2)I_s(j-2)-I_c(j-1)}{2},
 	\label{fig:keister-guaranteed-GCV}
 \end{figure}
 Figures \ref{fig:keister-guaranteed-MLE}, \ref{fig:keister-guaranteed-FB} and \ref{fig:keister-guaranteed-GCV} summarize the numerical tests for this integral.  We used the Sidi's $C^1$ periodization, dimension $d=4$, and $r=2$. 
-As we can see the GCV stopping criterion achieved the results faster than the others similar to the multivariate Gaussian case.
+As we can see the GCV stopping criterion achieved the results faster than the others but it is less conservative similar to the multivariate Gaussian case.
 
 \Subsection{Using \code{cubBayesNet\_g}}
 Figures \ref{fig:Sobol-keister-guaranteed-MLE}, \ref{fig:Sobol-keister-guaranteed-FB} and \ref{fig:Sobol-keister-guaranteed-GCV} summarize the numerical tests for this case. We used  dimension $d=4$, and $r=1$.  No periodization transform was used as the integrand need not be periodic. 
 In this example, we use $r=1$ order kernel whereas in \secref{sec:cubBayesLattice_keister_example}, $r=2$ kernel was used. This necessitates \code{cubBayesNet\_g} to use more samples for integration.
-As observed from the figures, the GCV stopping criterion achieved the results faster than the others which was also the case with the multivariate Gaussian example.
+As observed from the figures, the GCV stopping criterion achieved the results faster than the others but it is less conservative which is also the case with the multivariate Gaussian example.
 
 \begin{figure}
 	\centering
@@ -3803,19 +3914,20 @@ Because the integrand has a kink caused by the $\max$ function, it does not help
 \begin{figure}
 	\centering
 	\includegraphics[width=0.95\linewidth]{"Lattice/Lattice_optPrice_guaranteed_time_MLE_Baker_d12_r1_2019-Jul-9"}
-	\caption[Lattice: Option pricing guaranteed: MLE]{\code{cubBayesLattice\_g}: Option pricing using the empirical Bayes stopping criterion.}
+	\caption[Lattice: Option pricing guaranteed: MLE]{\code{cubBayesLattice\_g}: Option pricing using the empirical Bayes stopping criterion. The hollow stars indicate the algorithm has not met the error threshold $\epsilon$ even with using maximum $n$. }
 	\label{fig:optprice-guaranteed-MLE}
 \end{figure}
 \begin{figure}
 	\centering
 	\includegraphics[width=0.95\linewidth]{"Lattice/Lattice_optPrice_guaranteed_time_full_Baker_d12_r1_2019-Jul-9"}
-	\caption[Lattice: Option pricing guaranteed: Full Bayes]{\code{cubBayesLattice\_g}: Option pricing using the full Bayes stopping criterion.}
+	\caption[Lattice: Option pricing guaranteed: Full Bayes]{\code{cubBayesLattice\_g}: Option pricing using the full Bayes stopping criterion. The hollow stars indicate the algorithm has not met the error threshold $\epsilon$ even with using maximum $n$.}
 	\label{fig:optprice-guaranteed-FB}
 \end{figure}
 \begin{figure}
 	\centering
 	\includegraphics[width=0.95\linewidth]{"Lattice/Lattice_optPrice_guaranteed_time_GCV_Baker_d12_r1_2019-Jul-8"}
-	\caption[Lattice: Option pricing guaranteed: GCV]{\code{cubBayesLattice\_g}: Option pricing using the  GCV stopping criterion.} \label{fig:optprice-guaranteed-GCV}
+	\caption[Lattice: Option pricing guaranteed: GCV]{\code{cubBayesLattice\_g}: Option pricing using the GCV stopping criterion. The hollow stars indicate the algorithm has not met the error threshold $\epsilon$ even with using maximum $n$.} 
+	\label{fig:optprice-guaranteed-GCV}
 \end{figure}
 
 
@@ -3824,8 +3936,8 @@ Because the integrand has a kink caused by the $\max$ function, it does not help
 The Figures \ref{fig:Sobol-optprice-guaranteed-MLE}, \ref{fig:Sobol-optprice-guaranteed-FB} and 
 \ref{fig:Sobol-optprice-guaranteed-GCV} summarize the numerical results for the option pricing example using the same values for,
 $
-%T = 1/4, \ \ d = 13, \ \ S_0 = 100, \ \ r =  0.05, \ \ \sigma = 0.5, \ \ K = 100.
-T, \ \ d, \ \ S_0, \ \ r, \ \ \sigma, \ \ K
+%T = 1/4, \ \ d = 13$ \ \ S_0 = 100, \ \ r =  0.05, \ \ \sigma = 0.5, \ \ K = 100.
+T, \ \ d, \ \ S_0$, $\ \ r, \ \ \sigma, \ \ K
 $, as in \secref{sec:cubBayesLattice_option_pricing_example}.
 As mentioned before, this integrand has a kink caused by the $\max$ function, so, \code{cubBayesNet\_g} could be more efficient than \code{cubBayesLattice\_g}, as no periodization transform is required. This can be observed from the number of samples used for intgration to meet the same error threshold. For the error tolerance, $\varepsilon=10^{-3}$,  \code{cubBayesLattice\_g} used $n=2^{20}$ samples, whereas \code{cubBayesNet\_g} used $n=2^{17}$ samples.
 
@@ -3833,19 +3945,19 @@ As mentioned before, this integrand has a kink caused by the $\max$ function, so
 \begin{figure}
 	\centering
 	\includegraphics[width=0.95\linewidth]{"Sobol/Sobol_optPrice_guaranteed_time_MLE__d12_r1_2019-Sep-1"}
-	\caption[Sobol: Option pricing guaranteed: MLE]{\code{cubBayesNet\_g}: Option pricing using the empirical Bayes stopping criterion.}
+	\caption[Sobol: Option pricing guaranteed: MLE]{\code{cubBayesNet\_g}: Option pricing using the empirical Bayes stopping criterion. The hollow stars indicate the algorithm has not met the error threshold $\epsilon$ even with using maximum $n$.}
 	\label{fig:Sobol-optprice-guaranteed-MLE}
 \end{figure}
 \begin{figure}
 	\centering
 	\includegraphics[width=0.95\linewidth]{"Sobol/Sobol_optPrice_guaranteed_time_full__d12_r1_2019-Sep-1"}
-	\caption[Sobol: Option pricing guaranteed: Full Bayes]{\code{cubBayesNet\_g}: Option pricing using the full-Bayes stopping criterion.}
+	\caption[Sobol: Option pricing guaranteed: Full Bayes]{\code{cubBayesNet\_g}: Option pricing using the full-Bayes stopping criterion. The hollow stars indicate the algorithm has not met the error threshold $\epsilon$ even with using maximum $n$.}
 	\label{fig:Sobol-optprice-guaranteed-FB}
 \end{figure}
 \begin{figure}
 	\centering
 	\includegraphics[width=0.95\linewidth]{"Sobol/Sobol_optPrice_guaranteed_time_GCV__d12_r1_2019-Sep-1"}
-	\caption[Sobol: Option pricing guaranteed: GCV]{\code{cubBayesNet\_g}: Option pricing using the GCV stopping criterion.}
+	\caption[Sobol: Option pricing guaranteed: GCV]{\code{cubBayesNet\_g}: Option pricing using the GCV stopping criterion. The hollow stars indicate the algorithm has not met the error threshold $\epsilon$ even with using maximum $n$.}
 	\label{fig:Sobol-optprice-guaranteed-GCV}
 \end{figure}
 
