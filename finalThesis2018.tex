@@ -443,7 +443,7 @@ The goal is to have maximum uniform space filling. The discrepancy is defined as
 Let $\mathcal{M}$ be the set of all intervals of the form $\prod_{\ell=1}^{d} [a_\ell, b_\ell) = \{ \vx \in \mathbb{R}^d : a_\ell \le x_\ell \le b_\ell, 0 \le a_\ell \le b_\ell \le 1 \}$, where $\abs{\mathcal{P}}$ is the cardinality of the set $\mathcal{P}$, and $\lambda_L$ is the Lebesgue measure. Then, the discrepancy of a point set $\mathcal{P}$ is,
 \begin{align*}
 D(\mathcal{P}) := \sup_{M \in \mathcal{M}} 
-\abs{ \frac{\abs{M \cap \mathcal{P}}}{\abs{\mathcal{P}}} - \lambda_L(M) }
+\abs{ \frac{\abs{M \cap \mathcal{P}}}{\abs{\mathcal{P}}} - \lambda_L(M) }.
 \end{align*}
 The \emph{low discrepancy points} satisfy $D(\mathcal{P}) = \Order((\log n)^d/n)$.
 In this work we experiment with two most popular low discrepancy point sets, 1) lattice points, and 2) Sobol' points.
@@ -517,7 +517,7 @@ c_0 &:= \int_{[0,1]^{d} \times [0,1]^{d}} C_\vtheta(\vx,\vt) \, \dif{\vx} \, \di
 \cov(\vf, \mu) &= \left(  \int_{[0,1]^d} C(\vt,\vx_i) \, \D \vt \right)_{i=1}^n  =: \vc.
 \end{align}
 \end{subequations}
-Here, $c$ and $\vc$ depend implicitly on $\vtheta$.  We assume the covariance function $C$ is simple enough that the integrals in these definitions can be computed analytically.
+Here, $c_0$ and $\vc$ depend implicitly on $\vtheta$.  We assume the covariance function $C$ is simple enough that the integrals in these definitions can be computed analytically.
 We need the following lemma to derive the posterior error of our cubature. 
 
 \begin{lemma} \cite[(A.6), (A.11--13)]{RasWil06a} \label{thrm:condDist} If $\vY = (\vY_1, \vY_2)^T \sim \calN (\vm,\mC)$, where $\vY_1$ and $\vY_2$ are random vectors of arbitrary length, and 
@@ -1130,17 +1130,18 @@ Suppose that
 \label{eqn:cone-homogenity}
 \abs{\mu(f) - \hmu_n(f)} \le \err_{\textup{CI}} (f(x_1), \cdots, f(x_n))
 \end{align}
-for some $f$, which it is 99\% of the time under our hypothesis. Also note that our $\err_{\textup{CI}}$ is a positively homogeneous function, meaning, 
+for some $f$, which it is 99\% of the time under our hypothesis. Also note that our $\err_{\textup{CI}}$ \eqref{eqn:err_MLEGCV} \eqref{FJH:eq:errFull} are positively homogeneous functions, meaning, 
 \begin{align*}
 \err_{\textup{CI}} (a y_1, \cdots, a y_n) = \abs{a} \err_{\textup{CI}} ( y_1, \cdots,  y_n).
 \end{align*}
+One can verify the homogeneity of \eqref{eqn:err_MLEGCV} and \eqref{FJH:eq:errFull} easily.
 Thus if $f$ satisfies \eqref{eqn:cone-homogenity}, then
 \begin{align*}
 \abs{\mu(af) - \hmu_n(af)} &= \abs{a} \abs{\mu(f) - \hmu_n(f)} \\
 & \le \abs{a} \err_{\textup{CI}} (f(x_1), \cdots, f(x_n) ) \\
 & = \err_{\textup{CI}} (a f(x_1), \cdots, a f(x_n))
 \end{align*}
-for all real $a$. Thus the set of all $f$ satisfies \eqref{eqn:cone-homogenity} is a \emph{cone}, $\mathscr{C}$. Cone of functions satisfy the property that if $f \in \mathscr{C}$ then $af \in \mathscr{C}$.
+for all real $a$. Thus the set of all $f$ satisfying \eqref{eqn:cone-homogenity} is a \emph{cone}, $\mathscr{C}$. Cone of functions satisfy the property that if $f \in \mathscr{C}$ then $af \in \mathscr{C}$.
 
 
 
@@ -1176,8 +1177,9 @@ This can be interpreted as $|\mu(f)-\hmu_n(f)| \leq \err_{\textup{CI}}(f)$ with 
 
 We demonstrate the credible interval using the following example. For this purpose, choose a smooth and periodic integrand $f_{\TRUE}(\vx) = \exp(\sum_{\ell=1}^{d} \cos(2\pi x_\ell))$ and another integrand $f_{\PEAKY}(\vx) = f_{\TRUE} + a_{\PEAKY} f_{\NOISE}$ where $a_{\PEAKY} \in \reals$. 
 % Here $a_{\PEAKY} \in \reals, a_{\NICE} \in \reals$, and 
-Here $f_{\NOISE}(\vx) = (1 - \exp(2\pi \sqrt{-1} \vx^T \vzeta))$ is chosen to be zero at the sampling nodes $\{ \vx_i\}_{i=1}^n$, where $\vzeta \in \reals^d$ is some $d$-dimensional vector belonging to the dual space of the lattice nodes, $\{ \vx_i\}_{i=1}^n$, chosen to sample the integrand. 
-The $f_{\NICE}$ is obtained by kernel interpolation of the $n$ samples of $f_\TRUE$ at $\{ \vx_i\}_{i=1}^n$. We chose mat\'ern kernel \eqref{eqn:matern_kernel} for the interpolation.
+Here $f_{\NOISE}(\vx) = (1 - \exp(2\pi \sqrt{-1} \vx^T \vzeta))$, $\vzeta \in \reals^d$ is some $d$-dimensional vector belonging to the dual space of the lattice nodes for some $\{ \vx_i\}_{i=1}^n$. %chosen to sample the integrand. 
+The $\vzeta$ in the dual space of lattice nodes implies that $f_{\NOISE}(\vx_i)=0$ at the sampling nodes $\{ \vx_i\}_{i=1}^n$.
+The $f_{\NICE}$ is obtained by kernel interpolation of the $n$ samples of $f_\TRUE$ at $\{ \vx_i\}_{i=1}^n$. We chose the mat\'ern kernel \eqref{eqn:matern_kernel} for the interpolation.
 Please note that $f_{\PEAKY}(\vx_i) = f_{\NICE}(\vx_i) = f_{\TRUE}(\vx_i) $ for $i=1, \cdots, n$.
 
 
@@ -1186,7 +1188,7 @@ Please note that $f_{\PEAKY}(\vx_i) = f_{\NICE}(\vx_i) = f_{\TRUE}(\vx_i) $ for 
 	%\begin{subfigure}[h]{0.48\linewidth}
 	\includegraphics[width=0.9\linewidth]{cone_bayes_f_real}
 	%\end{subfigure}
-	\caption{Example integrands 1) $f_{\NICE}$, a smooth function, 2) $f_{\PEAKY}$, a peaky function, and samples from $f_{\TRUE}$, the true integrand. All have the same values at $\{\vx_i\}_{i=1}^n$.}
+	\caption{Example integrands 1) $f_{\NICE}$, a smooth function, 2) $f_{\PEAKY}$, a peaky function. The function values $f_{\PEAKY}(\vx_i) = f_{\NICE}(\vx_i) = f_{\TRUE}(\vx_i) $ for $i=1, \cdots, n$.}
 	\label{fig:cone_bayes_functions}
 \end{figure}
 \begin{figure}[ht]
@@ -2123,7 +2125,7 @@ C_\vtheta(\vx, \vt) := &  \sum_{\vk \in \mathbb{Z}^d} \alpha_{\vk,\vtheta}  e^{2
 e^{-2 \pi\sqrt{-1} \vk^T\vt}, \quad \alpha_{-\vk,\vtheta} = \alpha_{\vk,\vtheta}
 \end{align*}
 where $d$ is the number of dimensions and $\alpha_{\vk}$ is a positive scalar. The Gram matrix formed by this kernel is symmetric and positive definite. 
-The \textit{shape parameter} $\eta_\ell$ changes the kernel's shape, so that the function space spanned by the kernel contains the integrand. 
+The \textit{shape parameter} $\eta_\ell$ changes the kernel's shape, so that the integrand is in the middle of the function space spanned by the kernel. 
 %This form of the kernel is very convenient to use in any analytical derivations, but not suitable for use with finite precision computers as this involves infinite sum. 
 If the coefficients are chosen as 
 %\begin{align*}
@@ -2154,7 +2156,7 @@ B_{r}(x) = \frac{-r!}{(2 \pi \sqrt{-1})^{r}}
 \text{for} \;\; r=2,3,\hdots \;\; 0 \leq x \leq 1
 \end{cases}
 \end{align*}
-Plots of $C(\cdot, 0.3)$ are given in \figref{fig:fourierkernel-dim1} for $d=1$ and for various $r$ and $\eta$ values.
+Plots of $C(\cdot, 0.3)$ are given in \figref{fig:fourierkernel-dim1} for $d=1$ and for various $r$ and $\eta_1$ values.
 
 \begin{figure}
 	\centering  % , decodearray={0.2989, 0.5870,  0.1140}
@@ -2256,10 +2258,10 @@ By \eqref{shInvKernGramMatrixPermut} we then have the eigenvector-eigenvalue dec
 Thus
 \begin{equation}
 \label{Clateig}
-\mC_{\vtheta} = \frac 1n \mV \mLambda_\vtheta \mV^H , \qquad \mV = \mP \mW,
+\mC_{\vtheta} = \frac 1n \mV \mLambda_\vtheta \mV^H , \qquad \mV = \mP \mW \mP^T,
 \end{equation}
 where the eigenvalues of  $\mC_{\vtheta}$ and $\mK_{\vtheta}$ are identical.
-This can be performed in $\Order(n \log n)$ operations using the FFT. 
+Note that the matrix multiplication by $\mV$ can be performed in $\Order(n \log n)$ operations using the FFT. 
 
 %Fast Bayesian transform assumptions \eqref{fastcompAssumpA} and \eqref{fastcompAssumpB} can be verified by \eqref{PermMat}, \eqref{Keig}, and \eqref{Clateig}.  Assumption \eqref{fastcompAssumpC} is satisfied because $\mV^H \vb = \mW^H \mP^T \vb$ is just the discrete Fourier transform of a vector whose rows have been permuted.  
 % A proper scaling of the kernel $K_\vtheta$, such as the one given by \eqref{the_kernel_eqn_bernoulli},  ensures that assumption \eqref{addAssump} is satisfied. 
@@ -2338,7 +2340,7 @@ Here we explore two alternative forms of the kernel which allow the kernel order
 \begin{align*}
 C_\vtheta(\vx, \vt) := &  \sum_{\vk \in \mathbb{Z}^d} \alpha_{\vk,\vtheta}  e^{2 \pi\sqrt{-1} \vk^T\vx}
 e^{-2 \pi\sqrt{-1} \vk^T\vt}, \quad \text{where} \; 
-\alpha_{\vk,\vtheta} = \prod_{l=1}^d \frac{\eta_l}{{|k_l|}^r} 
+\alpha_{\vk,\vtheta} = \prod_{\ell=1}^d \frac{\eta_\ell}{{|k_\ell|}^r} 
 \end{align*}
 and $\vtheta = (r, \veta)$.  This form is convenient for analytical derivations.
 To make the derivations easier to follow, we fix the dimension $d=1$,
@@ -2374,10 +2376,10 @@ e^{ 2 \pi\sqrt{-1} k (x-t)}.
 \end{align*}
 The Gram matrix is written as 
 \begin{align*}
-\mC_{\vtheta, n} = & \biggl( C_{\vtheta, n}(\vx_i, \vx_j) \biggr)_{i,j=1}^n
+\mC_{\vtheta, n} = & \biggl( C_{\vtheta, n}(\vx_i, \vx_j) \biggr)_{i,j=1}^n,
 \end{align*}
 where $n$ is the number of samples. 
-The reason for having the truncation length and the number of sample to $n$ will be obvious as we proceed further.
+The reason for having the truncation length and the number of samples equal will be obvious as we proceed further.
 The first column of the Gram matrix is
 \begin{align*}
 \vC_{\vtheta, n} &= \biggl( C_{\vtheta, n}(\vx_i, \vx_1) \biggr)_{i=1}^n
@@ -2462,7 +2464,7 @@ The above results are summarized as an algorithm to compute $\mathfrak{C}$ using
 
 \end{algorithm}
 
-In Algorithm \ref{algorithm-cont-val-kernel-order}, the computational cost is $\Order(n \log n)$ instead of $\Order(n^2)$. Plugging-in the values of $\mathfrak{C}$ in \eqref{eqn:trunc_series_kernel} gives the kernel. Another major benefit is that the FFT approach is numerically more stable than the direct sum approach. These kernels obtain algebraic order decay. The infinite series kernel with little modification can be enhanced to obtain exponential decay as shown next.
+In Algorithm \ref{algorithm-cont-val-kernel-order}, the computational cost is $\Order(n \log n)$ instead of $\Order(n^2)$. Plugging-in the values of $\mathfrak{C}$ in \eqref{eqn:trunc_series_kernel} gives the kernel. Another major benefit is that the FFT approach is numerically more stable than the direct sum approach. Please note that these kernels evolve with the truncation length $n$. The larger $n$ value the closer the kernel resembles the original infinite series kernel. One disadvantage is, the truncated series kernels obtain algebraic order decay at best. The infinite series kernel with little modification can be enhanced to obtain exponential decay as shown next.
 
 
 
@@ -3346,7 +3348,7 @@ Now assume $\mH^{(m)}$ factorizes $\mK^{(m,q)}$, so $\mH^{(m)} \mK^{(m,q)} = \La
 % & = \begin{pmatrix} \mC^{(m)} + \mC^{(m,m)} & 0 \\ 0 & \mC^{(m)} - \mC^{(m,m)} \end{pmatrix} \mH^{(m+1)} \\
 & = \Lambda^{(m+1,q)} \mH^{(m+1)} .
 \end{align*}
-Thus, $\mH^{(m+1)}$ factorizes $\mK^{(m+1,q)}$ and $\Lambda^{(m+1,q)}$ is diagonal. This implies $\mH^{(p)}$ factorizes $\mC_\vtheta^{(p)}$ for $p \in \naturals$. Please recall $\mC_\vtheta^{(p)} = \mK^{(p,0)}$.  Here we used the fact that both $\mH$ and $\mK$ are symmetric positive definite. 
+Thus, $\mH^{(m+1)}$ factorizes $\mK^{(m+1,q)}$ to a diagonal matrix $\Lambda^{(m+1,q)}$. This implies $\mH^{(p)}$ factorizes $\mC_\vtheta^{(p)}$ for $p \in \naturals$. Please recall $\mC_\vtheta^{(p)} = \mK^{(p,0)}$.  Here we used the fact that both $\mH$ and $\mK$ are symmetric positive definite. 
 \end{proof}
 
 \iffalse
