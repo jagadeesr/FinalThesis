@@ -54,7 +54,6 @@
 \usepackage{hhline}
 \usepackage{mathrsfs}
 \usepackage{colortbl}
-
 \setcounter{tocdepth}{2}
 
 %\captionsetup{compatibility=false}
@@ -252,13 +251,20 @@
 \newtheorem{theorem}{Theorem}[section]
 \newtheorem{lemma}[theorem]{Lemma}
 
+\makeatletter
+\renewcommand*\env@matrix[1][\arraystretch]{%
+	\edef\arraystretch{#1}%
+	\hskip -\arraycolsep
+	\let\@ifnextchar\new@ifnextchar
+	\array{*\c@MaxMatrixCols c}}
+\makeatother
 
 \allowdisplaybreaks[4]
 \begin{document}
 \setlength\abovedisplayskip{0pt}
 \setlength{\belowdisplayskip}{0pt}
 
-\title{Fast Automatic Bayesian Cubature Using Matching Kernels and Design
+\title{Fast Automatic Bayesian Cubature Using Matching Kernels and Designs
 %\thanks{}
 }
 % Grants or other notes about the article that should go on the front
@@ -294,19 +300,19 @@
 %\begin{acknowledgement}     % acknowledgement environment, this is optional
 %\end{acknowledgement}
 \begin{acknowledgement}     % acknowledgement environment, this is optional
-	\par  I want to thank my advisor Prof. Fred Hickernell for his support and guidance in my completion of this thesis and throughout my studies here at IIT. 
+	\par  I want to thank my advisor Prof. Fred J Hickernell for his support and guidance in my completion of this thesis and throughout my studies here at IIT. 
 	His support and motivation have given me the confidence to endure through the research. 
 	
 	I would like to also thank the GAIL project collaborators with
-	whom I have worked to add my new algorithms to the GAIL MATLAB toolbox: Professor Sou-Cheng Choi,
-	Yuhan Ding, Lan Jiang, Xin Tong, and Kan Zhang. Especially, Professor Sou-Cheng Choi's support and guidance as the project leader helped me to focus on my cubature algorithms.
+	whom I have worked to add my new algorithms to the GAIL MATLAB toolbox: Prof. Sou-Cheng Choi,
+	Yuhan Ding, Lan Jiang, Xin Tong, and Kan Zhang. Especially, Prof. Sou-Cheng Choi's support and guidance as the project leader helped me to focus on my cubature algorithms.
 	
-	My special gratitude also goes to my thesis committee members, Professor Jinqiao Duan,
-	Professor Fred J. Hickernell, Professor Shuwang Li, and Professor Geoffrey Williamson. Above all, I want to thank them because they were flexible and willing to dedicate time to review my work and attend my comprehensive and defense examinations.
+	My special gratitude also goes to my thesis committee members, Prof. Jinqiao Duan,
+	Prof. Fred J Hickernell, Prof. Shuwang Li, and Prof. Geoffrey Williamson. Above all, I want to thank them because they were flexible and willing to dedicate time to review my work and attend my comprehensive and defense examinations.
 	
-	I would like to thank Dirk Nuyens for suggestions, valuable tips and notes when we were researching higher order nets and kernels.
+	I would like to thank Prof. Dirk Nuyens for suggestions, valuable tips and notes when we were researching higher order nets and kernels.
 	
-	I would like to thank the organizers of the SAMSI-Lloyds-Turing Workshop on Probabilistic Numerical Methods, where a part of preliminary version of this work was discussed.  I also thank Chris Oates and Sou-Cheng Choi for valuable comments.
+	I would like to thank the organizers of the SAMSI-Lloyds-Turing Workshop on Probabilistic Numerical Methods, where a part of preliminary version of this work was discussed.  I also thank Prof. Chris Oates and Prof. Sou-Cheng Choi for valuable comments.
 	
 	I would like to specifically thank my friend Samuel Davidson for reviewing and suggesting the improvements on the text.
 	
@@ -355,7 +361,7 @@ We assume a Gaussian process parameterized by a constant mean and a covariance f
 These parameters are estimated from integrand values or are given non-informative priors. This leads to a credible interval for the integral.  The sample size, $n$, is chosen to make the credible interval for the Bayesian posterior error no greater than the desired error tolerance. 
 
 However, the process just outlined typically requires vector-matrix operations  with a computational cost of $O(n^3)$. Our innovation is to pair low discrepancy nodes with matching kernels, which lowers the computational cost to $O(n \log n)$. 
-We begin the thesis by introducing the Bayesian approach to calculate the posterior cubature error and define our automatic Bayesian cubature. Although much of this material is known, it is used to develop the necessary foundations (Chapter~\ref{sec:BC}).
+We begin the thesis by introducing the Bayesian approach to calculate the posterior cubature error and define our automatic Bayesian cubature (Chapter~\ref{sec:BC}). Although much of this material is known, it is used to develop the necessary foundations.
 The contributions of this thesis are as follows:
 \begin{itemize}
 	\item The fast Bayesian transform is introduced. This generalizes the techniques that speedup Bayesian cubature when the kernel matches low discrepancy nodes (Chapter~\ref{sec:fast_BC}).
@@ -366,7 +372,7 @@ The contributions of this thesis are as follows:
 	2) gradient descent for hyperparameter search, and
 	3) non-integer kernel order selection.
 \end{itemize}
-The thesis concludes by applying the fast automatic Bayesian cubature algorithms to three sample integration problems (Chapter~\ref{sec:NumExp}). We show that our algorithms are faster than the basic Bayesian cubature and that they provide answers within the error tolerance in most cases. A major portion of this thesis comprising an automatic Bayesian cubature algorithm using lattice sequences and shift-invariant kernels was published in \cite{JagHic09a}.
+The thesis concludes by applying our fast automatic Bayesian cubature algorithms to three sample integration problems (Chapter~\ref{sec:NumExp}). We show that our algorithms are faster than the basic Bayesian cubature and that they provide answers within the error tolerance in most cases. A significant portion of this thesis comprising an automatic Bayesian cubature algorithm using lattice sequences and shift-invariant kernels was published and discussed in \cite{JagHic09a, HicJag09a}.
 
 The Bayesian cubatures that we develop are guaranteed for integrands belonging to cone of functions which reside in the middle of the sample space. The concept of a cone of functions is explained in \secref{sec:cone_of_functions}.
 
@@ -386,7 +392,7 @@ The Bayesian cubatures that we develop are guaranteed for integrands belonging t
 
 Cubature is the problem of inferring a numerical value for a definite integral, 
 $ \mu := \int_{\reals^d} g(\vx) \, \dif \vx$, where $\mu$ has no closed form analytic expression. Typically, $g$ is accessible through a black-box function routine. 
-Cubature means numerical multi-variate integration and is a key component of many problems in scientific computing, finance \cite{Gla03}, statistical modeling, imaging \cite{Keller2013}, uncertainty quantification, machine learning, etc. \cite{Goodfellow-et-al-2016}.
+Cubature means numerical multivariate integration and is a key component of many problems in scientific computing, finance \cite{Gla03}, statistical modeling, imaging \cite{Keller2013}, uncertainty quantification, machine learning, etc. \cite{Goodfellow-et-al-2016}.
 %\JRNote{add references}
 
 The integral may often be expressed as
@@ -452,18 +458,18 @@ In this work we experiment with two most popular low discrepancy point sets, 1) 
 
 Hickernell~\cite{Hic17a} compares different approaches to cubature error analysis depending on whether the rule is deterministic or random and whether the integrand is assumed to be deterministic or random.  Error analysis that assumes a deterministic integrand lying in a Banach space leads to an error bound that is typically impractical for deciding how large $n$ must be to satisfy \eqref{eqn:err_crit}.  The deterministic error bound includes a (semi-)norm of the integrand, which is often more complex to compute than the original integral.
 
-Hickernell and Jim\'enez-Rugama~\cite{HicJim16a,JimHic16a} have developed stopping criteria for cubature rules based on low discrepancy nodes by tracking the decay of the discrete Fourier coefficients of the integrand.  The algorithms proposed here also rely on discrete Fourier coefficients, but in a different way.  We only discuss automatic Bayesian cubature for absolute error tolerances in this thesis. The recent work by Hickernell, Jim\'enez-Rugama, and Li~\cite{HicEtal17a} suggests how one might accommodate more general error criteria, such as relative error tolerances which has been adapted in our MATLAB implementation of our algorithms.
+Hickernell and Jim\'enez-Rugama~\cite{HicJim16a,JimHic16a} have developed stopping criteria for cubature rules based on low discrepancy nodes by tracking the decay of the discrete Fourier coefficients of the integrand.  The algorithms proposed here also rely on discrete Fourier coefficients, but in a different way.  We only discuss automatic Bayesian cubature for absolute error tolerances in this thesis. The recent work by Hickernell, Jim\'enez-Rugama, and Li~\cite{HicEtal17a} suggests how one might accommodate more general error criteria, such as relative error tolerances which has been adapted in the MATLAB implementation of our algorithms.
 
 Chapter~\ref{sec:BC} explains the Bayesian approach to calculate the posterior cubature error and defines our automatic Bayesian cubature. Although much of this material is known, it is included for completeness.  We end Chapter~\ref{sec:BC}  by demonstrating why Bayesian cubature is typically computationally expensive.
 Chapter~\ref{sec:fast_BC}  introduces the concept of covariance kernels that match the nodes and expedite the computations required by our automatic Bayesian cubature. 
 Chapter~\ref{sec:shift_invariant_kernel} implements this concept for shift invariant kernels and rank-1 lattice nodes. It also develops approaches to build shift-invariant kernels of continuous valued kernel order rather than fixing the kernel order to integer values.
-Chapter~\ref{sec:sobol_walsh} demonstrates another implementation of matching nodes and kernel using Sobol' points and Walsh kernel. It also shows that the fast Walsh Hadamard as the fast Bayesian transform for this case.
+Chapter~\ref{sec:sobol_walsh} demonstrates another implementation of matching nodes and kernel using Sobol' points and Walsh kernels. It also shows that the fast Walsh Hadamard as the fast Bayesian transform for this case.
 Chapter~\ref{sec:NumImpl} describes how to avoid cancellation error for kernels of product form. 
 It also covers  some of the additional techniques used in the implementation of our Bayesian Cubature algorithms. 
 Numerical examples are provided in Chapter~\ref{sec:NumExp} to demonstrate the performance and advantages of our new algorithms.  We conclude with a brief discussion and potential future work.
 
 
-We use the terms integrand or function interchangeably to denote the function $f$ being considered for the numerical integration. Also, we use the terms, nodes, points, node-sets, design, and data-sites interchangeably to denote the points $\mathcal{P} := \{\vx_i\}_{i=1}^n \subset [0,1)^d$ used in the cubature.
+We use the terms integrand or function interchangeably to denote the function $f$ being considered for the numerical integration. Also, we use the terms, nodes, points, node-sets, designs, and data-sites interchangeably to denote the points $\mathcal{P} := \{\vx_i\}_{i=1}^n \subset [0,1)^d$ used in the cubature.
 
 
 
@@ -486,7 +492,7 @@ The Bayesian approach for numerical analysis was popularized by Diaconis \cite{D
 Diaconis motivates the reader by interpreting the most well known numerical methods, 1) trapezoidal rule and 2) splines, from the statistical point of view with whatever is known about the integrand as prior information. 
 For example, the trapezoidal rule can be interpreted as a Bayesian method with prior information being modeled as a Brownian motion in the sample space $\mathcal{C}[0,1)$, the space of continuous functions. %, with normal prior.
 
-This research is focused on the Bayesian approach for numerical integration that is known as Bayesian Cubature as introduced by O'Hagan \cite{OHagen1991}.  % $\mathbb{P}_f$
+This research is focused on the Bayesian approach for numerical integration that is known as Bayesian cubature as introduced by O'Hagan \cite{OHagen1991}.  % $\mathbb{P}_f$
 Bayesian cubature returns a probability distribution, that expresses belief about the true value of integral, $\mu(f)$.
 This posterior probability distribution is based on a prior that depends on $f$, which is computed via Bayes' rule using the \emph{data} contained in the function evaluations \cite{BriEtal18a}. 
 %The maximum likelihood estimate of $\mathbb{P}_f$ can be interpreted as a point estimate of the integral. 
@@ -501,7 +507,7 @@ We assume the integrand, $f$, is an instance of a stochastic Gaussian process, i
  \text{for all } \va \ne 0, \;
  n\in \mathbb{N}, \; \text{distinct} \; \vx_1, \ldots, \vx_n \in [0,1]^d.
 \end{multline}
-The covariance function, $C$, and the Gram matrix, $\mC$ depend implicitly on $\vtheta$, but the notation may omit this for simplicity's sake.
+The covariance function, $C$, and the Gram matrix, $\mC$, depend implicitly on $\vtheta$, but the notation may omit this for simplicity's sake.
 Procedures for estimating or integrating out the hyperparameters $m$, $s$, and $\vtheta$ are explained later in this section.
 
 For a Gaussian process, all vectors of linear functionals of $f$ have a multivariate Gaussian distribution. 
@@ -583,12 +589,12 @@ Naturally, $2.58$ and $99\%$ can be replaced by other quantiles and credible lev
 
 The credible interval in \eqref{eqn_prob_confidence_interval} suggests how our automatic Bayesian cubature proceeds.  Integrand data is accumulated until the width of the credible interval, $\err_{\textup{CI}}$, is no greater than the error tolerance.  As $n$ increases, one expects $c_{0} - \vc^T\mC^{-1}\vc$ to decrease for well-chosen nodes, $\{\vx_i\}_{i=1}^n$. Please note that the credible interval depends on the parameters $m, s$, and $\vtheta$
 
-Note that $\err_{\textup{CI}}$ has no explicit dependence on the integrand values, even though one would intuitively expect that a larger integrand should imply a larger $\err_{\textup{CI}}$.  This is because the hyperparameters, $m, s$, and $\vtheta$, have not yet been inferred from integrand data.  After inferring the hyperparameters, $\err_{\textup{CI}}$ does reflect the size of the integrand values. This section describes three approaches to hyperparameter estimation.
+Note that $\err_{\textup{CI}}$ has no explicit dependence on the integrand values, even though one would intuitively expect that a larger integrand should imply a larger $\err_{\textup{CI}}$.  This is because the hyperparameters, $m, s$, and $\vtheta$, have not yet been inferred from integrand data.  After inferring the hyperparameters, $\err_{\textup{CI}}$ \emph{does reflect the size} of the integrand values. This section describes three approaches to hyperparameter estimation.
 
 
 \Section{Empirical Bayes}  \label{sec:MLE}
 
-The first and a very straight forward approach is to estimate the parameters is via maximum likelihood estimation.  The log-likelihood function of the parameters given the function data $\vy$ is:
+The first and a very straight forward approach is to estimate the parameters via maximum likelihood estimation.  The log-likelihood function of the parameters given the function data $\vy$ is:
 \begin{align*}
 l(s,m,\vtheta | \vy)
 &= -\frac{1}{2} s^{-2} (\vy-m\vone)^T\mCInv(\vy-m\vone) 
@@ -656,17 +662,17 @@ Using the gradient of $l(s,m,\vtheta | \vy)$, one can apply optimization techniq
 \mathcal{L}(\vtheta | \vy)
 &:= \frac{1}{n} \log(\det\, \mC) +  \log\left( (\vy-m_\MLE\vone)^T\mCInv(\vy-m_\MLE\vone) \right) + \text{constants.}
 \end{align*}
-Taking derivative with respect to $\vtheta_\ell$, for $\ell=1,\cdots,d$
+Taking derivative with respect to $\theta_\ell$, for $\ell=1,\cdots,d$
 \begin{align*}
-\frac{\partial}{\partial \vtheta_\ell} \mathcal{L}(\vtheta | \vy)
-&=  \frac{1}{n} \frac{\partial}{\partial \vtheta_\ell} \log(\det\, \mC) + \frac{\partial}{\partial \vtheta_\ell} 
+\frac{\partial}{\partial \theta_\ell} \mathcal{L}(\vtheta | \vy)
+&=  \frac{1}{n} \frac{\partial}{\partial \theta_\ell} \log(\det\, \mC) + \frac{\partial}{\partial \theta_\ell} 
 \log\left((\vy-m_\MLE\vone)^T\mCInv(\vy-m_\MLE\vone) \right)
 \\
-&= \frac 1n \trace{\left( \mCInv \frac{\partial \mC}{\partial \vtheta_\ell} \right)}
+&= \frac 1n \trace{\left( \mCInv \frac{\partial \mC}{\partial \theta_\ell} \right)}
 - 
 \frac
 {\left((\vy-m_\MLE\vone)^T\mCInv\right)^T 
-	\left( \frac{\partial \mC}{\partial \vtheta_\ell} \right)
+	\left( \frac{\partial \mC}{\partial \theta_\ell} \right)
 	((\vy-m_\MLE\vone)^T\mCInv)}
 {(\vy-m_\MLE\vone)^T\mCInv(\vy-m_\MLE\vone)}
 \end{align*}
@@ -674,7 +680,7 @@ where we used some of the results from \cite{Dong2017a}.
 This can be used with gradient descent as follows,
 \begin{align}
 \label{eqn:deep_descent}
-\vtheta_\ell^{(j+1)} = \vtheta_\ell^{(j)} - \nu \frac{\partial}{\partial \vtheta_\ell} \mathcal{L}(\vtheta | \vy), \quad j=0,1,\cdots
+\theta_\ell^{(j+1)} = \theta_\ell^{(j)} - \nu \frac{\partial}{\partial \theta_\ell} \mathcal{L}(\vtheta | \vy), \quad j=0,1,\cdots
 \end{align}
 where $\nu$ is the step size for the gradient descent. 
 
@@ -790,8 +796,8 @@ Because the shape parameter, $\vtheta$, enters the definition of the covariance 
 
 
 \Subsection{Full Bayes with general prior}
-Rather than use non-informative, conjugate prior one can use generic prior, namely $\vrho_{m,s^2}(\xi, \lambda) \propto g(\lambda)$, which can generalize to any generic function.
-Then the posterior density for the integral given the data using Bayes theorem is,
+Rather than use non-informative, conjugate prior one can use general prior, namely $\vrho_{m,s^2}(\xi, \lambda) \propto g(\lambda)$, which can generalize to any general function. One would be curious if the posterior function can be obtained from the data, i.e, the integrand values.
+The posterior density for the integral given the data using Bayes theorem is,
 \begin{align*}
 \MoveEqLeft[1]{\rho_{\mu}(z | \vf = \vy)} \\
 & \propto \int_{0}^\infty \int_{-\infty}^\infty \rho_{\mu}(z | \vf = \vy, m = \xi, s^2 = \lambda)  \rho_{\vf}(\vy | \xi, \lambda ) \rho_{m, s^2}(\xi, \lambda) \, \D \xi \D \lambda \\
@@ -839,7 +845,10 @@ This can be interpreted as Laplace transform of $g(\lambda)$,
 \\
 & \propto \int_{0}^\infty \frac{g(\lambda)}{\lambda^{n/2}}
 \exp \left(  - \frac{1}{\lambda} \chi \right)
-\dif{\lambda}, \quad \text{where} \quad \chi = \frac{  \gamma - \beta^2/\alpha}{2(c_0  -\vc ^T \mC^{-1} \vc)}.
+\dif{\lambda}, 
+\\
+& \quad \text{where} \quad \chi = \frac{  \gamma - \beta^2/\alpha}{2(c_0  -\vc ^T \mC^{-1} \vc)} 
+\propto { 1 +  \frac{(z - \hmu_{\textup{full}})^2}{(n-1)\widehat{\sigma}_{\textup{full}}^2} }.
 \end{align*}
 Let $\displaystyle \lambda = \frac{1}{w}, \quad \dif{\lambda} = -w^{-2} \dif{w}$ then,
 \begin{align*}
@@ -860,22 +869,23 @@ Let $\displaystyle \lambda = \frac{1}{w}, \quad \dif{\lambda} = -w^{-2} \dif{w}$
 \exp \left(  - w \chi \right)
 \D{w}
 \\
-& = \mathcal{LT} \{ g(1/\chi) \}^{(\frac{n-4}2)'},
+% & = \mathcal{LT} \{ g(1/\chi) \}^{(\frac{n-4}2)'},
+& = \mathcal{LT} \{ g(1/\cdot) \}^{(\frac{n-4}2)}\left(\chi\right),
 \end{align*}
-where $\mathcal{LT}(.)$ denotes the Laplace transform and $(\frac{n-4}2)'$ indicates the derivative taken after the transform. Here we used frequency domain derivative property of the Laplace transform. 
+where $\mathcal{LT}(\cdot)$ denotes the Laplace transform and $(\frac{n-4}2)$ indicates the $\frac{n-4}2$th derivative taken after the transform. Here we used frequency domain derivative property of the Laplace transform. 
 The above result can be further simplified by replacing $\gamma - \beta^2/\alpha$ from  \eqref{eqn:full_bayes_student_short},
 \begin{align*}
-{\rho_{\mu}(z | \vf = \vy)} \propto \mathcal{LT} \{ g(1/\chi) \}^{(\frac{n-4}2)'} 
+{\rho_{\mu}(z | \vf = \vy)} \propto \mathcal{LT} \{ g(1/\cdot) \}^{(\frac{n-4}2)} \left(\chi \right)
 & \propto
 \mathcal{LT} \left\{ g 
 \left(
 \frac{1} 
-{ 1 +  \frac{(z - \hmu_{\textup{full}})^2}{(n-1)\widehat{\sigma}_{\textup{full}}^2} }
-\right) \right\}^{(\frac{n-4}2)'} \quad \text{by} \quad \eqref{eqn:full_bayes_student_short}.
+{\cdot}
+\right) \right\}^{(\frac{n-4}2)} \left( 1 +  \frac{(z - \hmu_{\textup{full}})^2}{(n-1)\widehat{\sigma}_{\textup{full}}^2}\right) \quad \text{by} \quad \eqref{eqn:full_bayes_student_short}.
 \end{align*}
-Thus, $\rho_{\mu}(z | \vf = \vy)$  is proportional to $(\frac{n-4}{2})$th derivative of the Laplace transform of $g(1/\chi)$, where $\chi \propto { 1 +  \frac{(z - \hmu_{\textup{full}})^2}{(n-1)\widehat{\sigma}_{\textup{full}}^2} } $.
+Thus, $\rho_{\mu}(z | \vf = \vy)$  is proportional to $(\frac{n-4}{2})$th derivative of the Laplace transform of $g(1/\cdot)$ evaluated at $\chi$, where $\chi \propto { 1 +  \frac{(z - \hmu_{\textup{full}})^2}{(n-1)\widehat{\sigma}_{\textup{full}}^2} } $.
 
-
+We demonstrate the general prior with the non-informative conjugate that we used above.
 If $\displaystyle g(\lambda) = \frac{1}{\lambda}$ then, 
 \begin{align*}
 {\rho_{\mu}(z | \vf = \vy)} 
@@ -894,7 +904,7 @@ If $\displaystyle g(\lambda) = \frac{1}{\lambda}$ then,
 & \propto \left(\alpha \gamma - \beta^2\right)^{-n/2},
 \end{align*}
 where we used the fact, Laplace transform of $g(1/t)$ is $1/t^2$. After the transform, taking $(\frac n2 -2)$th derivative gives us the result. This shows when using a generic prior leads to a posterior of the form,
-$ {\rho_{\mu}(z | \vf = \vy)}  \propto  \mathcal{LT} \{ g(1/\chi) \}^{(\frac{n-4}2)'} $, with full Bayes approach.
+$ {\rho_{\mu}(z | \vf = \vy)}  \propto  \mathcal{LT} \{ g(1/\cdot) \}^{(\frac{n-4}2)} \left(\chi\right) $, with full Bayes approach, i.e, the posterior $\rho_{\mu}(z | \vf = \vy)$ is a function of ${ 1 +  \frac{(z - \hmu_{\textup{full}})^2}{(n-1)\widehat{\sigma}_{\textup{full}}^2} }$.
 
 \iffalse
 We simplify the key term $\chi$ to verify it gives the 
@@ -949,7 +959,7 @@ where
 
 \fi
 
-Our motivation to experiment with the general prior is to show that it may be possible to infer the prior from the integrand samples. We verified it is working for the non-informative working which shows the possibility to compute the prior from function values. Obtaining ar arbitrary prior from the integrand samples is the topic of future work.
+Our motivation to experiment with the general prior was to show that it may be possible to infer the prior from the integrand samples. We demonstrated it with the non-informative prior, which shows the possibility to compute the prior from function values. Obtaining an arbitrary prior from the integrand samples is the topic of future work.
 
 
 
@@ -1033,7 +1043,7 @@ Thus, we may estimate $s_\GCV$ using an argument similar to that used in derivin
 s^2 &= \var[f(\vx_i ) | \vf_{-i} = \vy_{-i}] a_{ii} \\ 
 & \approx \frac 1n \sum_{i=1}^n (y_i - \widetilde{y}_i)^2a_{ii}  = \frac 1n \sum_{i=1}^n \frac{\zeta_i^2}{a_{ii}} \\ 
 & \approx \frac{ \frac 1n \sum_{i=1}^n \zeta_i^2}{\frac 1n \sum_{i=1}^n a_{ii} } 
- = \frac{(\vy - m\vone)^T \mC^{-2} (\vy - m \vone)}{ \trace(\mC^{-1}) } \quad =: \quad s^2_{\textup{GCV}}. \\
+ = \frac{(\vy - m\vone)^T \mC^{-2} (\vy - m \vone)}{ \trace(\mC^{-1}) } \; =: \; s^2_{\textup{GCV}}. \\
 % \intertext{where}
 % s^2_{\textup{GCV}} & : = \vy^T \left[\mC^{-2} - \frac{\mC^{-2} \vone \vone^T \mC^{-2}}{\vone^T \mC^{-2} \vone}  \right] \vy  \left[ \trace(\mC^{-1}) \right]^{-1}. 
 \end{align*}
@@ -1128,7 +1138,7 @@ In this research we assume that the integrand belongs to a cone of well-behaved 
 Suppose that 
 \begin{align}
 \label{eqn:cone-homogenity}
-\abs{\mu(f) - \hmu_n(f)} \le \err_{\textup{CI}} (f(x_1), \cdots, f(x_n))
+\abs{\mu(f) - \hmu_n(f)} \le \err_{\textup{CI}} (f(\vx_1), \cdots, f(\vx_n))
 \end{align}
 for some $f$, which it is 99\% of the time under our hypothesis. Also note that our $\err_{\textup{CI}}$ \eqref{eqn:err_MLEGCV} \eqref{FJH:eq:errFull} are positively homogeneous functions, meaning, 
 \begin{align*}
@@ -1138,8 +1148,8 @@ One can verify the homogeneity of \eqref{eqn:err_MLEGCV} and \eqref{FJH:eq:errFu
 Thus if $f$ satisfies \eqref{eqn:cone-homogenity}, then
 \begin{align*}
 \abs{\mu(af) - \hmu_n(af)} &= \abs{a} \abs{\mu(f) - \hmu_n(f)} \\
-& \le \abs{a} \err_{\textup{CI}} (f(x_1), \cdots, f(x_n) ) \\
-& = \err_{\textup{CI}} (a f(x_1), \cdots, a f(x_n))
+& \le \abs{a} \err_{\textup{CI}} (f(\vx_1), \cdots, f(\vx_n) ) \\
+& = \err_{\textup{CI}} (a f(\vx_1), \cdots, a f(\vx_n))
 \end{align*}
 for all real $a$. Thus the set of all $f$ satisfying \eqref{eqn:cone-homogenity} is a \emph{cone}, $\mathscr{C}$. Cone of functions satisfy the property that if $f \in \mathscr{C}$ then $af \in \mathscr{C}$.
 
@@ -1148,20 +1158,20 @@ for all real $a$. Thus the set of all $f$ satisfying \eqref{eqn:cone-homogenity}
 
 
 \iffalse
-Given the data driven error bound $\err_{\textup{CI}} = \err_{\textup{CI}}(f(x_1),\dots,f(x_n))$,
+Given the data driven error bound $\err_{\textup{CI}} = \err_{\textup{CI}}(f(\vx_1),\dots,f(\vx_n))$,
 \begin{align*}
-\abs{\mu(f) - \hmu_n(f)} \le \err_{\textup{CI}} (f(x_1), \dots, f(x_n)), \quad \forall f \in \mathscr{C}
+\abs{\mu(f) - \hmu_n(f)} \le \err_{\textup{CI}} (f(\vx_1), \dots, f(\vx_n)), \quad \forall f \in \mathscr{C}
 \end{align*}  
 where the cone of functions is defined as $\mathscr{C} = \{f : f \in \mathscr{C} \Rightarrow a f \in \mathscr{C} \}$. More specifically, if a function $f$ belongs to $\mathscr{C}$, then any function obtained by a constant multiplication, $af$, also belongs to the cone. 
 This property is very useful since,
 \begin{align*}
 \abs{\mu(a f) - \hmu_n(a f)} & = \abs{a} \abs{\mu(f) - \hmu_n(f)} \\
-& \le \abs{a} \err_{\textup{CI}} (f(x_1), \dots, f(x_n)) \\
-& = \err_{\textup{CI}} (a f(x_1), \dots, a f(x_n)).
+& \le \abs{a} \err_{\textup{CI}} (f(\vx_1), \dots, f(\vx_n)) \\
+& = \err_{\textup{CI}} (a f(\vx_1), \dots, a f(\vx_n)).
 \end{align*}
 This is due to the fact that the error bound $\err_{\textup{CI}}$ is homogeneous, i.e., 
 \begin{align*}
-\err_{\textup{CI}}(a f(x_1),\dots, a f(x_n)) = \abs{a} \err_{\textup{CI}}(f(x_1),\dots, f(x_n)).
+\err_{\textup{CI}}(a f(\vx_1),\dots, a f(\vx_n)) = \abs{a} \err_{\textup{CI}}(f(\vx_1),\dots, f(\vx_n)).
 \end{align*}
 If the integrand is multiplied by a constant, say $a=45$, then the integral error is also multiplied by the same constant $a=45$, but the factor $\err_{\textup{CI}}$ which depends on the characteristic of $f$ does not change.
 \fi
@@ -1201,7 +1211,7 @@ Please note that $f_{\PEAKY}(\vx_i) = f_{\NICE}(\vx_i) = f_{\TRUE}(\vx_i) $ for 
 \end{figure}
 % Done: \JRNote{Use standard deviation $\sigma$ in x-axis.  $f_{\NICE}$ using kernel approximation} 
 
-As shown in \figref{fig:cone_bayes_functions}, the sampled function values, $\{f_{\TRUE}(\vx_i)\}_{i=1}^n$ from a smooth integrand $f_{\TRUE}$ are shown as dots. One can imagine these samples $\{f(\vx_i)\}_{i=1}^n$ were obtained from $f_{\NICE}$, a moderately smoother function or from $f_{\PEAKY}$, a highly oscillating function. In this example, we used $a_{\PEAKY} = 2$.
+As shown in \figref{fig:cone_bayes_functions}, the sampled function values, $\{f_{\TRUE}(\vx_i)\}_{i=1}^n$, from a smooth integrand $f_{\TRUE}$ are shown as dots. One can imagine these samples $\{f(\vx_i)\}_{i=1}^n$ were obtained from $f_{\NICE}$, a moderately smoother function or from $f_{\PEAKY}$, a highly oscillating function. In this example, we used $a_{\PEAKY} = 2$.
 
 When using $n=16$ rank-1 lattice points, and $r=1$ shift-invariant kernel, we get the posterior distribution of $\mu$ as shown in \figref{fig:cone_bayes_posterior}. The true integral value is shown as $\mu_{\TRUE}$ which is at the center of the plot. The integral of the peaky function $f_{\PEAKY}$ almost lies outside of the 99\% of the credible interval given by \eqref{eqn_prob_CI_MLE}, whereas the $\mu_{\NICE}$ falls within.
 
@@ -1357,7 +1367,7 @@ One possible explanation is that the matrix inversions in the algorithm are ill-
 %with Intel i7 3630QM and 16GB RAM memory
 On our test computer, it took more than an hour to compute $\hmu_n$ with $n=2^{14}$. 
 As shown in \figref{fig:MVN_Metern_d2b2_time_growth}, the computation time increases rapidly with $n$. 
-The empirical Bayes estimation of $\vtheta$, which requires repeated evaluation of the objective function, is the most time consuming of all. Because the objective function needs to be computed multiple times in every iteration to find its minimum. It takes tens of seconds to compute $\hmu_n$ with $\varepsilon = 10^{-5}$.   In contrast, this example in Chapter~\ref{sec:NumExp} take less than a hundredth of a second to compute $\hmu_n$ with the same $\varepsilon$ using our new algorithm. Not only is the Bayesian cubature with the Mat\'ern kernel slow, but also $\mC_\vtheta$ becomes highly ill-conditioned as $n$ increases.
+The empirical Bayes estimation of $\vtheta$, which requires repeated evaluation of the objective function, is the most time consuming of all. This is due to fact that the objective function needs to be computed multiple times in every iteration to find its minimum. It takes tens of seconds to compute $\hmu_n$ with $\varepsilon = 10^{-5}$.   In contrast, this example in Chapter~\ref{sec:NumExp} take less than a hundredth of a second to compute $\hmu_n$ with the same $\varepsilon$ using our new algorithm. Not only is the Bayesian cubature with the Mat\'ern kernel slow, but also $\mC_\vtheta$ becomes highly ill-conditioned as $n$ increases.
 So, Algorithm~\ref{algorithm1} in its current form is impractical when $n$ must be large.
 
 
@@ -1400,7 +1410,7 @@ We introduce some further notation
 \nonumber
 \mC^p  &= \frac 1n \mV \mLambda^{p} \mV^H, \qquad \forall p \in \integers,
 \end{align}
-where $\mV^H$ is the Hermitian of $\mV$, $\vC_1,\dots,\vC_n$ are columns of $\mC$,  $\vV_1,\dots,\vV_n$ are columns of $\mV$, and $\vv_1,\dots,\vv_n$ are rows of $\mV$. 
+where $\mV^H$ is the Hermitian of $\mV$, $\vC_1,\cdots,\vC_n$ are columns of $\mC$,  $\vV_1,\cdots,\vV_n$ are columns of $\mV$, and $\vv_1,\cdots,\vv_n$ are rows of $\mV$. 
 The columns of matrix $\mV$ are eigenvectors of $\mC$, and $\mLambda$ is a diagonal matrix of eigenvalues of $\mC$.
 In this and later sections, we drop the $\vtheta$ dependence of various quantities for simplicity of notation.  The normalization of $\mV$ assumed in \eqref{eqn:ftk_factor} conveniently allows the first eigenvector, $\vV_1$, to be the vector of ones in \eqref{fastcompAssumpB} below.  
 For any $n \times 1$ vector $\vb$, define the notation  $\widetilde{\vb} := \mV^H \vb$.
@@ -1422,9 +1432,10 @@ Under assumptions \eqref{fastcompAssump} the eigenvalues may be identified as th
 \begin{align}
 \nonumber
 \vlambda 
-& = \begin{pmatrix}
+& = \begin{pmatrix}[0.8]
 \lambda_1 \\ \vdots \\ \lambda_n
-\end{pmatrix} = \mLambda \vone = \mLambda \vv_1^* 
+\end{pmatrix} 
+= \mLambda \vone = \mLambda \vv_1^* 
 = \underbrace{\left( \frac 1n \mV^H  \mV \right) }_{\mathsf{I}} \mLambda \vv_1^* \\
 &= \mV^H \left( \frac 1n \mV \mLambda \vv_1^* \right)
 = \mV^H \vC_1 =  \widetilde{\vC}_1,
@@ -1434,7 +1445,7 @@ where $\mathsf{I}$ is the identity matrix and $\vv_1^*$ is the complex conjugate
 Also note that the fast Bayesian transform of $\vone$ has a simple form
 \begin{align*} 
 \widetilde{\vone}
-& = \mV^H \vone = \mV^H \vV_1 = \begin{pmatrix}n \\ 0 \\ \vdots \\ 0 \end{pmatrix}.
+& = \mV^H \vone = \mV^H \vV_1 = \begin{pmatrix}[0.8] n \\ 0 \\ \vdots \\ 0 \end{pmatrix}.
 \label{eqn:fast_transform_one}
 \end{align*}
 
@@ -1656,7 +1667,7 @@ We use the notation $\bar{\vlambda}_{(\ell)} = \mV^H \bar{\vC_1}_{(\ell)}$ to de
 \begin{align*}
 \bar{\vC}_{1{(\ell)}} = \left(\frac{\partial }{\partial{\theta}_\ell} C_\vtheta(\vx_1,\vx_i) \right)_{i=1}^n.
 \end{align*}
-The goal is to compute the derivative of the objective function faster. First, let's rewrite the objective function from \eqref{eqn_MLE_loss_func_optimized_2} in two parts
+The goal is to compute the derivative of the objective function faster. First, let's rewrite the objective function from \eqref{eqn_MLE_loss_func_optimized_2} in two parts,
 \begin{align*}
 \mathcal{L}(\vtheta | \vy)_{\MLE} &= 
 \underbrace{\frac{1}{n}  \log(\det\, \mC)}_{\mathcal{L}_{\abs{\mC}}} + \underbrace{\log\left((\vy-m_\MLE\vone)^T\mCInv(\vy-m_\MLE\vone) \right)}_{\mathcal{L}_{\vy}},
@@ -1886,9 +1897,9 @@ C_\vtheta(\vt, \vx) =
 % $ C_\vtheta(\vt, \vx) = \prod_{l=1}^d [ 1 - \eta_l \mathfrak{C}(x_l,t_l) ]$
 where $\eta_\ell$ is called shape parameter in the $\ell$th variable for $\ell=1,\cdots,d$, and $\mathfrak{C}$ is some positive definite function. Our goal is to compute $\bar{\lambda}_{i(\ell)}$ for which the kernel derivative is necessary. The derivative of the product kernels can be obtained easily. Please note that $\vtheta$ denotes all the hyper parameters of the kernel $C$ where $\eta$ is one of them and called the shape parameter.
 
-\Subsection{Derivative of the product kernel when $\eta_1=\dots=\eta_d=\eta$}
+\Subsection{Derivative of the product kernel when $\eta_1=\cdots=\eta_d=\eta$}
 \label{sec:deriv_of_kernel}
-It was suggested to use gradient descent to find optimal shape parameter in \secref{grad_descent_MLE}. In this section, we compute the gradient for product kernels. When the $\eta_1=\dots=\eta_d=\eta$, the derivative of a product kernel  w.r.t. $\eta$ can be obtained as below,
+It was suggested to use gradient descent to find optimal shape parameter in \secref{grad_descent_MLE}. In this section, we compute the gradient for product kernels. When the $\eta_1=\cdots=\eta_d=\eta$, the derivative of a product kernel  w.r.t. $\eta$ can be obtained as below,
 \begin{align*}
 \frac{\partial}{\partial \eta} C_\vtheta(\vt, \vx) 
 & =
@@ -2031,7 +2042,7 @@ Thus,
 { 1 - \eta_\ell \mathfrak{C}(x_\ell,t_\ell) }
 \biggr).
 \end{align*}
-Please note the above derivatives do not depend on $\mathfrak{C}(x,t)$ and most importantly these computations are applicable to any product kernel of the form \eqref{eqn:prod_kernel}.
+Please note that the above derivatives do not depend on $\mathfrak{C}(x,t)$ and most importantly these computations are applicable to any product kernel of the form \eqref{eqn:prod_kernel}.
 %$ C_\vtheta(\vt, \vx) = \prod_{j=1}^d [ 1 - \eta_j \mathfrak{C}(x_j,t_j) ]$.
 The $\bar{\lambda}_{i(\ell)}$ can be computed now using \eqref{eqn:deriv_eigenval_gram_matrix} with the computed kernel derivative, $\frac{\partial}{\partial \eta_\ell} C_\vtheta$.
 
@@ -2043,7 +2054,7 @@ The $\bar{\lambda}_{i(\ell)}$ can be computed now using \eqref{eqn:deriv_eigenva
 Using the obtained derivative of the eigenvalues, $\bar{\lambda}_{i(\ell)}$, one can easily compute the gradient of the objective function \eqref{eqn:deriv_obj_func_MLE} or \eqref{eqn:deriv_obj_func_full}. This can be further used to implement the steepest descent search as introduced in \secref{grad_descent_MLE} 
 %\eqref{Dong2017a}
 \begin{align*}
-\eta^{(j+1)}_\ell = \eta^{(j)}_\ell - \nu \frac{\partial}{\partial \eta_\ell} \mathcal{L}(\vtheta | \vy), \quad j=0,\cdots, \infty; \quad \ell = 1, \cdots, d
+\eta^{(j+1)}_\ell = \eta^{(j)}_\ell - \nu \frac{\partial}{\partial \eta_\ell} \mathcal{L}(\vtheta | \vy), \quad j=0,1,\cdots,  \quad \ell = 1, \cdots, d
 \end{align*}
 where $\nu$ is the step size for the gradient descent, $j$ is the iteration index, and $\frac{\partial}{\partial \eta_\ell} \mathcal{L}(\vtheta | \vy)$ is either \eqref{eqn:deriv_obj_func_MLE} or \eqref{eqn:deriv_obj_func_full} depending on the choice of the hyperparameter search method. The parameter $\eta_\ell$ is usually searched in the whole $\reals$ by using the simple domain transformation as explained in Section~\ref{sec:kernel_param_search}.
 
@@ -2101,7 +2112,7 @@ A random shift $\vDelta$ is added to $\vh \phi(i-1)$ to get $\{\vx_{i}\}_{i=1}^n
 The rank-1 lattices with the modulo one addition have a very desirable group structure that helps to satisfy fast Bayesian transform kernel assumptions.
 
 
-An example of $64$ nodes is given in Figure~\ref{latticefig}.  The even coverage of the unit cube is ensured by a well chosen generating vector $\vh$.  The choice of generating vector is typically done offline by computer search.  See \cite{DicEtal14a} and \cite{HicNie03a} for more on extensible integration lattices. Lattice rules are designed to integrate the class of certain sinusoidal functions without error.
+An example of $64$ nodes is given in Figure~\ref{latticefig}.  The even coverage of the unit cube is ensured by a well chosen generating vector $\vh$.  The choice of generating vector is typically done offline by computer search.  Please refer to \cite{DicEtal14a, HicNie03a} for more on extensible integration lattices. Lattice rules are designed to integrate the class of certain sinusoidal functions without error.
 \begin{figure}[htp]
 	\centering
 	\includegraphics[width=0.8\linewidth]{ShiftedLatticePoints}
@@ -2114,7 +2125,7 @@ The covariance functions $C_{\vtheta}$ that match integration lattice node sets 
 \begin{equation} \label{eq:shInv}
 C_{\vtheta}(\vt,\vx) = K_{\vtheta}(\vt - \vx \bmod \vone).
 \end{equation}
-This is called a \emph{shift invariant kernel} because shifting both arguments of the covariance function by the same amount leaves the value unchanged.   By a proper scaling of the kernel $K_{\vtheta}$ it follows that assumption \eqref{addAssump} is satisfied. 
+This is called a \emph{shift invariant kernel} because shifting both arguments of the covariance function by the same amount leaves the value unchanged.   By a proper scaling of the function $K_{\vtheta}$, the kernel satisfies the assumption \eqref{addAssump}. 
 % Of course, $K_{\vtheta}$ is periodic and must be of the form that ensures 
 Here, $K_{\vtheta}$ is chosen such that to ensure
 $C_{\vtheta}$ is symmetric and positive definite, as assumed in \eqref{FJH:eq:CondPosDef}. 
@@ -2464,7 +2475,7 @@ The above results are summarized as an algorithm to compute $\mathfrak{C}$ using
 
 \end{algorithm}
 
-In Algorithm \ref{algorithm-cont-val-kernel-order}, the computational cost is $\Order(n \log n)$ instead of $\Order(n^2)$. Plugging-in the values of $\mathfrak{C}$ in \eqref{eqn:trunc_series_kernel} gives the kernel. Another major benefit is that the FFT approach is numerically more stable than the direct sum approach. Please note that these kernels evolve with the truncation length $n$. The larger $n$ value the closer the kernel resembles the original infinite series kernel. One disadvantage is, the truncated series kernels obtain algebraic order decay at best. The infinite series kernel with little modification can be enhanced to obtain exponential decay as shown next.
+In Algorithm \ref{algorithm-cont-val-kernel-order}, the computational cost of  computing  $\left(\mathfrak{C}_r(j/n)\right)_{j=0}^{n-1}$ is $\Order(n \log n)$ instead of $\Order(n^2)$. Plugging-in the values of $\mathfrak{C}$ in \eqref{eqn:trunc_series_kernel} gives the kernel. Another major benefit is that the FFT approach is numerically more stable than the direct sum approach. Please note that these kernels evolve with the truncation length $n$. The larger $n$ value the closer the kernel resembles the original infinite series kernel. One disadvantage is, the truncated series kernels obtain algebraic order decay at best. The infinite series kernel with little modification can be enhanced to obtain exponential decay as shown next.
 
 
 
@@ -2908,9 +2919,9 @@ The Walsh kernels are of the form,
 \begin{align}
 \label{eqn:walsh_kernel}
 K_{\vtheta} (\vx \ominus \vt) =  
-\prod_{\ell=1}^d  1 + \eta_\ell \omega_{r} (x_\ell \ominus t_\ell), \quad \vtheta = (r, \eta_1, \cdots, \eta_d)
+\prod_{\ell=1}^d  1 + \eta_\ell \omega_{r} (x_\ell \ominus t_\ell), \quad \veta = (\eta_1, \cdots, \eta_d), \quad \vtheta = (r, \veta)
 \end{align}
-where $r$ is the kernel order, $\eta$ is the kernel shape parameter, and
+where $r$ is the kernel order, $\veta$ is the kernel shape parameter, and
 \begin{align*}
 \omega_r(x) = \sum_{k=1}^\infty 
 \frac{\textup{wal}_{2,k}(x) }{2^{2r \lfloor \log_2 k \rfloor}}.
@@ -2934,11 +2945,11 @@ Explicit expression is available for $\omega_{r}$ in the case of order $r=1$ \ci
 	\label{fig:walshkernel-dim1}
 \end{figure}
 
-The \figref{fig:walshkernel-dim1} shows the Walsh kernel \eqref{eqn:walsh_kernel} of order $r=1$ in the interval $[0,1)$. Unlike the shift-invariant kernels used with lattice nodes, low order Walsh kernels are discontinuous and are only piecewise constant. Smaller $\eta$ implies lesser variation in the amplitude of the kernel. Also, the Walsh kernels are digitally shift invariant but not periodic.
+The \figref{fig:walshkernel-dim1} shows the Walsh kernel \eqref{eqn:walsh_kernel} of order $r=1$ in the interval $[0,1)$. Unlike the shift-invariant kernels used with lattice nodes, low order Walsh kernels are discontinuous and are only piecewise constant. Smaller $\eta_\ell$ implies lesser variation in the amplitude of the kernel. Also, the Walsh kernels are digitally shift invariant but not periodic.
 
 \Section{Eigenvectors}
 
-We show the eigenvectors $\mV$ \eqref{eqn:ftk_factor} of the Gram matrix formed by the covariance kernel \eqref{eqn:walsh_kernel} and Sobol' nets are the columns of the Walsh-Hadamard matrix. First we introduce the necessary concepts.
+We show the eigenvectors $\mV$ in \eqref{eqn:ftk_factor} of the Gram matrix formed by the covariance kernel \eqref{eqn:walsh_kernel} and Sobol' nets are the columns of the Walsh-Hadamard matrix. First we introduce the necessary concepts.
 
 \Subsection{Walsh transform}
 % \JRNote{add subsection for walsh transform, define and explain.}
@@ -2973,10 +2984,10 @@ The WHT involves multiplications by $2^m \times 2^m$ Walsh-Hadamard matrices, wh
 \end{align}
 where $\bigotimes$ is Kronecker product. Alternatively for base $b=2$, these matrices can be  directly obtained by,
 \begin{align*}
-\mH^{(m)} % = \bigg(\exp(\pi \sqrt{-1} \vec{\imath}_m^T\vec {j}_m) \bigg)_{i,j=0}^{n-1}  
-= \bigg((-1)^{(\vec{\imath}^T \vec{j})} \bigg)_{i,j=0}^{2^m-1},
+\mH^{(m)} % = \bigg(\exp(\pi \sqrt{-1} \vec{\imath}_m^T\vec {\jmath}_m) \bigg)_{i,j=0}^{n-1}  
+= \bigg((-1)^{(\vec{\imath}^T \vec{\jmath})} \bigg)_{i,j=0}^{2^m-1},
 \end{align*}
-where the notation $\vec{\imath}^T \vec{j}$ indicates the bitwise dot product. 
+where the notation $\vec{\imath}^T \vec{\jmath}$ indicates the bitwise dot product. 
 
 \iffalse
 An example of Walsh matrix of length $n=8$ is given in Table~\ref{tab:hadamard_matrix}. 
@@ -3011,13 +3022,13 @@ An example of Walsh matrix of length $n=8$ is given in Table~\ref{tab:hadamard_m
 The Gram matrix $\mCtheta$ formed by Walsh kernels and Sobol' nodes have a special structure called  block-Toeplitz, which can be used to construct the fast Bayesian transform. 
 A Toeplitz matrix is a diagonal-constant matrix in which each descending diagonal from left to right is constant. A block Toeplitz matrix is a special block matrix, which contains blocks that are repeated down the diagonals of the matrix.
 %, as a Toeplitz matrix has elements repeated down the diagonal. 
-We prove that the eigenvectors of $\mCtheta$ are columns of Walsh-Hadamard matrix in two theorems. 
+We prove that the eigenvectors of $\mCtheta$ are columns of a Walsh-Hadamard matrix in two theorems. 
 
 \begin{theorem}
 \label{thrm:block-toeplitz}
 Let $\left(\vx_i\right)_{i=0}^{n-1}$ be digitally shifted Sobol' nodes and $K$ be any function,
 % positive definite kernel function such as \eqref{eqn:omega1} which matches Sobol' nodes.
-The Gram matrix,
+then the Gram matrix,
 \begin{align*}
 \mCtheta = \bigl(C(\vx_i, \vx_j)\bigr)_{i,j=0}^{n-1} &= \bigl(K(\vx_i \ominus \vx_j)\bigr)_{i,j=0}^{n-1},   \\ & \text{where} \quad \quad n=2^m, \quad C(\vx, \vt) = K(\vx \ominus \vt), \quad  \vx, \vt \in [0,1)^d, \qquad
 \end{align*}
@@ -3054,10 +3065,10 @@ K({\vz_{i \ominus j + q 2^m}})
 \quad 
  q = 0,1,\cdots .
 \end{align*} 
-These two notations are related by, $\mK^{(m)} = \mK^{(m,0)}$. 
+These two notations are related by $\mK^{(m)} = \mK^{(m,0)}$. 
 Please note that $\mC_{\vtheta}^{(m)} = \mK^{(m,0)}$.
 % Since the digitally shift invariant kernel are used in this research. %, it is sufficient to prove $\mK^{(m,q)}$ as a $2\times 2$ block-Toeplitz. 
-We will prove $\mK^{(m,q)}$ is a $2\times 2$ block-toeplitz matrix.
+We will prove $\mK^{(m,q)}$ is a $2\times 2$ block-toeplitz matrix for all $m \in \naturals, q \in \naturals$.
 
 % This notation is convenient for the proof as shown below.
 
@@ -3208,7 +3219,7 @@ Now we prove every arbitrary sub-block is also block-Toeplitz:
 \begin{itemize}
 \item For $l=1$
 \begin{align*}
-\bigl( K(z_{i \ominus j})\bigr)_{i=2q, \; j=2s}^{2q+1, 2s+1}, \quad q,s=0,1,\dots,
+\bigl( K(z_{i \ominus j})\bigr)_{i=2q, \; j=2s}^{2q+1, 2s+1}, \quad q,s=0,1,\cdots,
 \end{align*}
 is a block-Toeplitz since
 \begin{align*}
@@ -3262,9 +3273,9 @@ Thus $\mCtheta^{(m)}$ is a block-Toeplitz and every block its and sub-blocks are
 
 \begin{theorem}
 \label{thrm:hadamard_eigenvector}
-The Walsh-Hadamard matrix $\mH^{(m)}$ factorizes $\mC_{\vtheta}^{(m)}$ so the columns of Walsh-Hadamard matrix are the eigenvectors of $\mC_{\vtheta}^{(m)}$, i.e.,
+The Walsh-Hadamard matrix $\mH^{(m)}$ factorizes $\mC_{\vtheta}^{(m)}$ so that the columns of Walsh-Hadamard matrix are the eigenvectors of $\mC_{\vtheta}^{(m)}$, i.e.,
 \begin{align*}
-\mH^{(m)} \mC_{\vtheta}^{(m)}  = \Lambda^{(m)} \mH^{(m)}, \quad m \in \naturals. 
+\mH^{(m)} \mC_{\vtheta}^{(m)}  = \mLambda^{(m)} \mH^{(m)}, \quad m \in \naturals. 
 \end{align*}
 \end{theorem}
 
@@ -3292,9 +3303,9 @@ K(\vz_{0})
 \end{pmatrix}
 \\ 
 % & = \begin{pmatrix} K(\vz_{0})+K(\vz_{1}) & 0 \\ 0 & K(\vz_{0})-K(\vz_{1}) \end{pmatrix} \mH^{(1)} \\
-&= \Lambda^{(0)} \mH^{(0)},
+&= \mLambda^{(0)} \mH^{(0)},
 \end{align*}
-where $\Lambda^{(0)}$ is a diagonal matrix, thus $\mH^{(0)}$ diagonalizes $\mC^{(0)}$.
+where $\mLambda^{(0)}$ is a diagonal matrix, thus $\mH^{(0)}$ diagonalizes $\mC^{(0)}$.
 \fi
 We can easily see the Hadamard matrix $\mH^{(1)}$ diagonalizes $\mK^{(1,q)}$,
 \begin{align*}
@@ -3311,11 +3322,11 @@ K(\vz_{0 + q2^1}) & K(\vz_{1 + q2^1}) \\ K(\vz_{1 + q2^1}) & K(\vz_{0 + q2^1})
 \begin{pmatrix}
 1 &  1 \\ 1 & -1
 \end{pmatrix} \\
-&= \Lambda^{(1,q)} \mH^{(1)},
+&= \mLambda^{(1,q)} \mH^{(1)},
 \end{align*}
-where $\Lambda^{(1,q)}$ is a diagonal matrix, thus $\mH^{(1)}$ factorizes $\mK^{(1,q)}$.
+where $\mLambda^{(1,q)}$ is a diagonal matrix, thus $\mH^{(1)}$ factorizes $\mK^{(1,q)}$.
 
-Now assume $\mH^{(m)}$ factorizes $\mK^{(m,q)}$, so $\mH^{(m)} \mK^{(m,q)} = \Lambda^{(m,q)} \mH^{(m)}$ where $\Lambda^{(m,q)}$ is diagonal. We need to prove $\mH^{(m+1)}$ factorizes $\mK^{(m+1,q)}$,
+Now assume $\mH^{(m)}$ factorizes $\mK^{(m,q)}$, so $\mH^{(m)} \mK^{(m,q)} = \mLambda^{(m,q)} \mH^{(m)}$ where $\mLambda^{(m,q)}$ is diagonal. We need to prove $\mH^{(m+1)}$ factorizes $\mK^{(m+1,q)}$,
 \begin{align*}
 \mH^{(m+1)} \mK^{(m+1,q)} &= 
 \begin{pmatrix}
@@ -3326,29 +3337,29 @@ Now assume $\mH^{(m)}$ factorizes $\mK^{(m,q)}$, so $\mH^{(m)} \mK^{(m,q)} = \La
 \end{pmatrix}, \quad \text{by Theorem \ref{thrm:block-toeplitz}}
 \\
 & = \begin{pmatrix}
-\mH^{(m)}\mK^{(m,q)}   + \mH^{(m)}\mK^{(m,q+1)} & 
-\mH^{(m)}\mK^{(m,q)}   + \mH^{(m)}\mK^{(m,q+1)} \\ 
-\mH^{(m)}\mK^{(m,q)}   - \mH^{(m)}\mK^{(m,q+1)} & 
-\mH^{(m)}\mK^{(m,q+1)} - \mH^{(m)}\mK^{(m,q)} 
+\mH^{(m)} (\mK^{(m,q)}   + \mK^{(m,q+1)}) & 
+\mH^{(m)} (\mK^{(m,q)}   + \mK^{(m,q+1)}) \\ 
+\mH^{(m)} (\mK^{(m,q)}   - \mK^{(m,q+1)}) & 
+\mH^{(m)} (\mK^{(m,q+1)} - \mK^{(m,q)}) 
 \end{pmatrix} \\ 
 & = \begin{pmatrix}
-\Lambda^{(m,q)} \mH^{(m)} + \Lambda^{(m,q+1)} \mH^{(m)} & 
-\Lambda^{(m,q)} \mH^{(m)} + \Lambda^{(m,q+1)} \mH^{(m)} \\ 
-\Lambda^{(m,q)} \mH^{(m)} - \Lambda^{(m,q+1)} \mH^{(m)} & 
-\Lambda^{(m,q+1)} \mH^{(m)} - \Lambda^{(m,q)} \mH^{(m)}
+(\mLambda^{(m,q)}  + \mLambda^{(m,q+1)})  \mH^{(m)} & 
+(\mLambda^{(m,q)}   + \mLambda^{(m,q+1)}) \mH^{(m)} \\ 
+(\mLambda^{(m,q)}   - \mLambda^{(m,q+1)}) \mH^{(m)} & 
+(\mLambda^{(m,q+1)} - \mLambda^{(m,q)})   \mH^{(m)}
 \end{pmatrix} \\ 
 & = 
 \begin{pmatrix}
-\Lambda^{(m,q)} + \Lambda^{(m,q+1)} & 0 \\ 0 & \Lambda^{(m,q)} - \Lambda^{(m,q+1)}
+\mLambda^{(m,q)} + \mLambda^{(m,q+1)} & 0 \\ 0 & \mLambda^{(m,q)} - \mLambda^{(m,q+1)}
 \end{pmatrix}
 \begin{pmatrix}
 \mH^{(m)} & \mH^{(m)} \\ \mH^{(m)} & -\mH^{(m)}
 \end{pmatrix}
 \\ 
 % & = \begin{pmatrix} \mC^{(m)} + \mC^{(m,m)} & 0 \\ 0 & \mC^{(m)} - \mC^{(m,m)} \end{pmatrix} \mH^{(m+1)} \\
-& = \Lambda^{(m+1,q)} \mH^{(m+1)} .
+& = \mLambda^{(m+1,q)} \mH^{(m+1)} .
 \end{align*}
-Thus, $\mH^{(m+1)}$ factorizes $\mK^{(m+1,q)}$ to a diagonal matrix $\Lambda^{(m+1,q)}$. This implies $\mH^{(p)}$ factorizes $\mC_\vtheta^{(p)}$ for $p \in \naturals$. Please recall $\mC_\vtheta^{(p)} = \mK^{(p,0)}$.  Here we used the fact that both $\mH$ and $\mK$ are symmetric positive definite. 
+Thus, $\mH^{(m+1)}$ factorizes $\mK^{(m+1,q)}$ to a diagonal matrix $\mLambda^{(m+1,q)}$. This implies $\mH^{(p)}$ factorizes $\mC_\vtheta^{(p)}$ for $p \in \naturals$. Please recall $\mC_\vtheta^{(p)} = \mK^{(p,0)}$.  Here we used the fact that both $\mH$ and $\mK$ are symmetric positive definite. 
 \end{proof}
 
 \iffalse
@@ -3385,15 +3396,17 @@ We have implemented a fast adaptive Bayesian cubature algorithm using the kernel
 
 \Subsection{Iterative Computation of Walsh Transform}
 In every iteration of our algorithm, we double the number of function values. Using the technique described here, we have to only compute the Walsh transform for the newly added function values.
-Similar to the lattice points, Sobol' points are extensible by definition. This property is used in our algorithm to improve the integration accuracy till the required error tolerance is met. Sobol' nodes can be combined with Hadamard matrices as demonstrated here for iterative computation. Using the same notations as in \secref{sec:iter_fft}, let $\widetilde{\vy} = \mH^{(m+1)} {\vy}$ for some arbitrary $\vy \in \reals^{2n}$, $n = 2^m$. Define, 
+Similar to the lattice points, Sobol' points are extensible by definition. This property is used in our algorithm to improve the integration accuracy till the required error tolerance is met. Sobol' nodes can be combined with Hadamard matrices as demonstrated here for iterative computation. 
+% Using the same notations as in \secref{sec:iter_fft}, l
+Let $\widetilde{\vy} = \mH^{(m+1)} {\vy}$ for some arbitrary $\vy \in \reals^{2n}$, $n = 2^m$. Define, 
 \begin{gather*}
-\vy = \begin{pmatrix} y_1 \\ \vdots \\ y_{2n} \end{pmatrix}, \quad 
-\vy^{(1)} = \begin{pmatrix} y_1 \\ \vdots \\ y_{n} \end{pmatrix}, \quad 
-\vy^{(2)}  = \begin{pmatrix} y_{n+1} \\ \vdots \\ y_{2n} \end{pmatrix}, \\ 
+\vy = \begin{pmatrix}[1.1] y_1 \\ \vdots \\ y_{2n} \end{pmatrix}, \quad 
+\vy^{(1)} = \begin{pmatrix}[1.1] y_1 \\ \vdots \\ y_{n} \end{pmatrix}, \quad 
+\vy^{(2)}  = \begin{pmatrix}[1.1] y_{n+1} \\ \vdots \\ y_{2n} \end{pmatrix}, \\ 
 \widetilde{\vy}^{(1)} = \mH^{(m)} \vy^{(1)} = 
-\begin{pmatrix} \widetilde{y}^{(1)}_1 \\ \widetilde{y}^{(1)}_2 \\ \vdots \\ \widetilde{y}^{(1)}_{n} \end{pmatrix}, \quad 
+\begin{pmatrix}[1.0] \widetilde{y}^{(1)}_1 \\ \widetilde{y}^{(1)}_2 \\ \vdots \\ \widetilde{y}^{(1)}_{n} \end{pmatrix}, \quad 
 \widetilde{\vy}^{(2)}  =  \mH^{(m)} \vy^{(2)} =
-\begin{pmatrix} \widetilde{y}^{(2)}_{1} \\  \widetilde{y}^{(2)}_{2} \\ \vdots \\ \widetilde{y}^{(2)}_{n} \end{pmatrix}. 
+\begin{pmatrix}[1.0] \widetilde{y}^{(2)}_{1} \\  \widetilde{y}^{(2)}_{2} \\ \vdots \\ \widetilde{y}^{(2)}_{n} \end{pmatrix}. 
 \end{gather*}
 Then,
 \begin{align*}
@@ -3591,13 +3604,13 @@ The Algorithm \ref{algorithm2} has a computational cost which is the sum of the 
 
 The various hyperparameters introduced and used by our algorithms need to be optimally chosen. % We have not discussed how that will be done. 
 The parameter search can be done in two major ways. 
-Bounded minima search, if the search interval is known, else unbounded search.  Most of the time, the search interval is unknown. So the natural choice is to use unbounded search over the unbound domain such as \code{fminsearch} provided by MATLAB.
+Bounded minima search, if the search interval is known, else unbounded search.  Most of the scenarios, the search interval is unknown. So the natural choice is to use unbounded search over the unbound domain such as \code{fminsearch} provided by MATLAB.
 % line in -- that is semi-bounded.
 However hyperparameters need to live in a domain that is bounded or semi-bounded. 
 There are some simple domain transformations available to achieve this.
 
 \Subsection{Positive kernel shape parameter}
-The following parameter map is used to ensure that the shape parameter values are positive real numbers. For $\eta$ in Section \ref{sec:deriv_of_kernel}, let
+The following parameter map is used to ensure that the shape parameter values are positive real numbers. For $\eta > 0$ as introduced in Section \ref{sec:deriv_of_kernel}, let
 % We need to have $\eta > 0$ and $ 0 < b < 1$ while searching for the optimum value, so we use the following transformations
 \begin{align*}
 \eta{(t_1)} = & \quad e^{t_1}, & \eta : (-\infty, \infty) \to (0, \infty).
@@ -3615,7 +3628,7 @@ The optimal value $t_{1, \textup{opt}}$ can be transformed back to the $(0, \inf
 \Subsection{Kernel order $1 < r < \infty$}
 The following map is used to ensure that the kernel order values are positive real number and greater than one, i.e., in the $(1, \infty)$ interval as required in \secref{sec:trunc_series_kernel},
 \begin{align*}
-r(t) = & \quad {1 + e^{t_2}}, & r:  (-\infty, \infty) \to (1,\infty).
+r(t_2) = & \quad {1 + e^{t_2}}, & r:  (-\infty, \infty) \to (1,\infty).
 \end{align*}
 So one may search for the optimal $t_2 = -\log(r-1)$ in the whole real line $\reals$.
 The optimal value $t_{2, \textup{opt}}$ can be transformed back to the desired interval $(0,1)$ using 
@@ -3630,7 +3643,7 @@ r_{\textup{opt}} = 1+ e^{t_{2, \textup{opt}}}.
 \Subsection{Kernel order $0 < q < 1$}
 The following multivariate map is used to ensure that the kernel order values are positive real and less than one, i.e., in the $(0,1)$ interval to use with exponentially decaying kernel, as introduced in \secref{sec:exp_decay_kernel},
 \begin{align*}
-q(t) = & \quad \frac{1}{1 + e^{t}}, & q: (-\infty, \infty) \to (0, 1).
+q(t_3) = & \quad \frac{1}{1 + e^{t_3}}, & q: (-\infty, \infty) \to (0, 1).
 \end{align*}
 So one may search for the optimal $t_3 = \log(q^{-1}-1)$ in the whole real line $\reals$.
 The optimal value $t_{3, \textup{opt}}$ can be transformed back to the desired interval $(0,1)$ by using
@@ -3643,13 +3656,13 @@ q_{\textup{opt}} = \frac{1}{1 + e^{t_{3, \textup{opt}}}}.
 
 \Subsection{Combined searching of kernel order $r$ and shape parameter $\veta$}
 Instead of searching $\veta$ and $r$ separately one would prefer to search them together so that the most optimal values can be obtained, where $\veta = (\eta_1, \cdots, \eta_d)$ such that $\eta_l \ne \eta_k$,  for $l \ne k$.
-We can combine parameter maps used above to ensure that the kernel order values in $(1, \infty)$ and shape parameter $\veta$ in $(0,\infty)^d$ as required in \secref{sec:trunc_series_kernel},
+We can combine the parameter maps used above to ensure that the kernel order values in $(1, \infty)$ and shape parameter $\veta$ in $(0,\infty)^d$ as required in \secref{sec:trunc_series_kernel},
 \begin{align*}
 \vtheta(\vt) = 
-\begin{pmatrix}
+\begin{pmatrix}[1]
 r(t_{1}) \\ \eta(t_2) \\ \vdots \\ \eta(t_{d+1}) 
 \end{pmatrix} =
-\begin{pmatrix}
+\begin{pmatrix}[1]
 1 + e^{t_1} \\ e^{t_2} \\ \vdots \\ e^{t_{d+1}}
 \end{pmatrix}, 
 \quad
@@ -3658,21 +3671,21 @@ r(t_{1}) \\ \eta(t_2) \\ \vdots \\ \eta(t_{d+1})
 So instead of searching for $\vtheta_{\textup{opt}}$ in $(1,\infty) \times (0,\infty)^d$, one may search for the optimal 
 $$
 \vt = \vt^{-1} (\vtheta) = 
-\begin{pmatrix}
+\begin{pmatrix}[1]
 \log(r-1) \\ \log(\eta_1) \\ \vdots \\ \log(\eta_d)
 \end{pmatrix}
 $$ in the whole real line $\reals^{d+1}$.
 The optimal value $\vt_{\textup{opt}}$ can be transformed back to the desired interval $(1,\infty) \times (0,\infty)^d$ using 
 \begin{align*}
 \vtheta_{\textup{opt}} = 
-\begin{pmatrix}
+\begin{pmatrix}[1]
 1 + e^{t_{1, \textup{opt}}} \\
 e^{t_{2, \textup{opt}}} \\
 \vdots \\
 e^{t_{d+1, \textup{opt}}} \\
 \end{pmatrix}.
 \end{align*}
-Similarly one can map the kernel order $q \in (0,1)$ and $\veta$ in to a multivariate hyperparameter search.
+Similarly one can map the kernel order $q \in (0,1)$ \secref{sec:exp_decay_kernel}, and $\veta$ in to a multivariate hyperparameter search.
 
 \clearpage
 
@@ -4027,7 +4040,7 @@ $
 
 
 
-\Subsection{Multi-variate Gaussian}
+\Subsection{Multivariate Gaussian}
 The Table~\ref{tab3} summarizes the performance of the methods MC, Lattice, Sobol,
 BayesLat, and BayesSob for estimating the multi-dimensional Gaussian probability $\bf{X}\sim N(\bf{\mu},\Sigma)$. This experiment demonstrates our algorithm's ability to handle  high-dimensional integral.
 
@@ -4040,7 +4053,7 @@ The \code{cubBayesNet\_g}  was competitive and had the smallest average absolute
 \begin{table}[ht] % MATLAB Driver: MVNCubatureExampleBayes.m
 	\arrayrulecolor[HTML]{DB5800}
 \centering
-\caption{Comparison of average performance of cubatures for estimating the $d=20$ Multi-variate Normal \eqref{eqn:fGenzdef} for $1000$ independent runs with $\varepsilon=10^{-3}$. These results can be conditionally reproduced with the script, \code{MVNCubatureExampleBayes.m}, in GAIL. 
+\caption{Comparison of average performance of cubatures for estimating the $d=20$ Multivariate Normal \eqref{eqn:fGenzdef} for $1000$ independent runs with $\varepsilon=10^{-3}$. These results can be conditionally reproduced with the script, \code{MVNCubatureExampleBayes.m}, in GAIL. 
 \label{tab3}}	   
 %\vspace{-2ex}
 $
@@ -4098,7 +4111,7 @@ where \code{fresnels} is the Fresnel Sine integral,
 	$
 \end{table}
 
-The results are summarized from the two different approaches in Table \ref{tabMultiTheta}. The first method, called \code{OneTheta}, uses common shape parameter across all the dimensions, whereas the second method, called \code{MultiTheta}, allows the shape parameters to vary across the dimensions. In the \code{MultiTheta} method, the shape parameter search is multi-variate, so the magnitude of shape parameter depends on the integrand's magnitude in each dimensions. We have chosen an integrand particularly to demonstrate this aspect \eqref{eqn:fresnels} where we used $d=3$ and the constants $\bm{\upsilon}= (10^{-4}, 1, 10^4)$. The choice of magnitude variations in constants $\bm{\upsilon}$ allows to make the integrand vary significantly across dimensions.
+The results are summarized from the two different approaches in Table \ref{tabMultiTheta}. The first method, called \code{OneTheta}, uses common shape parameter across all the dimensions, whereas the second method, called \code{MultiTheta}, allows the shape parameters to vary across the dimensions. In the \code{MultiTheta} method, the shape parameter search is multivariate, so the magnitude of shape parameter depends on the integrand's magnitude in each dimensions. We have chosen an integrand particularly to demonstrate this aspect \eqref{eqn:fresnels} where we used $d=3$ and the constants $\bm{\upsilon}= (10^{-4}, 1, 10^4)$. The choice of magnitude variations in constants $\bm{\upsilon}$ allows to make the integrand vary significantly across dimensions.
 
 We ran this test for 1000 times. In comparison, both the methods successfully computed the integral all the time but \code{MultiTheta} was slightly faster. The \code{MultiTheta} method used less number of samples but the integration error was bigger than the \code{OneTheta}. For the same number of samples, the \code{OneTheta} method will be much faster since the shape parameter search is faster. The \code{MultiTheta} method is useful in scenarios where we want to use smaller size, $n$, and the integrand varies significantly across dimensions.
 
@@ -4457,11 +4470,11 @@ Some of the improvement ideas are listed here:
 We could improve the computation speed of \code{cubBayesNet\_g} for smoother integrands using higher order digital sequences and matching kernels, which have the potential of being another match that satisfies the conditions in Section~\ref{sec:fast_BC}.  The fast Bayesian transform would correspond to a fast Walsh transform similar to the second algorithm we demonstrated.  For such kernels and the first order Walsh kernel we demonstrated, periodicity is not assumed, however, special structure of both the sequences and the kernels are required to take advantage of integrand smoothness.
 
 \item Control variates:
-Hickernell et.al \cite{HicEtal17a} \cite{Li16a} adapted control variates for Quasi-Montro. 
+Hickernell et.al \cite{HicEtal17a} \cite{Li16a} adapted control variates for Quasi-Monte Carlo. 
 Control variates are commonly used to improve the efficiency of IID Monte Carlo integration.
 One should be able to adapt our Bayesian cubature to control variates, i.e., assuming  
 \begin{equation*}
-f = \mathcal{GP} \left( \beta_0 + \beta_1 \, g_1 + \dots + \beta_p \, g_p, \;s^2 C \right),
+f = \mathcal{GP} \left( \beta_0 + \beta_1 \, g_1 + \cdots + \beta_p \, g_p, \;s^2 C \right),
 \end{equation*}
 for some choice of vector of functions $\vg = \{g_1, \ldots, g_p\}$, where $\vg : [0,1)^d \to \reals^p$ whose integrals are known $\mu_{\vg} := \int_{[0,1)^d} \vg(\vx)\dvx$, and some parameters $\beta_0, \ldots, \beta_p$ in addition to the $s$ and $C$, then
 \begin{align*}
@@ -4493,7 +4506,8 @@ The efficacy of this approach has not yet been explored.
 The kernels's optimal shape parameter searched using steepest descent with kernels gradient could sometime get into local minima. This needs more understanding and enhancements.
 \JRNote{explain why, any suggestions?}
 
-\item Gaussian diagnosis: We assumed the integrand to be an instance of a Gaussian process. One could attempt to prove if this is a good assumption based on the results we have.
+\item Gaussian diagnosis: We assumed the integrand to be an instance of a Gaussian process. One could attempt to prove if this is a good assumption using statistical diagnosis for goodness of fit.
+% based on the results we have.
 
 
 \item Parallel Algorithm: 
