@@ -7,7 +7,7 @@ logSavePath=[GAIL_path,'Papers', filesep, 'Theses',filesep, 'Jagadees', filesep]
 dim = 1;
 b = 1;
 n = 4;
-A_peak = 2;
+A_peak = 2.5;
 ftrue = @(x) exp(sum(cos(2*pi*x),2));
 exactInteg = besseli(0,1)^dim;
 
@@ -94,7 +94,7 @@ plot(xa, gauss((xa*sqrt(s2_MLE)+m_MLE)), 'k')
 hold on
 plot( (mu_peak-m_MLE)/sqrt(s2_MLE), 0, 'r.')
 plot( (mu_nice-m_MLE)/sqrt(s2_MLE), 0, 'b.')
-plot( 0, 0, 'g.')
+% plot( 0, 0, 'g.')
 
 xlabel('$\sigma$','Interpreter','latex')
 % ylabel('$\rho_\mu|_{(\boldmath{f}=\boldmath{y})}$', 'Interpreter','latex')
@@ -106,7 +106,7 @@ axis tight
 % annotation('textarrow',[xa_norm(mu_nice) xa_norm(mu_nice)],[0 0.25],'String','$\mu_{nice}$')
 % annotation('textarrow',[xa_norm(mu_true) xa_norm(mu_true)],[0 0.5],'String','$\mu_{true}$')
 legend({'$\rho_\mu|_{(\boldmath{f}=\boldmath{y})}$', ...
-  '$\mu_\textup{peaky}$', '$\mu_\textup{nice}$', '$\hat{\mu}$'}, ...
+  '$\mu_\textup{peaky}$', '$\mu_\textup{nice}$'}, ...  %, '$\hat{\mu}$'
   'location','best','Interpreter','latex')
 % temp = [{'${\vert\mu-\widehat{\mu} \vert}/{\varepsilon}=1$'}, temp'];
 % legend(temp,'location','best','Interpreter','latex'); axis tight
