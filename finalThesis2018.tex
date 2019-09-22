@@ -879,7 +879,7 @@ Let $\displaystyle \lambda = \frac{1}{w}, \quad \dif{\lambda} = -w^{-2} \dif{w}$
 where $\mathcal{LT}(\cdot)$ denotes the Laplace transform and $(\frac{n-4}2)$ indicates the $\frac{n-4}2$th derivative taken after the transform. Here we used frequency domain derivative property of the Laplace transform. 
 The above result can be further simplified by replacing $\gamma - \beta^2/\alpha$ from  \eqref{eqn:full_bayes_student_short},
 \begin{align*}
-{\rho_{\mu}(z | \vf = \vy)} \propto \mathcal{LT} \{ g(1/\cdot) \}^{(\frac{n-4}2)} \left(\chi \right)
+{\rho_{\mu}(z | \vf = \vy)} & \propto \mathcal{LT} \{ g(1/\cdot) \}^{(\frac{n-4}2)} \left(\chi \right) \\
 & \propto
 \mathcal{LT} \left\{ g({1}/{\cdot})
  \right\}^{(\frac{n-4}2)} \left( 1 +  \frac{(z - \hmu_{\textup{full}})^2}{(n-1)\widehat{\sigma}_{\textup{full}}^2}\right) \quad \text{by} \quad \eqref{eqn:full_bayes_student_short}.
@@ -1355,13 +1355,13 @@ d = 3, \quad \va = \begin{pmatrix}
 
 
 
-\begin{figure}[h]
+\begin{figure}[ht]
 	\centering
 	\includegraphics[width=0.9\linewidth]{MVN_guaranteed_time_Matern_d2_2019-Jun-29}
 	\caption{Multivariate Gaussian probability: Guaranteed integration using Mat\'ern kernel in $d=2$ using empirical Bayes stopping criterion within error tolerance $\varepsilon$. This figure can be conditionally reproduced using \code{matern\_guaranteed\_plots.m} in GAIL.}
 	\label{fig:MVN_Metern_d2b2}
 \end{figure}
-\begin{figure}[h]
+\begin{figure}[ht]
 	\centering
 	\includegraphics[width=0.9\linewidth]{MVN_rapid_n_vs_time_Matern_d2_2019-Jun-29}
 	\caption{Multivariate Gaussian probability estimated using Mat\'ern kernel in $d=2$ using empirical Bayes stopping criterion. Computation time rapidly increases with increase of $n$. This figure can be conditionally reproduced using \code{matern\_guaranteed\_plots.m} in GAIL.}
@@ -2417,8 +2417,8 @@ Using the $\mathfrak{C}_r$, rewrite
 \vC_{\vtheta, n}
 &= \left( \prod_{l=1}^d \left[ 1 + \eta \mathfrak{C}_r( \abs{x_{il} - x_{1l}})\right] \right)_{i=1}^n.
 \end{align}
-By the definition of lattice points from \eqref{eqn:lattice_def}, we can observe
-$\abs{x_{i\ell}-x_{1\ell}} \in \lbrace 0, \frac 1n, \frac 2n, \dots \frac{n-1}{n}  \rbrace$. This can be used to rewrite $\mathfrak{C}_r$ in a much simpler form,
+One can observe
+$\abs{x_{i\ell}-x_{1\ell}} \in \lbrace 0, \frac 1n, \frac 2n, \dots \frac{n-1}{n}  \rbrace$ by using the definition of lattice points from \eqref{eqn:lattice_def}. This can be used to rewrite $\mathfrak{C}_r$ in a much simpler form,
 \begin{align*}
 \mathfrak{C}_r \left(\frac jn \right) &= \sum_{k = - n/2, k \neq 0 }^{n/2 - 1} \frac{1}{\abs{k}^r} 
 e^{ 2 \pi\sqrt{-1} k (\frac jn)}, \quad \text{where} \;  j=0,1,\dots n-1.
@@ -2439,7 +2439,9 @@ This notation is very convenient to show that $\widetilde{\mathfrak{C}}_r$,  the
 This is the reason we have chosen the truncation length to $n$. 
 Based on the above result, it is evident that $\widetilde{\mathfrak{C}}_r$ can be computed analytically,
 \begin{align} \label{dft_of_g}
-\widetilde{\mathfrak{C}}_r(m) &= 
+\widetilde{\bm{\mathfrak{C}}}_r := \left(\widetilde{\mathfrak{C}}_{r}(m)\right)_{m=0}^{n-1}, \quad
+\text{where} \quad
+\widetilde{\mathfrak{C}}_r(m) = 
 \begin{cases}
 0, & \text{for} \quad m=0 \\
 \frac{n}{\abs{m}^r}, & \text{for} \quad m=1,\dots,n/2-1 \\
@@ -2475,13 +2477,19 @@ The above results are summarized as an algorithm to compute $\mathfrak{C}$ using
 	\Require
 	Number of points to use, $n$; 
 
-	\State Analytically compute $\left(\widetilde{\mathfrak{C}}_{r}(m)\right)_{m=0}^{n-1}$, the discrete Fourier coefficients of $\left(\mathfrak{C}_r(j/n)\right)_{j=0}^{n-1}$ using \eqref{dft_of_g}
-	\State Take the inverse FFT of $\left(\widetilde{\mathfrak{C}}_{r}(m)\right)_{m=0}^{n-1}$ to get $\left(\mathfrak{C}_r(j/n)\right)_{j=0}^{n-1}$
+	\State Analytically compute $ \widetilde{\bm{\mathfrak{C}}}_r $ in \eqref{eqn:trunc_series_kernel}, the discrete Fourier transform of ${\bm{\mathfrak{C}}}_r$ using \eqref{dft_of_g}
+	\State Take the inverse FFT of $\widetilde{\bm{\mathfrak{C}}}_r$ to get ${\bm{\mathfrak{C}}}_r$
+	
+	\State Using ${\bm{\mathfrak{C}}}_r$ compute the truncated series of kernel of truncation length $n$ using \eqref{eqn:trunc_series_kernel}
+
+	%\State Analytically compute $ \widetilde{\bm{\mathfrak{C}}}_r = \left(\widetilde{\mathfrak{C}}_{r}(m)\right)_{m=0}^{n-1}$, the discrete Fourier transform of $\left(\mathfrak{C}_r(j/n)\right)_{j=0}^{n-1}$ using \eqref{dft_of_g}
+	% \State Take the inverse FFT of $\left(\widetilde{\mathfrak{C}}_{r}(m)\right)_{m=0}^{n-1}$ to get $\left(\mathfrak{C}_r(j/n)\right)_{j=0}^{n-1}$
 	\end{algorithmic}
 
 \end{algorithm}
 
-In Algorithm \ref{algorithm-cont-val-kernel-order}, the computational cost of  computing  $\left(\mathfrak{C}_r(j/n)\right)_{j=0}^{n-1}$ is $\Order(n \log n)$ instead of $\Order(n^2)$. Plugging-in the values of $\mathfrak{C}$ in \eqref{eqn:trunc_series_kernel} gives the kernel. Another major benefit is that the FFT approach is numerically more stable than the direct sum approach. Please note that these kernels evolve with the truncation length $n$. The larger $n$ value the closer the kernel resembles the original infinite series kernel. One disadvantage is, the truncated series kernels obtain algebraic order decay at best. The infinite series kernel with little modification can be enhanced to obtain exponential decay as shown next.
+In Algorithm \ref{algorithm-cont-val-kernel-order}, the computational cost of  computing ${\bm{\mathfrak{C}}}_r$ % $\left(\mathfrak{C}_r(j/n)\right)_{j=0}^{n-1}$ 
+is $\Order(n \log n)$ instead of $\Order(n^2)$. Plugging-in the values of ${\bm{\mathfrak{C}}}_r$ in \eqref{eqn:trunc_series_kernel} gives the kernel. Another major benefit is that the FFT approach in Algorithm \ref{algorithm-cont-val-kernel-order} is the computations are numerically more stable than the direct sum approach. Please note that these kernels evolve with the truncation length $n$. The larger $n$ value the closer the kernel resembles the original infinite series kernel. One disadvantage is, the truncated series kernels obtain algebraic order decay at best. The infinite series kernel with little modification can be enhanced to obtain exponential decay as shown next.
 
 
 
@@ -3279,7 +3287,7 @@ Thus $\mCtheta^{(m)}$ is a block-Toeplitz and every block its and sub-blocks are
 
 \begin{theorem}
 \label{thrm:hadamard_eigenvector}
-The Walsh-Hadamard matrix $\mH^{(m)}$ factorizes $\mC_{\vtheta}^{(m)}$ so that the columns of Walsh-Hadamard matrix are the eigenvectors of $\mC_{\vtheta}^{(m)}$, i.e.,
+The Walsh-Hadamard matrix $\mH^{(m)}$ factorizes $\mC_{\vtheta}^{(m)}$, so that the columns of Walsh-Hadamard matrix are the eigenvectors of $\mC_{\vtheta}^{(m)}$, i.e.,
 \begin{align*}
 \mH^{(m)} \mC_{\vtheta}^{(m)}  = \mLambda^{(m)} \mH^{(m)}, \quad m \in \naturals. 
 \end{align*}
@@ -3287,7 +3295,7 @@ The Walsh-Hadamard matrix $\mH^{(m)}$ factorizes $\mC_{\vtheta}^{(m)}$ so that t
 
 \begin{proof}
 	
-Again we use the proof-by-induction technique to show that the Walsh-Hadamard matrix factorizes $\mK^{(m,q)}$.
+Again, we use the proof-by-induction technique to show that the Walsh-Hadamard matrix factorizes $\mK^{(m,q)}$.
 \iffalse
 We can easily see the Hadamard matrix $\mH^{(0)}$ diagonalizes $\mC^{(0)}$,
 \begin{align*}
@@ -4026,9 +4034,9 @@ had the smallest average absolute error. \code{cubBayesNet\_g} used lowest numbe
 \begin{table}[ht] % MATLAB Driver: KeisterCubatureExampleBayes.m
 	\arrayrulecolor[HTML]{DB5800}
 \centering
-\caption{Comparison of average performance of cubatures for estimating the integral \eqref{eqn:keister_integral}
-for $1000$ independent runs. These results can be conditionally reproduced with the
-script, \code{KeisterCubatureExampleBayes.m}, in GAIL. 
+\caption{Comparison of average performance of cubatures for estimating the Keister integral \eqref{eqn:keister_integral} for $1000$ independent runs. 
+These results can be conditionally reproduced with the
+script, \allowdisplaybreaks \code{KeisterCubatureExampleBayes.m}, in GAIL. 
 \label{tab2}}	   
 %\vspace{-2ex}
 \begin{tabular}{c}
@@ -4036,7 +4044,7 @@ $
 \arraycolsep=1.4pt\def\arraystretch{0.9}
 \begin{array}{l@{\quad}r@{\quad}r@{\quad}r@{\quad}r@{\quad}r@{\quad}r}
 \hhline{======}
-\input{KeisterBayesOut.txt} 
+\input{figures/KeisterBayesOut.txt} 
 \end{array}
 $
 \end{tabular}
@@ -4066,7 +4074,7 @@ $
 \arraycolsep=1.4pt\def\arraystretch{0.9}
 \begin{array}{l@{\quad}r@{\quad}r@{\quad}r@{\quad}r@{\quad}r@{\quad}r}
 \hhline{======}
-\input{MVNBayesOut.txt} 
+\input{figures/MVNBayesOut.txt} 
 \end{array}
 $
 \end{table}
@@ -4112,7 +4120,7 @@ where \code{fresnels} is the Fresnel Sine integral,
 	\arraycolsep=1.4pt\def\arraystretch{0.9}
 \begin{array}{l@{\quad}r@{\quad}r@{\quad}r@{\quad}r@{\quad}r@{\quad}r}
 \hhline{======}
-\input{MultiThetaOut.txt} 
+\input{figures/MultiThetaOut.txt} 
 \end{array}	
 	$
 \end{table}
