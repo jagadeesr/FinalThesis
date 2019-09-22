@@ -403,9 +403,9 @@ The integral may often be expressed as
 where $f:[0,1]^d \to \reals$ is the integrand, and $\boldsymbol{X} \sim \mathcal{U}[0,1]^d$.  The process of transforming the original integral into the form of \eqref{eqn:defn_mu} is addressed in \cite{BecHae92b, Sid08a, Sid93, Lau96a, CriEtal07}.  The cubature may be an affine function of integrand values:
 \begin{equation}
 \label{eqn:defn_hmu}  % remove this
-\hmu: = \hmu(f) := w_0 + \sum_{i=1}^{n} f(\vx_i) w_i,
+\hmu: = \hmu(f) := w_0 + \sum_{i=1}^{n} f(\vx_i) w_i, \quad \mathcal{P} :=\{\vx_i\}_{i=1}^n \subset [0,1]^d
 \end{equation}
-where the weights, $w_0$, and  $\vw = (w_i)_{i=1}^n \in \reals^n$, and the nodes, $\{\vx_i\}_{i=1}^n \subset [0,1]^d$, are chosen to make the error, $\abs{\mu - \hmu}$, small. The integration domain $[0,1]^d$ is convenient for the low discrepancy node sets that we use.  The nodes are assumed to be deterministic.
+where the weights, $w_0$, and  $\vw = (w_i)_{i=1}^n \in \reals^n$, and the nodes, $\mathcal{P}$, are chosen to make the error, $\abs{\mu - \hmu}$, small. The integration domain $[0,1]^d$ is convenient for the low discrepancy node sets that we use.  The nodes are assumed to be deterministic.
 The integral of function $f$ is the same over $[0, 1]^d$ or $(0, 1)^d$ or $[0, 1)^d$. So we use $[0, 1]^d$ or $[0, 1)^d$ depending on the application. Most often $[0, 1)^d$ is preferred especially for extensible node-sets because  it partitions easily into congruent subhypercubes.
 This research focuses on multivariate numerical integrals where the computational cost is a bottleneck. %of evaluating the integrand 
 
@@ -473,7 +473,7 @@ It also covers  some of the additional techniques used in the implementation of 
 Numerical examples are provided in Chapter~\ref{sec:NumExp} to demonstrate the performance and advantages of our new algorithms.  We conclude with a brief discussion and potential future work in Chapter~\ref{sec:conclusion-future-work}.
 
 
-We use the terms integrand or function interchangeably to denote the function $f$ being considered for the numerical integration. Also, we use the terms, nodes, points, node-sets, designs, and data-sites interchangeably to denote the points $\mathcal{P} := \{\vx_i\}_{i=1}^n \subset [0,1)^d$ used in the cubature.
+We use the terms integrand or function interchangeably to denote the function $f$ being considered for the numerical integration. Also, we use the terms, nodes, points, node-sets, designs, and data-sites interchangeably to denote the points $\mathcal{P}$ used in the cubature.
 
 
 
@@ -505,7 +505,7 @@ The distribution in general captures numerical uncertainty due to the fact that 
 \Section{Bayesian Posterior Error}
 \label{sec:BayesPostErr}
 
-We assume the integrand, $f$, is an instance of a stochastic Gaussian process, i.e., $f \sim \mathcal{GP}(m,s^2 C_\vtheta)$.  Specifically, $f$ is a real-valued random function with constant mean $m$ and covariance function $s^2C_\vtheta$, where $s$ is a positive scale factor, and $C_\vtheta: [0,1]^d \times [0,1]^d \to \mathbb{R} $ is a symmetric, positive-definite function and parameterized by $\vtheta$:
+We assume the integrand, $f$, is an instance of a stochastic Gaussian process, i.e., $f \sim \mathcal{GP}(m,s^2 C_\vtheta)$.  Specifically, $f$ is a real-valued random function with constant mean $m$ and covariance function $s^2C_\vtheta$, where $s$ is a positive scale factor, and $C_\vtheta: [0,1]^d \times [0,1]^d \to \mathbb{R} $ is a symmetric, positive-definite function and, parameterized by $\vtheta$:
 \begin{multline} \label{FJH:eq:CondPosDef}
 \mC^T = \mC,  \quad \va^T \mC \va > 0, \quad \text{where }  \mC = \left(  C_\vtheta(\vx_i,\vx_j)  \right)_{i,j=1}^n,\\
  \text{for all } \va \ne 0, \;
@@ -593,7 +593,7 @@ Naturally, $2.58$ and $99\%$ can be replaced by other quantiles and credible lev
 
 The credible interval in \eqref{eqn_prob_confidence_interval} suggests how our automatic Bayesian cubature proceeds.  Integrand data is accumulated until the width of the credible interval, $\err_{\textup{CI}}$, is no greater than the error tolerance.  As $n$ increases, one expects $c_{0} - \vc^T\mC^{-1}\vc$ to decrease for well-chosen nodes, $\{\vx_i\}_{i=1}^n$. Please note that the credible interval depends on the parameters $m, s$, and $\vtheta$
 
-Note that $\err_{\textup{CI}}$ has no explicit dependence on the integrand values, even though one would intuitively expect that a larger integrand should imply a larger $\err_{\textup{CI}}$.  This is because the hyperparameters, $m, s$, and $\vtheta$, have not yet been inferred from integrand data.  After inferring the hyperparameters, $\err_{\textup{CI}}$ \emph{does reflect the size} of the integrand values. This section describes three approaches to hyperparameter estimation.
+Note that $\err_{\textup{CI}}$ has no explicit dependence on the integrand values, even though one would intuitively expect that a larger integrand should imply a larger $\err_{\textup{CI}}$.  This is because the hyperparameters, $m, s$, and $\vtheta$, have not yet been inferred from integrand data.  After inferring the hyperparameters, $\err_{\textup{CI}}$ \emph{does reflect the size} of the integrand values. The following next few sections describe three approaches to hyperparameter estimation.
 
 
 \Section{Empirical Bayes}  \label{sec:MLE}
@@ -634,21 +634,21 @@ s^2_{\MLE}
 The empirical Bayes estimate of $\vtheta$ balances minimizing the covariance scale factor, $s^2_{\MLE}$, against minimizing  $\det(\mC)$. 
 
 Under these estimates of the parameters, the cubature \eqref{eqn:BayesCub} and the credible interval \eqref{eqn_prob_confidence_interval} simplify to 
-\begin{align*} % \label{eqn:cubMLE}
-\hmu_\MLE  &= 
+\begin{align} % \label{eqn:cubMLE}
+\nonumber
+\hmu_\MLE  &:= 
 \left(
 \frac{ (1 - \vone^T  \mCInv\vc )  \vone }{ \vone^T \mCInv \vone}   +  \vc 
 \right)^T  \mCInv \vy, \\
 % \label{eqn:errMLE} 
+\nonumber
 \err_\MLE^2 & : = \frac{2.58^2}{n}
  \vy^T \left[ \mCInv - 
 \frac{ \mCInv \vone \vone^T \mCInv }{\vone^T\mCInv \vone}
 \right] \vy  
-(c_0 - \vc^T\mC^{-1}\vc ),
-\end{align*}
-\begin{align}
+(c_0 - \vc^T\mC^{-1}\vc ), \\
 \label{eqn_prob_CI_MLE}
-\mathbb{P}_f \left[
+\mathbb{P}_f &\left[
 |\mu-\hmu_\MLE| \leq \err_\MLE \right]  = 99\%.
 \end{align}
 Here $c_0$, $\vc$, and $\mC$ are assumed implicitly to be based on $\vtheta = \vtheta_\MLE$.   
@@ -684,16 +684,16 @@ where we used some of the results from \cite{Dong2017a}.
 This can be used with gradient descent as follows,
 \begin{align}
 \label{eqn:deep_descent}
-\theta_\ell^{(j+1)} = \theta_\ell^{(j)} - \nu \frac{\partial}{\partial \theta_\ell} \mathcal{L}(\vtheta | \vy), \quad j=0,1,\cdots
+\theta_\ell^{(j+1)} = \theta_\ell^{(j)} - \nu_\ell \frac{\partial}{\partial \theta_\ell} \mathcal{L}(\vtheta | \vy), \quad j=0,1,\cdots
 \end{align}
-where $\nu$ is the step size for the gradient descent. 
+where $\nu_\ell$ is the step size for the gradient descent. 
 
 
 
 
 \Section{Full Bayes}
 
-Rather than use maximum likelihood to determine $m$ and $s$, one can treat them as hyper-parameters with a non-informative, conjugate prior, namely $\vrho_{m,s^2}(\xi, \lambda) \propto 1/\lambda$. Then the posterior density for the integral given the data using Bayes theorem is,
+Rather than using maximum likelihood to determine $m$ and $s$, one can treat them as hyper-parameters with a non-informative, conjugate prior, namely $\vrho_{m,s^2}(\xi, \lambda) \propto 1/\lambda$. Then the posterior density for the integral given the data using Bayes theorem is,
 \begin{align*}
 \MoveEqLeft[1]{\rho_{\mu}(z | \vf = \vy)} \\
 & \propto \int_{0}^\infty \int_{-\infty}^\infty \rho_{\mu}(z | \vf = \vy, m = \xi, s^2 = \lambda)  \rho_{\vf}(\vy | \xi, \lambda ) \rho_{m, s^2}(\xi, \lambda) \, \D \xi \D \lambda \\
@@ -800,7 +800,7 @@ Because the shape parameter, $\vtheta$, enters the definition of the covariance 
 
 
 \Subsection{Full Bayes with general prior}
-Rather than use non-informative, conjugate prior one can use general prior, namely $\vrho_{m,s^2}(\xi, \lambda) \propto g(\lambda)$, which can generalize to any general function. One would be curious if the posterior function can be obtained from the data, i.e, the integrand values.
+Rather than using non-informative, conjugate prior one can use general prior, namely $\vrho_{m,s^2}(\xi, \lambda) \propto g(\lambda)$, which can generalize to any general function. One would be curious if the posterior function can be obtained from the data, i.e, the integrand values.
 The posterior density for the integral given the data using Bayes theorem is,
 \begin{align*}
 \MoveEqLeft[1]{\rho_{\mu}(z | \vf = \vy)} \\
@@ -1052,16 +1052,14 @@ s^2 &= \var[f(\vx_i ) | \vf_{-i} = \vy_{-i}] a_{ii} \\
 \end{align*}
 
 The confidence interval based on generalized cross-validation corresponds to \eqref{eqn_prob_confidence_interval} with the GCV estimates for $m$, $s$, and $\vtheta$:
-\begin{gather}
+\begin{align}
 \label{GCVerr}
 \err_{\textup{GCV}} = 2.58 s_{\textup{GCV}}  \sqrt{c_0 - \vc^T\mC^{-1}\vc}, \\
 \label{GCVCI}
 \mathbb{P}_f \left[
 |\mu-\hmu_{\textup{GCV}}| \leq \err_{\textup{GCV}} 
 \right] = 99\%.
-\end{gather}
-
-
+\end{align}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 The methods developed for hyperparameter estimation from the previous sections are summarized as a theorem below:
@@ -1201,7 +1199,7 @@ Please note that $f_{\PEAKY}(\vx_i) = f_{\NICE}(\vx_i) = f_{\TRUE}(\vx_i) $ for 
 	%\begin{subfigure}[h]{0.48\linewidth}
 	\includegraphics[width=0.8\linewidth]{cone_bayes_f_real}
 	%\end{subfigure}
-	\caption{Example integrands 1) $f_{\NICE}$, a smooth function, 2) $f_{\PEAKY}$, a peaky function. The function values $f_{\PEAKY}(\vx_i) = f_{\NICE}(\vx_i) = f_{\TRUE}(\vx_i) $ for $i=1, \cdots, n$.}
+	\caption{Example integrands 1) $f_{\NICE}$, a smooth function, 2) $f_{\PEAKY}$, a peaky function. The function values $f_{\PEAKY}(\vx_i) = f_{\NICE}(\vx_i) = f_{\TRUE}(\vx_i) $ for $i=1, \cdots, n$. This plot can be conditionally reproduced using \code{DemoCone.m}}
 	\label{fig:cone_bayes_functions}
 \end{figure}
 \begin{figure}[ht]
@@ -1209,7 +1207,7 @@ Please note that $f_{\PEAKY}(\vx_i) = f_{\NICE}(\vx_i) = f_{\TRUE}(\vx_i) $ for 
 	%\begin{subfigure}[h]{0.48\linewidth}
 	\includegraphics[width=0.8\linewidth]{cone_bayes_mu_pdf}
 	%\end{subfigure}
-	\caption{Probablity distributions showing the relative position integral of a smooth and a peaky function. $f_{\NICE}$ lies within the center 99\% of the confidence interval, and $f_{\PEAKY}$ lies on the outside of 99\% of  the confidence interval.}
+	\caption{Probability distributions showing the relative integral position of a smooth and a peaky function. $f_{\NICE}$ lies within the center 99\% of the confidence interval, and $f_{\PEAKY}$ lies on the outside of 99\% of  the confidence interval. This plot can be conditionally reproduced using \code{DemoCone.m}}
 	\label{fig:cone_bayes_posterior}
 \end{figure}
 % Done: \JRNote{Use standard deviation $\sigma$ in x-axis.  $f_{\NICE}$ using kernel approximation} 
@@ -1336,19 +1334,19 @@ This approach transforms a $d'$ dimensional integral into a $d=d'-1$ dimensional
 	%\begin{subfigure}[h]{0.48\linewidth}
 		\includegraphics[width=0.75\linewidth]{GenzFunc_varTx_none}
 	%\end{subfigure}
-	\caption{The $d=3$ multivarivate normal probability transformed to an integral of $f_{\text{Genz}}$ with  $d=2$. This plot can be reproduced using \code{IntegrandPlots.m} in GAIL.}
+	\caption{The $d=3$ multivariate normal probability transformed to an integral of $f_{\text{Genz}}$ with  $d=2$. This plot can be reproduced using \code{IntegrandPlots.m} in GAIL.}
 	\label{fig:MVN_Genz}
 \end{figure}
 
 We use the following parameter values in the simulation: 
 \begin{equation*}
-d = 3, \quad \va = \begin{pmatrix}
+d = 3, \quad \va = \begin{pmatrix}[1]
 -6 \\ -2 \\ -2
 \end{pmatrix}, \quad 
-\vb = \begin{pmatrix}
+\vb = \begin{pmatrix}[1]
 5 \\ 2 \\ 1
 \end{pmatrix} , \quad 
-\mL = \begin{pmatrix}
+\mL = \begin{pmatrix}[1]
 4 & 1 & 1 \\ 0 & 1 & 0.5 \\ 0 & 0 & 0.25
 \end{pmatrix}.
 \end{equation*}
@@ -1367,7 +1365,7 @@ d = 3, \quad \va = \begin{pmatrix}
 	\caption{Multivariate Gaussian probability estimated using Mat\'ern kernel in $d=2$ using empirical Bayes stopping criterion. Computation time rapidly increases with increase of $n$. This figure can be conditionally reproduced using \code{matern\_guaranteed\_plots.m} in GAIL.}
 	\label{fig:MVN_Metern_d2b2_time_growth}
 \end{figure}
-The node sets are randomly scrambled Sobol' points \cite{DicEtal14a,DicPil10a}.  The results are for 400 randomly chosen $\varepsilon$ in the interval $[10^{-5}, 10^{-2}]$ as shown in \figref{fig:MVN_Metern_d2b2}. In each run, the nodes are randomly scrambled.  We  observe the algorithm meets the error criterion 95\% of the time even-though we used 99\% credible intervals.
+The node sets are randomly scrambled Sobol' points \cite{DicEtal14a,DicPil10a}.  The results are for 400 randomly chosen $\varepsilon$ in the interval $[10^{-5}, 10^{-2}]$ as shown in \figref{fig:MVN_Metern_d2b2}. In each run, the nodes are randomly scrambled.  We  observe the algorithm meets the error criterion 95\% of the time even though we used 99\% credible intervals.
 One possible explanation is that the matrix inversions in the algorithm are ill-conditioned leading to numerical inaccuracies.  Another possible explanation is that this Mat\'ern covariance kernel is not a good match for the integrand.
 
 %with Intel i7 3630QM and 16GB RAM memory

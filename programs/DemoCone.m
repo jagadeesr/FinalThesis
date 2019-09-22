@@ -35,6 +35,7 @@ assert(all((ftrue(xpts_un)-real(fpeak(xpts_un)))==0))
 
 if dim==1
   figH3 = figure;
+  set(figH3, 'units', 'inches', 'Position', [7 2 8 6])
   xplot = [0:0.001:1]';
   
   shape = 0.9;
@@ -54,7 +55,7 @@ if dim==1
   xlabel('\( x \)','Interpreter','latex')
   ylabel('\( f(x) \)', 'Interpreter','latex')
   legend({'$f_{\textup{nice}}$', '$f_{\textup{peaky}}$', ...
-    '$f_{\textup{nice}} = f_{\textup{peaky}}$'},...
+    '$f_{\textup{smooth}} = f_{\textup{nice}} = f_{\textup{peaky}}$'},...
     'Interpreter','latex', 'location','best') % R2018a and earlier
   
   saveas(figH3, sprintf('cone_bayes_f_real.png'))
@@ -90,6 +91,8 @@ gauss = @(x) (1/sqrt(2*pi*s2_MLE))*exp(-((x-m_MLE).^2)/(2*s2_MLE));
 xa = -4:0.001:6;
 
 figH4 = figure;
+set(figH4, 'units', 'inches', 'Position', [7 2 8 5])
+
 plot(xa, gauss((xa*sqrt(s2_MLE)+m_MLE)), 'k')
 hold on
 plot( (mu_peak-m_MLE)/sqrt(s2_MLE), 0, 'r.')
