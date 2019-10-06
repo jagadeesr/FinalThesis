@@ -1,32 +1,36 @@
 
+*.nav
+*.snm
+*.out
 *.aux
-
 *.blg
-
 *.log
-
 *.gz
-
 *.lof
-
 *.bak
-
 *.toc
+*.bbl
+*.lot
+*.asv
 
 figures/backup/cone_bayes_f_real\.png
-
 figures/backup/cone_bayes_mu_pdf\.png
 
 del/
+temp/
 
 figures/backup/
 
 finalThesis2018 - backup Jun11\.tex
 
-*.bbl
-
-*.lot
-
-*.asv
-
-temp/
+finalThesis2018 - Sep-8.pdf
+finalThesis2018 - Sep-1.pdf
+finalThesis2018 - Aug-20.pdf
+finalThesis2018 - Aug22.pdf
+finalThesis2018 - Jul29.pdf
+finalThesis2018 - Jul28.pdf
+finalThesis2018 - Jul25.pdf
+finalThesis_Jul19_Jagadees.pdf
+figures/USobolPoints-eps-converted-to.pdf
+finalThesis Sep14.pdf
+Jagadeeswaran-Thesis-Sep21-2019.pdf
