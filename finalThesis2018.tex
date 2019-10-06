@@ -660,7 +660,7 @@ Here $c_0$, $\vc$, and $\mC$ are assumed implicitly to be based on $\vtheta = \v
 \Subsection{Gradient descent to find optimal shape parameter} \label{grad_descent_MLE}
 The equation specifying $\vtheta_\MLE$ as defined in \eqref{eqn:thetaMLE} does not say how the parameter search can be done. There exist empirical algorithms \cite{Bre73, For77} that one could use to accomplish the same.
 % Searching for $\vtheta_\MLE$ as defined in \eqref{eqn:thetaMLE} is not very efficient. 
-Since the objective function is known we could compute the gradient.
+	Since the objective function is known we could compute the gradient.
 Using the gradient of $l(s,m,\vtheta | \vy)$, one can apply optimization techniques such as gradient descent to find the optimal value faster. Let us define the objective function for the same purpose by excluding the negative sign, which modifies the problem to become a minimization of
 \begin{align*}
 \mathcal{L}(\vtheta | \vy)
@@ -1673,23 +1673,23 @@ We use the notation $\bar{\vlambda}_{(\ell)} = \mV^H \bar{\vC_1}_{(\ell)}$ to de
 \end{align*}
 The goal is to compute the derivative of the objective function faster. First, let's rewrite the objective function from \eqref{eqn_MLE_loss_func_optimized_2} in two parts,
 \begin{align*}
-\mathcal{L}(\vtheta | \vy)_{\MLE} &= 
+\mathcal{L}_{\MLE}(\vtheta | \vy) &= 
 \underbrace{\frac{1}{n}  \log(\det\, \mC)}_{\mathcal{L}_{\abs{\mC}}} + \underbrace{\log\left((\vy-m_\MLE\vone)^T\mCInv(\vy-m_\MLE\vone) \right)}_{\mathcal{L}_{\vy}},
 \\ &=: \mathcal{L}_{\abs{\mC}} + \mathcal{L}_{\vy}.
 \end{align*}
 Now, take the derivative:
 \begin{align*}
-\frac{\partial}{\partial \theta_\ell} \mathcal{L}(\vtheta | \vy)
+\frac{\partial}{\partial \theta_\ell} \mathcal{L}_{\MLE}(\vtheta | \vy)
 &=  \frac{\partial}{\partial \theta_\ell} \mathcal{L}_{\abs{\mC}} + \frac{\partial}{\partial \theta_\ell} \mathcal{L}_{\vy} \;.
 \end{align*}
 Now we tackle the individual terms,
 \begin{align*}
-\frac{\partial}{\partial \theta_\ell} \mathcal{L}_{\abs{\mC}} &= \frac{\partial}{\partial \theta_\ell}  \frac{1}{n} \log(\det\, \mC) ,
+\frac{\partial}{\partial \theta_\ell} \mathcal{L}_{\abs{\mC}} &= \frac{\partial}{\partial \theta_\ell}  \frac{1}{n} \log(\det\, \mC) 
 \\ & = \frac 1n \trace{\left( \mCInv \frac{\partial \mC}{\partial \vtheta_\ell} \right)}
 = \frac{1}{n}
 \trace{\left( \mV {\mLambda}^{-1} \mV^H
 	\frac 1n \mV \overline{\mLambda}_{(\ell)} \mV^H
-	\right)},
+	\right)}
 \\
 & = \frac{1}{n}
 \trace{\left(
@@ -1714,14 +1714,14 @@ Part of the $\mathcal{L}_{\vy}$ was already simplified using the fast Bayesian t
 Using the above result,
 \begin{align*}
 \frac{\partial}{\partial \theta_\ell} \mathcal{L}_{\vy} 
-&= \frac{\partial}{\partial \vtheta_\ell} \log\left(\frac{1}{n} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i} \right) ,
+&= \frac{\partial}{\partial \vtheta_\ell} \log\left(\frac{1}{n} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i} \right)
 \\ 
 &= \left(\frac{1}{n} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i}\right)^{-1}
 \;
-\frac{\partial}{\partial \vtheta_\ell} \left(\frac{1}{n} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i} \right) ,
+\frac{\partial}{\partial \vtheta_\ell} \left(\frac{1}{n} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i} \right)
 \\ &= \left(
 \frac{1}{n} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i} \right)^{-1} \frac{1}{n} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2}
-\left( -\frac{\partial \lambda_i}{\partial \vtheta_\ell} \right),
+\left( -\frac{\partial \lambda_i}{\partial \vtheta_\ell} \right)
 \\ &= -\left(
 \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i} \right)^{-1} 
 \left( \sum_{i=2}^n \abs{\widetilde{y}_i}^2 \frac{ \bar{ \lambda}_{i(\ell)} }{\lambda_i^2}
@@ -1730,7 +1730,7 @@ Using the above result,
 Finally, using the above results,
 \begin{align}
 \label{eqn:deriv_obj_func_MLE}
-\frac{\partial}{\partial \theta_\ell} \mathcal{L}(\vtheta | \vy)_{\MLE}
+\frac{\partial}{\partial \theta_\ell} \mathcal{L}_{\MLE}(\vtheta | \vy)
 &=  \frac 1n \sum_{i=1}^{n} \frac{\bar{\lambda}_{i(\ell)}}{\lambda_i}
 - \left({ \sum_{i=2}^n \frac{\abs{\tvy_i}^2 \bar{\lambda}_{i(\ell)}}{\lambda_i^2}}\right)
 \left( {\sum_{i=2}^n \frac{\abs{\tvy_i}^2}{\lambda_\ell}} \right)^{-1},
@@ -1745,7 +1745,7 @@ where $\bar{\lambda}_{i(\ell)}$ is the derivative of the $i$th eigenvalue of $\m
 \iffalse
 If $m=0$ assumption can be made,
 \begin{align*}
-\frac{\partial}{\partial \theta_\ell} \mathcal{L}(\vtheta | \vy)_{\MLE} 
+\frac{\partial}{\partial \theta_\ell} \mathcal{L}_{\MLE}(\vtheta | \vy) 
 &=  \frac 1n \sum_{i=1}^{n} \frac{\bar{\lambda}_{i(\ell)}}{\lambda_i}
 - \left({ \sum_{i=1}^n \frac{\abs{\tvy_i}^2 \bar{\lambda}_{i(\ell)}}{\lambda_i^2}}\right)
 \left( {\sum_{i=1}^n \frac{\abs{\tvy_i}^2}{\lambda_\ell}} \right)^{-1}.
@@ -1817,7 +1817,7 @@ Moreover, under further assumption \eqref{addAssump} it follows that
 &= \hmu_\MLE = \hmu_{\textup{full}} =
 \frac{\widetilde{y}_1}{n} = \frac 1n \sum_{i=1}^n y_i,\\
 \err_{\textup{GCV}} & =
-\frac{2.58}{n}\left\{\sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2}  \left [ \frac 1n \sum_{i=1}^n \frac{1}{\lambda_i} \right]^{-1}  \times
+\frac{2.58}{n}\left\{\sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2}  \left [ \frac 1n \sum_{i=1}^n \frac{1}{\lambda_i} \right]^{-1}  
 \left( 1 -  \frac{n}{\lambda_1} \right)  
 \right\}^{1/2}.
 \end{align*}
@@ -1843,15 +1843,15 @@ In this case too, $\hmu$ is simply the sample mean.
 
 
 \Subsection{Gradient of the objective function}
-Using the results obtained from the Section \secref{deriv_obj_func_MLE} with empirical Bayes, one can reduce the computational cost of the derivative of the objective function in \eqref{eqn:thetaGCV_fast},
+Using the results obtained from the Section \ref{deriv_obj_func_MLE} with empirical Bayes, one can reduce the computational cost of the derivative of the objective function in \eqref{eqn:thetaGCV_fast},
 \begin{align*}
-\mathcal{L}(\vtheta | \vy)_\GCV
+\mathcal{L}_\GCV(\vtheta | \vy)
 &= \log \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2} 
 \right) -2\log\left( \sum_{i=1}^n \frac{1}{\lambda_i} \right).
 \end{align*}
 Using the similar techniques from \secref{deriv_obj_func_MLE}, the derivative of the objective function w.r.t $\theta_\ell$:
 \begin{align*}
-& \frac{\partial}{\partial \theta_\ell}  \mathcal{L}(\vtheta | \vy)_\GCV
+& \frac{\partial}{\partial \theta_\ell}  \mathcal{L}_\GCV(\vtheta | \vy)
 \\
 &= \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2} \right)^{-1}
 \frac{\partial}{\partial \theta_\ell} \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2} \right)
@@ -1871,7 +1871,7 @@ Using the similar techniques from \secref{deriv_obj_func_MLE}, the derivative of
 \end{align*}
 Thus,
 \begin{multline}
-\frac{\partial}{\partial \theta_\ell}  \mathcal{L}(\vtheta | \vy)_\GCV
+\frac{\partial}{\partial \theta_\ell}  \mathcal{L}_\GCV(\vtheta | \vy)
 \label{eqn:deriv_obj_func_full}
 = -2 \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2} \right)^{-1}
 \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2 \bar{\lambda}_{i(\ell)} }{\lambda_i^3}    \right) \\
@@ -1898,8 +1898,8 @@ In this research, we use product kernels in the demonstrations and numerical imp
 C_\vtheta(\vt, \vx) = 
 \prod_{\ell=1}^d \biggl[ 1 - \eta_\ell \; \mathfrak{C}(x_\ell,t_\ell) \biggr]
 \end{align}
-% $ C_\vtheta(\vt, \vx) = \prod_{l=1}^d [ 1 - \eta_l \mathfrak{C}(x_l,t_l) ]$
-where $\eta_\ell$ is called shape parameter in the $\ell$th variable for $\ell=1,\cdots,d$, and $\mathfrak{C}$ is some positive definite function. Our goal is to compute $\bar{\lambda}_{i(\ell)}$ for which the kernel derivative is necessary. The derivative of the product kernels can be obtained easily. Please note that $\vtheta$ denotes all the hyper parameters of the kernel $C$ where $\eta$ is one of them and called the shape parameter.
+% $ C_{\vtheta}(\vt, \vx) = \prod_{l=1}^d [ 1 - \eta_l \mathfrak{C}(x_l,t_l) ]$
+where $\eta_\ell$ is called shape parameter in the $\ell$th variable for $\ell=1,\cdots,d$, and $\mathfrak{C}$ is chosen such that to ensure $C_{\vtheta}$ is symmetric and positive definite. Our goal is to compute $\bar{\lambda}_{i(\ell)}$ for which the kernel derivative is necessary. The derivative of the product kernels can be obtained easily. Please note that $\vtheta$ denotes all the hyper parameters of the kernel $C$ where $\eta$ is one of them and called the shape parameter.
 
 \Subsection{Derivative of the product kernel when $\eta_1=\cdots=\eta_d=\eta$}
 \label{sec:deriv_of_kernel}
