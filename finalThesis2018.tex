@@ -580,9 +580,9 @@ A credible interval for the integral is given by
 \begin{subequations} \label{eqn_prob_confidence_interval}
 	\begin{gather}
 	\mathbb{P}_f \left[
-	|\mu-\hmu| \leq \err_{\textup{CI}}
+	|\mu-\hmu| \leq \err_{\CI}
 	\right] = 99\%, \\
-	\err_{\textup{CI}} = 2.58 s \sqrt{c_{0} - \vc^T\mC^{-1}\vc}.
+	\err_{\CI} = 2.58 s \sqrt{c_{0} - \vc^T\mC^{-1}\vc}.
 	\end{gather}
 \end{subequations}
 Naturally, $2.58$ and $99\%$ can be replaced by other quantiles and credible levels.
@@ -591,9 +591,9 @@ Naturally, $2.58$ and $99\%$ can be replaced by other quantiles and credible lev
 \Section{Hyperparameter Estimation}
 \label{sec:stopping_criteria}
 
-The credible interval in \eqref{eqn_prob_confidence_interval} suggests how our automatic Bayesian cubature proceeds.  Integrand data is accumulated until the width of the credible interval, $\err_{\textup{CI}}$, is no greater than the error tolerance.  As $n$ increases, one expects $c_{0} - \vc^T\mC^{-1}\vc$ to decrease for well-chosen nodes, $\{\vx_i\}_{i=1}^n$. Please note that the credible interval depends on the parameters $m, s$, and $\vtheta$
+The credible interval in \eqref{eqn_prob_confidence_interval} suggests how our automatic Bayesian cubature proceeds.  Integrand data is accumulated until the width of the credible interval, $\err_{\CI}$, is no greater than the error tolerance.  As $n$ increases, one expects $c_{0} - \vc^T\mC^{-1}\vc$ to decrease for well-chosen nodes, $\{\vx_i\}_{i=1}^n$. Please note that the credible interval depends on the parameters $m, s$, and $\vtheta$
 
-Note that $\err_{\textup{CI}}$ has no explicit dependence on the integrand values, even though one would intuitively expect that a larger integrand should imply a larger $\err_{\textup{CI}}$.  This is because the hyperparameters, $m, s$, and $\vtheta$, have not yet been inferred from integrand data.  After inferring the hyperparameters, $\err_{\textup{CI}}$ \emph{does reflect the size} of the integrand values. The following next few sections describe three approaches to hyperparameter estimation.
+Note that $\err_{\CI}$ has no explicit dependence on the integrand values, even though one would intuitively expect that a larger integrand should imply a larger $\err_{\CI}$.  This is because the hyperparameters, $m, s$, and $\vtheta$, have not yet been inferred from integrand data.  After inferring the hyperparameters, $\err_{\CI}$ \emph{does reflect the size} of the integrand values. The following next few sections describe three approaches to hyperparameter estimation.
 
 
 \Section{Empirical Bayes}  \label{sec:MLE}
@@ -1108,7 +1108,7 @@ Under these three approaches, we have the following:
 	\label{eqn:muCV}
 	\hmu_{\GCV}
 	& = \left(\frac{(1 - \vone^T  \mCthetaInv\vc) \mCthetaInv \vone}{\vone^T \mC_\vtheta^{-2} \vone} + \vc \right)^T \mCthetaInv \vy.
-	\intertext{The credible intervals widths, $\err_{\textup{CI}}$, are given by}
+	\intertext{The credible intervals widths, $\err_{\CI}$, are given by}
 	\label{eqn:err_MLEGCV}
 	\err_{\mathsf{x}} & = 2.58 s_{\mathsf{x}} \sqrt{c_{0} - \vc^T\mCthetaInv\vc }, \qquad \mathsf{x} \in \{\MLE, \GCV\},  \\ 
 	\err_{\textup{full}} 
@@ -1139,18 +1139,18 @@ In this research we assume that the integrand belongs to a cone of well-behaved 
 Suppose that 
 \begin{align}
 \label{eqn:cone-homogenity}
-\abs{\mu(f) - \hmu_n(f)} \le \err_{\textup{CI}} (f(\vx_1), \cdots, f(\vx_n))
+\abs{\mu(f) - \hmu_n(f)} \le \err_{\CI} (f(\vx_1), \cdots, f(\vx_n))
 \end{align}
-for some $f$, which it is 99\% of the time under our hypothesis. Also note that our $\err_{\textup{CI}}$ \eqref{eqn:err_MLEGCV} \eqref{FJH:eq:errFull} are positively homogeneous functions, meaning, 
+for some $f$, which it is 99\% of the time under our hypothesis. Also note that our $\err_{\CI}$ \eqref{eqn:err_MLEGCV} \eqref{FJH:eq:errFull} are positively homogeneous functions, meaning, 
 \begin{align*}
-\err_{\textup{CI}} (a y_1, \cdots, a y_n) = \abs{a} \err_{\textup{CI}} ( y_1, \cdots,  y_n).
+\err_{\CI} (a y_1, \cdots, a y_n) = \abs{a} \err_{\CI} ( y_1, \cdots,  y_n).
 \end{align*}
 One can verify the homogeneity of \eqref{eqn:err_MLEGCV} and \eqref{FJH:eq:errFull} easily.
 Thus if $f$ satisfies \eqref{eqn:cone-homogenity}, then
 \begin{align*}
 \abs{\mu(af) - \hmu_n(af)} &= \abs{a} \abs{\mu(f) - \hmu_n(f)} \\
-& \le \abs{a} \err_{\textup{CI}} (f(\vx_1), \cdots, f(\vx_n) ) \\
-& = \err_{\textup{CI}} (a f(\vx_1), \cdots, a f(\vx_n))
+& \le \abs{a} \err_{\CI} (f(\vx_1), \cdots, f(\vx_n) ) \\
+& = \err_{\CI} (a f(\vx_1), \cdots, a f(\vx_n))
 \end{align*}
 for all real $a$. Thus the set of all $f$ satisfying \eqref{eqn:cone-homogenity} is a \emph{cone}, $\mathscr{C}$. Cones of functions satisfy the property that if $f \in \mathscr{C}$ then $af \in \mathscr{C}$.
 
@@ -1159,22 +1159,22 @@ for all real $a$. Thus the set of all $f$ satisfying \eqref{eqn:cone-homogenity}
 
 
 \iffalse
-Given the data driven error bound $\err_{\textup{CI}} = \err_{\textup{CI}}(f(\vx_1),\dots,f(\vx_n))$,
+Given the data driven error bound $\err_{\CI} = \err_{\CI}(f(\vx_1),\dots,f(\vx_n))$,
 \begin{align*}
-\abs{\mu(f) - \hmu_n(f)} \le \err_{\textup{CI}} (f(\vx_1), \dots, f(\vx_n)), \quad \forall f \in \mathscr{C}
+\abs{\mu(f) - \hmu_n(f)} \le \err_{\CI} (f(\vx_1), \dots, f(\vx_n)), \quad \forall f \in \mathscr{C}
 \end{align*}  
 where the cone of functions is defined as $\mathscr{C} = \{f : f \in \mathscr{C} \Rightarrow a f \in \mathscr{C} \}$. More specifically, if a function $f$ belongs to $\mathscr{C}$, then any function obtained by a constant multiplication, $af$, also belongs to the cone. 
 This property is very useful since,
 \begin{align*}
 \abs{\mu(a f) - \hmu_n(a f)} & = \abs{a} \abs{\mu(f) - \hmu_n(f)} \\
-& \le \abs{a} \err_{\textup{CI}} (f(\vx_1), \dots, f(\vx_n)) \\
-& = \err_{\textup{CI}} (a f(\vx_1), \dots, a f(\vx_n)).
+& \le \abs{a} \err_{\CI} (f(\vx_1), \dots, f(\vx_n)) \\
+& = \err_{\CI} (a f(\vx_1), \dots, a f(\vx_n)).
 \end{align*}
-This is due to the fact that the error bound $\err_{\textup{CI}}$ is homogeneous, i.e., 
+This is due to the fact that the error bound $\err_{\CI}$ is homogeneous, i.e., 
 \begin{align*}
-\err_{\textup{CI}}(a f(\vx_1),\dots, a f(\vx_n)) = \abs{a} \err_{\textup{CI}}(f(\vx_1),\dots, f(\vx_n)).
+\err_{\CI}(a f(\vx_1),\dots, a f(\vx_n)) = \abs{a} \err_{\CI}(f(\vx_1),\dots, f(\vx_n)).
 \end{align*}
-If the integrand is multiplied by a constant, say $a=45$, then the integral error is also multiplied by the same constant $a=45$, but the factor $\err_{\textup{CI}}$ which depends on the characteristic of $f$ does not change.
+If the integrand is multiplied by a constant, say $a=45$, then the integral error is also multiplied by the same constant $a=45$, but the factor $\err_{\CI}$ which depends on the characteristic of $f$ does not change.
 \fi
 
 
@@ -1182,9 +1182,9 @@ In the context of Bayesian cubature, one can explain the cone concept beginning 
 Let $f \sim \mathcal{GP}$, be an instance of a Gaussian stochastic process:
 \begin{align*}
 \mathbb{P}_f \left[
-|\mu(f)-\hmu_n(f)| \leq \err_{\textup{CI}}(f) \right] \ge 99\%.
+|\mu(f)-\hmu_n(f)| \leq \err_{\CI}(f) \right] \ge 99\%.
 \end{align*}
-This can be interpreted as $|\mu(f)-\hmu_n(f)| \leq \err_{\textup{CI}}(f)$ with 99\% confidence. If $f$ is in the 99\% middle of the sample space with $f(\vx_i) = y_i$ then $af$ is also in the middle 99\% of the sample space with $a f(\vx_i) = a y_i$.
+This can be interpreted as $|\mu(f)-\hmu_n(f)| \leq \err_{\CI}(f)$ with 99\% confidence. If $f$ is in the 99\% middle of the sample space with $f(\vx_i) = y_i$ then $af$ is also in the middle 99\% of the sample space with $a f(\vx_i) = a y_i$.
 
 We demonstrate the credible interval using the following example. For this purpose, choose a smooth and periodic integrand $f_{\TRUE}(\vx) = \exp(\sum_{\ell=1}^{d} \cos(2\pi x_\ell))$ and another integrand $f_{\PEAKY}(\vx) = f_{\TRUE} + a_{\PEAKY} f_{\NOISE}$ where $a_{\PEAKY} \in \reals$. 
 % Here $a_{\PEAKY} \in \reals, a_{\NICE} \in \reals$, and 
@@ -1483,7 +1483,7 @@ which implies that $c_{0 \vtheta} = 1$ and $\vc_{\vtheta} = \vone$.  Under \eqre
 \vc^T\mCInv \vone =
 \vc^T\mCInv \vc = \frac{n}{\lambda_1}.
 \end{equation*}
-We use the fast Bayesian transform to speedup the computation of the hyperparameter $\vtheta$, the credible interval width $\err_{\textup{CI}}$, and the integral estimate $\hmu$ that we presented in Theorem~\ref{thm:param} as shown next.
+We use the fast Bayesian transform to speedup the computation of the hyperparameter $\vtheta$, the credible interval width $\err_{\CI}$, and the integral estimate $\hmu$ that we presented in Theorem~\ref{thm:param} as shown next.
 \iftrue
 The assumptions and results in this chapter lead to the following theorem.
 
@@ -3578,13 +3578,13 @@ This shows the $\err_\GCV$ is more aggressive stopping criterion than $\err_\MLE
 		$\varepsilon>0$; the positive initial sample size, $n_0$, that is a power of $2$;
 		the maximum sample size $n_{\textup{max}}$
 		
-		\State $n \gets n_0, \; n' \gets 0, \; \err_{\textup{CI}} \gets \infty$
+		\State $n \gets n_0, \; n' \gets 0, \; \err_{\CI} \gets \infty$
 		
-		\While{$\err_{\textup{CI}} > \varepsilon$ and $n \le n_{\textup{max}}$}
+		\While{$\err_{\CI} > \varepsilon$ and $n \le n_{\textup{max}}$}
 		
 		\State\label{LoopStartA2}Generate $\{ \vx_i\}_{i=n' + 1}^{n}$ and sample $\{f(\vx_i)\}_{i=n'+1}^{n}$
 		\State Compute $\vtheta$ by \eqref{eqn_MLE_loss_func_optimized_2} or \eqref{thetaGCV} by using the techniques from Chapter~\ref{sec:shift_invariant_kernel} or \ref{sec:sobol_walsh}
-		\State Compute $\err_{\textup{CI}}$  according to \eqref{fastStoppingCriterionMLE}, \eqref{fastStoppingCriterionFull}, or \eqref{fastStoppingCriterionGCV}  by using the techniques from Chapter~\ref{sec:shift_invariant_kernel} or \ref{sec:sobol_walsh}
+		\State Compute $\err_{\CI}$  according to \eqref{fastStoppingCriterionMLE}, \eqref{fastStoppingCriterionFull}, or \eqref{fastStoppingCriterionGCV}  by using the techniques from Chapter~\ref{sec:shift_invariant_kernel} or \ref{sec:sobol_walsh}
 		
 		\State	$n' \gets n, \; n \gets 2n'$
 		
@@ -3592,7 +3592,7 @@ This shows the $\err_\GCV$ is more aggressive stopping criterion than $\err_\MLE
 		
 		\State Update sample size to compute $\hmu$, $n \gets n'$
 		\State Compute $\hmu$, the approximate integral,   according to \eqref{muhatGCV-FB-MLE-Simple}
-		\State \Return $\hmu, \; n$  and $\err_{\textup{CI}}$
+		\State \Return $\hmu, \; n$  and $\err_{\CI}$
 	\end{algorithmic}
 \end{algorithm}
 

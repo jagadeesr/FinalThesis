@@ -14,8 +14,7 @@
 \usepackage{algorithm}
 \usepackage{algorithmicx}% http://ctan.org/pkg/algorithm
 \usepackage{algpseudocode}% http://ctan.org/pkg/algorithmicx
-
-
+\usepackage{mathrsfs}
 
 
 %%%%%
@@ -84,6 +83,11 @@ Adviser: Prof. Fred J Hickernell}
 \newcommand{\GCV}{\textup{GCV}}
 \newcommand{\full}{\textup{full}}
 \newcommand{\CI}{\textup{CI}}
+\newcommand{\NICE}{\textup{NICE}}
+\newcommand{\PEAKY}{{\textup{PEAKY}}}
+\newcommand{\NOISE}{{\textup{NOISE}}}
+\newcommand{\TRUE}{\textup{TRUE}}
+
 \newcommand{\vC}{\bvec{C}}
 \newcommand{\vW}{\bvec{W}}
 
@@ -119,6 +123,8 @@ Adviser: Prof. Fred J Hickernell}
 \newcommand{\vPsi}{\bm{ \Psi}}
 \renewcommand{\ty}{\widetilde{y}}
 \renewcommand{\vtheta}{{\bm{\theta}}}
+\newcommand{\vzeta}{{\bm{\zeta}}}
+
 \newcommand{\mCthetaInv}{{\mathsf{C}^{-1}_{\vtheta}}}
 
 \newcommand{\pause}{}
@@ -332,7 +338,7 @@ The goal of this work is to
 \vspace*{-4ex}
 \begin{itemize}
 \item How to choose \alert{$\{\vx_i\}_{i=1}^n$}, and
-\alert{$\{w_i\}_{i=1}^n$} to make $\abs{\mu - \hmu_n}$ small? what is $\errn$? \alert{(Bayesian posterior error)}
+\alert{$\{w_i\}_{i=1}^n$} to make $\abs{\mu - \hmu_n}$ small? what is $\err_\CI$? \alert{(Bayesian posterior error)}
 \item How to find $n$ such that $\abs{\mu - \hmu_n} \le \err_\CI \le \errtol $ ? \alert{(automatic cubature)}
 \end{itemize}
 }
@@ -458,7 +464,7 @@ s^2_{\MLE} =
 \frametitle{Parameter estimation - Full Bayes}
 \vspace*{-6ex}
 Treat $m$ and $s$ as hyper-parameters with a non-informative, conjugate prior, namely $\vrho_{m,s^2}(\xi, \lambda) \propto 1/\lambda$.
-Then the posterior density for the integral $\mu$ given the data is :
+Then the posterior density for the integral $\mu$ given the data is
 \vspace*{-2.0ex}
 \begin{align*}
 \rho_{\mu}(z | \vf = \vy)
@@ -469,7 +475,7 @@ Then the posterior density for the integral $\mu$ given the data is :
 \pause
 \vspace{-4ex}
 \begin{align*}
-\text{Where}: \;
+\text{Where} \;
 \\
 \mu_{\full} &= \mu_\MLE
 \\
@@ -482,6 +488,47 @@ Then the posterior density for the integral $\mu$ given the data is :
 \\ \err_{\full} &:= t_{n_j-1,0.995} \hat{\sigma}_{\full} > \err_{\MLE}
 \end{align*}
 \end{frame}
+
+
+
+
+
+
+
+
+\begin{frame}
+	\frametitle{Parameter estimation - Full Bayes - General prior}
+	\vspace*{-6ex}
+	What if $\vrho_{m,s^2}(\xi, \lambda) \; \propto \; g( 1/\lambda )$ ?
+	
+	\begin{align*}
+	{\rho_{\mu}(z | \vf = \vy)} & \propto \mathcal{LT} \{ g(1/\cdot) \}^{(\frac{n-4}2)} \left(\chi \right) \\
+	& \propto
+	\mathcal{LT} \left\{ g({1}/{\cdot})
+	\right\}^{(\frac{n-4}2)} \left( 1 +  \frac{(z - \hmu_{\textup{full}})^2}{(n-1)\widehat{\sigma}_{\textup{full}}^2}\right) \quad % \text{by} \quad \eqref{eqn:full_bayes_student_short}.
+	\end{align*}
+	Thus, $\rho_{\mu}(z | \vf = \vy)$  is proportional to $\left(\frac{n-4}{2}\right)$th derivative of the Laplace transform of $g(1/\cdot)$ evaluated at $\chi$, where $\chi \propto { 1 +  \frac{(z - \hmu_{\textup{full}})^2}{(n-1)\widehat{\sigma}_{\textup{full}}^2} } $.
+	
+	Our motivation to experiment with the general prior was to show that it may
+	be possible to infer the prior from the integrand samples.
+\end{frame}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -939,10 +986,10 @@ s^2_{\GCV}  =  \frac 1{n} \sum_{i=2}^n \frac{\abs{\ty_i}^2}{\lambda_i^2}  \left 
 
 
 \subsection{Error Bound}
-\frame{
-\frametitle{Computing the error bound $\err_{\CI}$ and $\hmu$ faster }
+
+\begin{frame}{Computing the error bound $\err_{\CI}$ and $\hmu$ faster}
 \vspace{-5ex}
-Using the properties of the \alert{fast transform kernel}, the error bound \alert{$\errn$} can be computed faster
+Using the properties of the \alert{fast Bayesian transform}, the error bound \alert{$\errn$} can be computed faster
 \vspace{-3ex} %\redroundmathbox
 \begin{subequations}
 \label{fastStoppingCriterions}
@@ -981,7 +1028,7 @@ where
 \end{align*}
 \alert{$\Order(n \log n )$ operations to compute the $\err$}.
 \alert{$\Order(n )$ operations to compute the $\hmu$}
-}
+\end{frame}
 
 
 
@@ -1084,67 +1131,6 @@ where
 %\subsection{Lattice nodes and shift invariant covariance kernels}
 \subsection{Shift invariant covariance kernels}
 
-\begin{frame}
-{Lattice nodes and shift invariant covariance kernels}
-\vspace*{-2ex}
-\begin{theorem}
-	Let $\mCtheta$ be any symmetric, positive definite, shift-invariant covariance kernel of the form 
-	%\eqref{eq:shInv}, 
-	$C_{\vtheta}(\vx,\vt) = K_{\vtheta}(\vx - \vt \bmod \vone)$,
-	where $K_{\vtheta}$ has period one in every variable. Furthermore, let $K_{\vtheta}$ be scaled to satisfy \eqref{addAssump}. When matched with rank-1 lattice data-sites, $\mCtheta$ must satisfy assumptions \eqref{fastcompAssump}. The cubature, $\hmu$, is just the sample mean. 
-	The \emph{fast Fourier transform} (FFT) can be used to expedite the estimates of $\vtheta$ in \eqref{thetaSimple} and the credible interval widths \eqref{fastStoppingCriterions} in $\Order(n \log n)$ operations. 
-\end{theorem}
-\vspace*{-2ex}
-\begin{align*}
-\redroundmathbox{
-\displaystyle{
-C_{\vtheta}(\vx, \vt) = \prod_{\ell=1}^d
-\left[
-1 - \eta_\ell  \frac{(2 \pi \sqrt{-1})^{r}}{r!} B_{r}( |{x_\ell - t_\ell}| )\right], \quad r \in 2\mathbb{N}, \quad \eta_\ell > 0, \quad \vtheta = (\bm{\eta}, r) }
-}
-\end{align*}
-\vspace*{-0ex} 
-\pause
-where $B_r$ is Bernoulli polynomial of \alert{order $r$} \smallcite{OlvEtal10a}.
-We call $C_{\vtheta}$, Fourier kernel. Also this kernel has:
-\vspace*{-0ex}
-\begin{align*}
-\alert{c_0} &= \int_{[0,1]^2} C_{\vtheta} (\vx,\vt) \dvx \dvt = \alert{1}, 
-\qquad
-\alert{\vc} = \left( \int_{[0,1] } C_{\vtheta} (\vx_i,\vt) \dvt \right)_{i=1}^n = \alert{\vone}.
-% \\ \mV &= \Bigl ( \me^{2 \pi n \sqrt{-1} \phi(i-1)\phi(j-1)} \Bigr)_{i = 1}^n
-\end{align*}
-
-\end{frame}
-
-
-
-
-
-\frame{
-\frametitle{Fourier kernel}
-\vspace{-6ex}
-\begin{figure}[htp]
-    \centering
-    \begin{subfigure}[b]{0.40\textwidth}
-    \includegraphics[width=\textwidth]{"../figures/fourier_kernel r_2 shape_10by100"}
-    \end{subfigure}
-    \centering
-    \begin{subfigure}[b]{0.40\textwidth}
-    \includegraphics[width=\textwidth]{"../figures/fourier_kernel r_2 shape_90by100"}
-    \end{subfigure}
-    \centering
-    \begin{subfigure}[b]{0.40\textwidth}
-    \includegraphics[width=\textwidth]{"../figures/fourier_kernel r_4 shape_10by100"}
-    \end{subfigure}
-    \centering
-    \begin{subfigure}[b]{0.40\textwidth}
-    \includegraphics[width=\textwidth]{"../figures/fourier_kernel r_4 shape_90by100"}
-    \end{subfigure}
-\end{figure}
-}
-
-
 
 
 
@@ -1193,14 +1179,76 @@ where \alert{ $\modop{.}_1$} the fractional part, i.e, \emph{modulo 1} operator 
 
 \frame{
 \frametitle{Rank-1 Lattice points in $d=2$}
-\vspace{-5ex}
+\vspace{-6ex}
 \begin{figure}[htp]
     \includegraphics[height=5cm]{../figures/ShiftedLatticePoints}
 \end{figure}
-
 \centering\redroundmathbox{\text{
-Shift invariant kernel + Lattice points = `\emph{Symmetric circulant kernel}' matrix
+		Shift invariant kernel + Lattice points = `\emph{Symmetric circulant kernel}' matrix
 }}
+}
+
+
+
+
+
+\begin{frame}
+	{Lattice nodes and shift invariant covariance kernels}
+	\vspace*{-6ex}
+	\begin{align*}
+	\redroundmathbox{
+		\displaystyle{
+			C_{\vtheta}(\vx, \vt) = \prod_{\ell=1}^d
+			\left[
+			1 - \eta_\ell  \frac{(2 \pi \sqrt{-1})^{r}}{r!} B_{r}( |{x_\ell - t_\ell}| )\right], \quad r \in 2\mathbb{N}, \quad \eta_\ell > 0, \quad \vtheta = (\bm{\eta}, r) }
+	}
+	\end{align*}
+	\vspace*{-0ex} 
+	\pause
+	where $B_r$ is Bernoulli polynomial of \alert{order $r$} \smallcite{OlvEtal10a}.
+	We call $C_{\vtheta}$, Fourier kernel. Also this kernel has:
+	\vspace*{-0ex}
+	\begin{align*}
+	\alert{c_0} &= \int_{[0,1]^2} C_{\vtheta} (\vx,\vt) \dvx \dvt = \alert{1}, 
+	\qquad
+	\alert{\vc} = \left( \int_{[0,1] } C_{\vtheta} (\vx_i,\vt) \dvt \right)_{i=1}^n = \alert{\vone}.
+	% \\ \mV &= \Bigl ( \me^{2 \pi n \sqrt{-1} \phi(i-1)\phi(j-1)} \Bigr)_{i = 1}^n
+	\end{align*}
+	\vspace*{-2ex}
+	\begin{theorem}
+		Let $\mCtheta$ be any symmetric, positive definite, shift-invariant covariance kernel of the form 
+		%\eqref{eq:shInv}, 
+		$C_{\vtheta}(\vx,\vt) = K_{\vtheta}(\vx - \vt \bmod \vone)$,
+		where $K_{\vtheta}$ has period one in every variable. Furthermore, let $K_{\vtheta}$ be scaled to satisfy \eqref{addAssump}. When matched with rank-1 lattice data-sites, $\mCtheta$ must satisfy assumptions \eqref{fastcompAssump}. The cubature, $\hmu$, is just the sample mean. 
+		The \emph{fast Fourier transform} (FFT) can be used to expedite the estimates of $\vtheta$ in \eqref{thetaSimple} and the credible interval widths \eqref{fastStoppingCriterions} in $\Order(n \log n)$ operations. 
+	\end{theorem}
+\end{frame}
+
+
+
+
+
+\frame{
+	\frametitle{Fourier kernel}
+	\vspace{-6ex}
+	\begin{figure}[htp]
+		\centering
+		\begin{subfigure}[b]{0.40\textwidth}
+			\includegraphics[width=\textwidth]{"../figures/fourier_kernel r_2 shape_10by100"}
+		\end{subfigure}
+		\centering
+		\begin{subfigure}[b]{0.40\textwidth}
+			\includegraphics[width=\textwidth]{"../figures/fourier_kernel r_2 shape_90by100"}
+		\end{subfigure}
+		\centering
+		\begin{subfigure}[b]{0.40\textwidth}
+			\includegraphics[width=\textwidth]{"../figures/fourier_kernel r_4 shape_10by100"}
+		\end{subfigure}
+		\centering
+		\begin{subfigure}[b]{0.40\textwidth}
+			\includegraphics[width=\textwidth]{"../figures/fourier_kernel r_4 shape_90by100"}
+		\end{subfigure}
+	\end{figure}
 }
 
 
@@ -1521,14 +1569,14 @@ $g \in C^{(r, \ldots, r)}[0,1]^d$, for $r \in \natzero$.
 
 \section{Sobol'}
 
-\subsection{Sobol' Nets and Walsh Kernels}
+\subsection{Digital Nets}
 
 
 
 
 
 
-\begin{frame}{Sobol' Nets and Walsh Kernels}
+\begin{frame}{Digital Nets}
 	\vspace{-1ex}
 \begin{Definition}[$(t, m, d)$ -- net]
 	\label{defn:tmd_net}
@@ -1572,8 +1620,7 @@ Digital sequences are infinite length digital nets, i.e., the first $n=b^m$ poin
 
 
 
-
-\frame{\frametitle{Sobol' nets}
+\begin{frame}{Sobol' Nets}
 
 An example of $n=64$ Sobol' nets in $d=2$ is given below:	
 
@@ -1587,15 +1634,26 @@ An example of $n=64$ Sobol' nets in $d=2$ is given below:
 			\includegraphics[width=\textwidth]{../figures/USobolPoints}
 		\end{subfigure}
 		\centering
-		\begin{subfigure}[b]{0.35\textwidth}
+		\begin{subfigure}[b]{0.5\textwidth}
 			\includegraphics[width=\textwidth]{../figures/SSobolPoints}
 		\end{subfigure}
 	\end{figure}
-}
+\end{frame}
 
 
 
-\begin{frame}{Walsh kernels}
+
+
+
+
+
+
+
+
+
+\subsection{Walsh Kernels}
+
+\begin{frame}{Walsh Kernels}
 
 Consider the covariance kernels of the form,
 \begin{align}
@@ -1625,7 +1683,7 @@ Explicit expression is available for $\omega_{r}$ in the case of order $r=1$ \ci
 \end{frame}
 
 
-\begin{frame}{Walsh kernels}
+\begin{frame}{Walsh Kernels}
 	\vspace{-6ex}
 \begin{figure}
 	\centering
@@ -1638,22 +1696,8 @@ Explicit expression is available for $\omega_{r}$ in the case of order $r=1$ \ci
 
 
 
-\begin{frame}{Sobol' Nets and Walsh Kernels}
-	
-	\begin{theorem}
-		Any symmetric, positive definite, digital shift-invariant covariance kernel of the form \eqref{eqn:walsh_kernel} scaled to satisfy \eqref{addAssump}, when matched with digital net data-sites, satisfies assumptions \eqref{fastcompAssump}.  The \emph{fast Walsh-Hadamard transform} (FWHT) can be used to expedite the estimates of $\vtheta$ in \eqref{thetaSimple} and the credible interval widths \eqref{fastStoppingCriterions} in $\Order(n \log n)$ operations. The cubature, $\hmu$, is just the sample mean.
-	\end{theorem}
-	
-	\centering\redroundmathbox{\text{
-			Walsh kernels + digital nets = `\emph{Block-Toeplitz}' matrix
-	}}
 
-\end{frame}
-
-
-
-
-\begin{frame}{Walsh transform}
+\begin{frame}{Walsh Transform}
 	The WHT involves multiplications by $2^m \times 2^m$ Walsh-Hadamard matrices, which is constructed recursively, starting with $\mH^{(0)} = 1$,
 	\begin{align}
 	\nonumber
@@ -1686,6 +1730,22 @@ Explicit expression is available for $\omega_{r}$ in the case of order $r=1$ \ci
 
 
 
+\begin{frame}{Sobol' Nets and Walsh Kernels}
+	
+	\begin{theorem}
+		Any symmetric, positive definite, digital shift-invariant covariance kernel of the form \eqref{eqn:walsh_kernel} scaled to satisfy \eqref{addAssump}, when matched with digital net data-sites, satisfies assumptions \eqref{fastcompAssump}.  The \emph{fast Walsh-Hadamard transform} (FWHT) can be used to expedite the estimates of $\vtheta$ in \eqref{thetaSimple} and the credible interval widths \eqref{fastStoppingCriterions} in $\Order(n \log n)$ operations. The cubature, $\hmu$, is just the sample mean.
+	\end{theorem}
+	
+	\centering\redroundmathbox{\text{
+			Walsh kernels + digital nets = \emph{$2\times 2$ block-Toeplitz} matrix
+	}}
+
+\end{frame}
+
+
+
+
+
 \begin{frame}{Eigenvectors of $\mC$}
 	\vspace{-2ex}
 	The columns of Walsh-Hadamard matrix are the eigenvectors of $\mC$, i.e., $\mV := \mH$
@@ -1710,9 +1770,10 @@ Explicit expression is available for $\omega_{r}$ in the case of order $r=1$ \ci
 
 
 
+\subsection{Fast Bayesian transform}
 
 
-\begin{frame}{Fast Bayesian transform}
+\begin{frame}{Fast Bayesian Transform}
 	
 	
 	\begin{theorem}
@@ -1726,7 +1787,6 @@ Explicit expression is available for $\omega_{r}$ in the case of order $r=1$ \ci
 	\end{theorem}
 
 	By using these two theorems
-	
 	\begin{align}
 	\label{eqn:hadamard_fwht}
 	\mC^{(m)} = \frac{1}{n} \mH^{(m)} \mLambda^{(m)} \mH^{(m)}, \quad \text{where} \quad \mH^{({m})} = \underbrace{ \mH^{(1)} \bigotimes \cdots \bigotimes \mH^{(1)} }_{m \; \text{times}}.
@@ -1784,6 +1844,70 @@ Then,
 
 
 \section{Demonstrate}
+
+
+
+
+
+
+\begin{frame}{Cone of functions and the Credible interval}
+In this research we assume that the integrand belongs to a cone of well-behaved functions, ${\mathscr{C}}$.  
+Suppose that 
+\begin{align}
+\label{eqn:cone-homogenity}
+\abs{\mu(f) - \hmu_n(f)} \le \err_{\CI} (f(\vx_1), \cdots, f(\vx_n))
+\end{align}
+for some $f$, which it is 99\% of the time under our hypothesis. Also note that our $\err_{\CI}, \CI \in \{\MLE, \GCV\}$  % \eqref{eqn:err_MLEGCV} \eqref{FJH:eq:errFull} 
+are positively homogeneous functions, meaning, 
+\begin{align*}
+\err_{\CI} (a y_1, \cdots, a y_n) = \abs{a} \err_{\CI} ( y_1, \cdots,  y_n).
+\end{align*}
+%One can verify the homogeneity of \eqref{eqn:err_MLEGCV} and \eqref{FJH:eq:errFull} easily.
+Thus if $f$ satisfies \eqref{eqn:cone-homogenity}, then
+\begin{align*}
+\abs{\mu(af) - \hmu_n(af)} &= \abs{a} \abs{\mu(f) - \hmu_n(f)} \\
+& \le \abs{a} \err_{\textup{CI}} (f(\vx_1), \cdots, f(\vx_n) ) 
+ = \err_{\textup{CI}} (a f(\vx_1), \cdots, a f(\vx_n))
+\end{align*}
+for all real $a$. Thus the set of all $f$ satisfying \eqref{eqn:cone-homogenity} is a \emph{cone}, $\mathscr{C}$. Cones of functions satisfy the property that if $f \in \mathscr{C}$ then $af \in \mathscr{C}$.
+\begin{align*}
+ \mathbb{P}_f \left[
+ |\mu(f)-\hmu_n(f)| \leq \err_{\CI}(f) \right] \ge 99\%.
+\end{align*}
+\end{frame}
+
+
+
+
+
+
+
+
+
+
+
+\begin{frame}{}
+\vspace{-7ex}
+Let $f_{\TRUE}(\vx) = \exp(\sum_{\ell=1}^{d} \cos(2\pi x_\ell))$ and the peaky integrand $f_{\PEAKY}(\vx) = f_{\TRUE} + a_{\PEAKY} f_{\NOISE}$, $f_{\NOISE}(\vx) = (1 - \exp(2\pi \sqrt{-1} \vx^T \vzeta))$, $\vzeta \in \reals^d$ is some $d$-dimensional vector belonging to the dual space of the lattice nodes. The $f_{\NICE}$ is obtained by kernel interpolation.
+\vspace{-4ex}
+\begin{figure}[htp]
+	\centering
+	\begin{subfigure}[b]{0.44\textwidth}
+		\includegraphics[width=0.9\linewidth]{../figures/cone_bayes_f_real}
+	\end{subfigure}
+	\centering
+	\begin{subfigure}[b]{0.55\textwidth}
+		\includegraphics[width=0.9\linewidth]{../figures/cone_bayes_mu_pdf}
+	\end{subfigure}
+\caption{Left: Example integrands 1) $f_{\NICE}$, a smooth function, 2) $f_{\PEAKY}$, a peaky function. The function values $f_{\PEAKY}(\vx_i) = f_{\NICE}(\vx_i) = f_{\TRUE}(\vx_i) $ for $i=1, \cdots, n$. 
+Right: Probability distributions showing the relative integral position of a smooth and a peaky function. $f_{\NICE}$ lies within the center 99\% of the confidence interval, and $f_{\PEAKY}$ lies on the outside of 99\% of the confidence interval.
+}
+\end{figure}
+\end{frame}
+
+
+
+
 
 
 
@@ -1891,6 +2015,7 @@ where $\bar{\lambda}_{i(\ell)}$ is the derivative of the $i$th eigenvalue of the
 
 
 \begin{frame}{Product Kernels}
+	\vspace{-3ex}
 	Product kernels in $d$ dimensions are of the form,
 	\begin{align}
 	\label{eqn:prod_kernel}
@@ -2294,7 +2419,33 @@ MVN example uses Baker, C1sin and C2sin transforms, Bernoulli order $r=2,4$ and 
 \caption{Multivariate normal probability example using 1) Empirical Bayes, 2) GCV, 3) Full Bayes stopping criterion}
 \end{figure}
 }
-% Lattice/Lattice_MVN_guaranteed_time_MLE_C2sin_d2_r2_2019-Jun-27
+
+
+
+
+\frame{
+	\frametitle{Multivariate normal probability: Sobol' }
+	\vspace{-5ex}
+	\begin{figure}[htp]
+		\centering
+		\begin{subfigure}[b]{0.48\textwidth}
+			\includegraphics[width=\textwidth]{"../figures/Sobol/Sobol_MVN_guaranteed_time_MLE__d2_r1_2019-Sep-1"}
+		\end{subfigure}
+		\centering
+		\begin{subfigure}[b]{0.48\textwidth}
+			\includegraphics[width=\textwidth]{"../figures/Sobol/Sobol_MVN_guaranteed_time_GCV__d2_r1_2019-Sep-1"}
+		\end{subfigure}
+		\centering
+		\begin{subfigure}[b]{0.48\textwidth}
+			\includegraphics[width=\textwidth]{"../figures/Sobol/Sobol_MVN_guaranteed_time_full__d2_r1_2019-Sep-1"}
+		\end{subfigure}
+		\caption{Multivariate normal probability example using 1) Empirical Bayes, 2) GCV, 3) Full Bayes stopping criterion}
+	\end{figure}
+}
+
+
+
+
 
 \subsection{Keister integral}
 
@@ -2318,6 +2469,29 @@ MVN example uses Baker, C1sin and C2sin transforms, Bernoulli order $r=2,4$ and 
     \end{subfigure}
    \caption{Integrating Keister function using 1) Empirical Bayes, 2) GCV, 3) Full Bayes stopping criterion}
 \end{figure}
+}
+
+
+
+\frame{
+	\frametitle{Keister Integral: Sobol'}
+	\vspace{-5ex}
+	\begin{figure}[htp]
+		\linespread{0.7}
+		\centering
+		\begin{subfigure}[b]{0.43\textwidth}
+			\includegraphics[width=\textwidth]{"../figures/Sobol/Sobol_Keister_guaranteed_time_MLE__d4_r1_2019-Sep-1"}
+		\end{subfigure}
+		\centering
+		\begin{subfigure}[b]{0.43\textwidth}
+			\includegraphics[width=\textwidth]{"../figures/Sobol/Sobol_Keister_guaranteed_time_GCV__d4_r1_2019-Sep-1"}
+		\end{subfigure}
+		\centering
+		\begin{subfigure}[b]{0.43\textwidth}
+			\includegraphics[width=\textwidth]{"../figures/Sobol/Sobol_Keister_guaranteed_time_full__d4_r1_2019-Sep-1"}
+		\end{subfigure}
+		\caption{Integrating Keister function using 1) Empirical Bayes, 2) GCV, 3) Full Bayes stopping criterion}
+	\end{figure}
 }
 
 
@@ -2347,6 +2521,27 @@ MVN example uses Baker, C1sin and C2sin transforms, Bernoulli order $r=2,4$ and 
 
 
 
+
+\frame{
+	\frametitle{Option pricing: Sobol'}
+	\vspace{-5ex}
+	\begin{figure}[htp]
+		\linespread{0.7}
+		\centering
+		\begin{subfigure}[b]{0.43\textwidth}
+			\includegraphics[width=\textwidth]{"../figures/Sobol/Sobol_optPrice_guaranteed_time_MLE__d12_r1_2019-Sep-1"}
+		\end{subfigure}
+		\centering
+		\begin{subfigure}[b]{0.43\textwidth}
+			\includegraphics[width=\textwidth]{"../figures/Sobol/Sobol_optPrice_guaranteed_time_GCV__d12_r1_2019-Sep-1"}
+		\end{subfigure}
+		\centering
+		\begin{subfigure}[b]{0.43\textwidth}
+			\includegraphics[width=\textwidth]{"../figures/Sobol/Sobol_optPrice_guaranteed_time_full__d12_r1_2019-Sep-1"}
+		\end{subfigure}
+		\caption{Option pricing using 1) Empirical Bayes, 2) GCV, 3) Full Bayes stopping criterion}
+	\end{figure}
+}
 
 
 
@@ -2384,13 +2579,13 @@ MVN example uses Baker, C1sin and C2sin transforms, Bernoulli order $r=2,4$ and 
 \linespread{1.3}
 \begin{itemize}
 \item Developed a \emph{technique} for a \alert{Fast Bayesian transform}
-\item Developed a \alert{fast automatic Bayesian cubature} with \alert{$\Order(n\log n)$} complexity
+\item Developed two \alert{fast automatic Bayesian cubature} algorithms with \alert{$\Order(n\log n)$} complexity
 \item Having the advantages of a kernel method and the low computation cost of Quasi Monte carlo
 \item Scalable based on the complexity of the Integrand
 \\ i.e, Kernel order and Lattice-points can be chosen to suit the smoothness of the integrand
 \item Conditioning problem if the kernel $C$ is very smooth
 \item Source code : \alert{\url{https://github.com/GailGithub/GAIL_Dev/tree/feature/BayesianCubature}}.
-\item This work is to be published as a paper "Fast Automatic Bayesian Cubature Using Lattice Sampling by R. Jagadeeswaran, Fred J. Hickernell" (\alert{\url{https://arxiv.org/abs/1809.09803}})
+\item A part of this work was published as a paper "Fast Automatic Bayesian Cubature Using Lattice Sampling by R. Jagadeeswaran, Fred J. Hickernell" (\alert{\url{https://arxiv.org/abs/1809.09803}})
 \end{itemize}
 \end{minipage}
 }
@@ -2403,12 +2598,13 @@ MVN example uses Baker, C1sin and C2sin transforms, Bernoulli order $r=2,4$ and 
 \begin{itemize}
 \item Choosing the \alert{kernel order $r$} and \alert{periodization} transform automatically
 %\item \alert{Deterministic} interpretation of Bayesian cubature
-\item Use gradient descent to find optimal $\vtheta$
+% \item Use gradient descent to find optimal $\vtheta$
 \item Diagnostics for Gaussian process assumption
 \item Broaden the choice of numerical examples
 \item Better handling of \alert{conditioning} problem and numerical  errors
 \\
-\item Sobol pointset and Fast Walsh Transform with smooth kernels (More details next) ...
+% \item Sobol pointset and Fast Walsh Transform with smooth kernels (More details next) 
+\item Higher order nets and Walsh kernels could be used to achieve higher order or accuracy.
 \end{itemize}
 \end{minipage}
 }
@@ -2417,23 +2613,6 @@ MVN example uses Baker, C1sin and C2sin transforms, Bernoulli order $r=2,4$ and 
 
 
 
-
-\frame{\frametitle{Future work : Higher order nets and fast Walsh transform}
-	
-	\begin{itemize}
-		\vspace{-3ex}
-		\item
-		Higher order nets and Walsh kernels could be used to achieve higher order or accuracy.
-		% Using the established generalized concept of a \textit{Fast transform kernel}, we could use other kernels with suitable point sets to achieve similar or better performance and accuracy. 
-		% \item
-		% One such point sets to consider in future is, \textit{Sobol points} and with appropriate choice of smooth kernel, should lead to \textit{Fast Walsh Transform}.
-	\end{itemize}
-	\vspace{-3ex}
-	%\begin{figure}[htp]
-	%    \includegraphics[height=5cm]{figures/USobolPoints}
-	%\end{figure}
-
-}
 
 
 \frame{\frametitle{Future work : More applications}
@@ -2505,7 +2684,7 @@ Finally, the function approximation is
 
 \begin{frame}[allowframebreaks]
 	\frametitle{References}
-	\bibliography{FJH22,FJHown22}{}
+	\bibliography{../FJH22,../FJHown22}{}
 	%\bibliography{../mybib}{}
 \end{frame}
 
