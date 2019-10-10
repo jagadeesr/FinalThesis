@@ -8,14 +8,15 @@ n = 64;
 d = 2;
 tick = 0:0.25:1;
 xIID = rand(n,d);
-figure
+figIID = figure();
 plot(xIID(:,1),xIID(:,2),'.')
 xlabel('\(x_1\)')
 ylabel('\(x_2\)')
-title('IID Points')
+% title('IID Points')
 axis square
 set(gca,'xtick',tick,'ytick',tick)
-print -depsc IIDPoints.eps
+% print -depsc IIDPoints.eps
+saveas(figIID, 'IIDPoints.png')
 
 %% Plot Unscramled Sobol Points
 xUSobol = net(sobolset(d),n);
@@ -23,7 +24,7 @@ figSobolU = figure();
 plot(xUSobol(:,1),xUSobol(:,2),'.','color',MATLABOrange)
 xlabel('\(x_1\)')
 ylabel('\(x_2\)')
-title('Unscrambled Sobol'' Points')
+% title('Unscrambled Sobol'' Points')
 axis square
 set(gca,'xtick',tick,'ytick',tick)
 % print -depsc USobolPoints.eps
