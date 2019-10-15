@@ -337,9 +337,9 @@ $f \sim \mathcal{GP} (m, s^2C_{\vtheta})$,
 a \alert{Gaussian process} with mean $m$ and covariance kernel $s^2C_{\vtheta}$, $C_{\vtheta}:[0,1] \times [0,1] \to \reals$ .
 \vspace*{-1ex}
 \begin{align*}
-\text{Define} \quad c_0 &= \int_{[0,1] \times [0,1]} C_{\vtheta} (\vx,\vt) \dvx \dvt, 
+\text{Define} \quad c_{0,\vtheta} &= \int_{[0,1] \times [0,1]} C_{\vtheta} (\vx,\vt) \dvx \dvt, 
 \\
-\vc& = \left( \int_{[0,1] } C_{\vtheta} (\vx_i,\vt) \dvt \right)_{i=1}^n,
+\vc_{\vtheta}& = \left( \int_{[0,1] } C_{\vtheta} (\vx_i,\vt) \dvt \right)_{i=1}^n,
 \quad
 \mCtheta =  \biggl( C_{\vtheta} (\vx_i,\vx_j) \biggr)_{i,j=1}^n
 \end{align*}
@@ -349,15 +349,15 @@ a \alert{Gaussian process} with mean $m$ and covariance kernel $s^2C_{\vtheta}$,
 \mu - \hmu_n  \big \vert \vy & \; \sim \;
 \cn
 \biggl( %-w_0 + m(1- \bm{1}^T \mCthetaInv\vc) + \vy^T (\mCthetaInv\vc - \vw)
-0, \quad s^2(c_0 - \vc ^T \mCthetaInv \vc)
+0, \quad s^2(c_{0,\vtheta} - \vc_{\vtheta} ^T \mCthetaInv \vc_{\vtheta})
 \biggr)
 \quad % \\
 \text{where} \; \vy = \bigl(f(\vx_i)\bigr)_{i=1}^n. 
 \\
-\text{Choosing} \; \hmu_n &= \underbrace{m(1 - \vone^T \mCthetaInv \vc)}_{w_0} + {(\underbrace{\mCthetaInv\vc}_{\vw})}^T \vy \; \text{makes error unbiased.} 
+\text{Choosing} \; \hmu_n &= \underbrace{m(1 - \vone^T \mCthetaInv \vc_{\vtheta})}_{w_0} + {(\underbrace{\mCthetaInv \vc_{\vtheta}}_{\vw})}^T \vy \; \text{makes error unbiased.} 
 \end{align*}
 \pause
-If $\alert{m = 0}$, fixed, choosing $\vw = \mCthetaInv\vc \;$ makes error unbiased. Please note \alert{$m, s$ and $\vtheta$} needs to be inferred.
+If $\alert{m = 0}$, fixed, choosing $\vw = \mCthetaInv\vc_{\vtheta} \;$ makes error unbiased. Please note \alert{$m, s$ and $\vtheta$} needs to be inferred.
 
 \ocite{Dia88a}, \ocite{OHa91a}, \ocite{Rit00a}, \ocite{RasGha03a}, \ocite{BriEtal18a}, \ocite{TraWasWoz88} and others
 \end{frame}
@@ -398,10 +398,10 @@ s^2_{\MLE}
 \\
 \hmu_\MLE  &= 
 \left(
-\frac{ (1 - \vone^T  \mCthetaInv\vc )  \vone }{ \vone^T \mCthetaInv \vone}   +  \vc 
+\frac{ (1 - \vone^T  \mCthetaInv\vc_{\vtheta} )  \vone }{ \vone^T \mCthetaInv \vone}   +  \vc_{\vtheta} 
 \right)^T  \mCthetaInv \vy  , & \text{(Explicit)} 
 \intertext{The credible interval width, $\err_{\MLE}$, is given by}
-\err_{\MLE} & = 2.58 \; s_{\MLE} \; \sqrt{c_{0} - \vc^T\mCthetaInv\vc }
+\err_{\MLE} & = 2.58 \; s_{\MLE} \; \sqrt{c_{0,\vtheta} - \vc_{\vtheta}^T\mCthetaInv\vc_{\vtheta} }
 \end{align*}
 \pause %\vspace{-3ex}
 % \alert{Why do we need $\vtheta_{\MLE}$?} \quad The sample space spanned by $C_{\vtheta}$ customized to have the integrand $f$ in the middle.
@@ -605,10 +605,11 @@ f  \sim \mathcal{GP} (0, s^2 C_{\vtheta})
 \subsection{Automatic cubature algorithm}
 
 \frame{
-	\setbeameruncoveredtransp
+	% \setbeameruncoveredtransp
 	%\frametitle{Algorithm }
 	\vspace*{-6ex}
-	\uncover<1-2>{
+	% \uncover<1-2>
+	{
 		\begin{algorithm}[H]
 			\begin{algorithmic}[1]
 				\Procedure{AutoBayesCubature}{$f$,$\errtol$} 
@@ -639,7 +640,7 @@ f  \sim \mathcal{GP} (0, s^2 C_{\vtheta})
 			\end{algorithmic}
 			%\caption{Template}\label{algorithmBasic}
 	\end{algorithm}}
-	\vspace*{-4.5ex}
+	%\vspace*{-4.5ex}
 
 }
 
@@ -652,7 +653,7 @@ f  \sim \mathcal{GP} (0, s^2 C_{\vtheta})
 \frametitle{Multivariate Gaussian integration with Mat\'ern kernel}
 \vspace{-8ex}
 \begin{align}
-\label{eqn:matern_kernel}
+\label{eqn:matern_kernel_order_3by2}
 \text{Mat\'ern covariance kernel:} \; C_{\theta}(\vx, \vt) = \prod_{\ell=1}^d \exp(-\theta|\vx_\ell-\vt_\ell|)(1+\theta |\vx_\ell-\vt_\ell|) %\\
 %\text{Multivariate Gaussian:} \; 
 %\label{eqn:GaussDef}
@@ -825,10 +826,10 @@ Choose the kernel $C_{\vtheta}$ and $\{\vx_i\}_{i=1}^n$ so the Gram matrix $\mC 
 	Then the posterior density for the integral $\mu$ given the data is
 	\vspace*{-2.0ex}
 	\begin{align*}
-	\rho_{\mu}(z | \vf = \vy)
-	& \propto \int_{0}^\infty \int_{-\infty}^\infty \rho_{\mu}(z | \vf = \vy, m = \xi, s^2 = \lambda)  
-	\rho_{\vf}(\vy | \xi, \lambda ) \rho_{m, s^2}(\xi, \lambda) \, \D \xi \D \lambda 
-	\\ & \propto \left(1 +  \frac{1}{n-1} \frac{(z - \mu_{\full})^2}{\widehat{\sigma}_{\full}^2} \right)^{-n/2}
+	\rho_{\mu}(z | \vf = \vy) 
+	%& \propto \int_{0}^\infty \int_{-\infty}^\infty \rho_{\mu}(z | \vf = \vy, m = \xi, s^2 = \lambda)  
+	% \rho_{\vf}(\vy | \xi, \lambda ) \rho_{m, s^2}(\xi, \lambda) \, \D \xi \D \lambda \\
+	& \propto \left(1 +  \frac{1}{n-1} \frac{(z - \mu_{\full})^2}{\widehat{\sigma}_{\full}^2} \right)^{-n/2}
 	\end{align*}
 	\pause
 	\vspace{-4ex}
@@ -879,9 +880,11 @@ Choose the kernel $C_{\vtheta}$ and $\{\vx_i\}_{i=1}^n$ so the Gram matrix $\mC 
 	The cross-validation criterion, which is to be minimized, is sum of squares of the difference between these conditional expectations and the observed values: :
 	\vspace*{-2.0ex}
 	\begin{align*}
-	\textup{CV} &= \sum_{i=1}^n (y_i - \ty_i)^2 = \sum_{i=1}^n \left(\frac{\zeta_i }{a_{ii}} \right)^2, \quad \text{where}\; \bm{\zeta} = \mCthetaInv(\vy - m \vone), 
-	\\
-	& \qquad \qquad a_{ii} \; \text{are diagonal elems of} \; \mCthetaInv = \begin{pmatrix} a_{ii}  & \vA_{-i,i}^T \\  \vA_{-i,i} & \mA_{-i,-i}\end{pmatrix}
+	%\textup{CV} &= \sum_{i=1}^n (y_i - \ty_i)^2 = \sum_{i=1}^n \left(\frac{\zeta_i }{a_{ii}} \right)^2, \quad 
+	\text{Let}\; \bm{\zeta} &= \mCthetaInv(\vy - m \vone), 
+	% \\
+	% & \qquad 
+	\qquad a_{ii} \; \text{the diagonal elems of} \; \mCthetaInv = \begin{pmatrix} a_{ii}  & \vA_{-i,i}^T \\  \vA_{-i,i} & \mA_{-i,-i}\end{pmatrix}
 	\\
 	\GCV &
 	= \frac{\sum_{i=1}^n\zeta_i^2}{\left(\frac 1n \sum_{i=1}^n a_{ii} \right)^2} 
@@ -890,13 +893,13 @@ Choose the kernel $C_{\vtheta}$ and $\{\vx_i\}_{i=1}^n$ so the Gram matrix $\mC 
 	\pause
 	\vspace{-2ex}
 	\begin{align*}
-	\vtheta_{\GCV} &= \argmin_{\vtheta} \left\{\log \left(  \vy^T \left[\mCtheta^{-2} - \frac{\mCtheta^{-2} \vone \vone^T \mCtheta^{-2}}{\vone^T \mCtheta^{-2} \vone}  \right] \vy \right)  
+	\vtheta_{\GCV} &= \argmin_{\vtheta} \left\{\log \left(  \vy^T \left[\mCtheta^{\alert{-2}} - \frac{\mCtheta^{\alert{-2}} \vone \vone^T \mCtheta^{\alert{-2}}}{\vone^T \mCtheta^{\alert{-2}} \vone}  \right] \vy \right)  
 	- 2 \log \left ( \trace(\mCthetaInv) \right ) \right\}
 	\\
 	% s^2_{\GCV} & : = \vy^T \left[\mCtheta^{-2} - \frac{\mCtheta^{-2} \vone \vone^T \mCtheta^{-2}}{\vone^T \mCtheta^{-2} \vone}  \right] \vy  \left[ \trace(\mCthetaInv) \right]^{-1}, 
 	% \quad m_{\GCV} := \frac{\vone^T \mCtheta^{-2} \vy}{\vone^T \mCtheta^{-2} \vone}. 
 	\intertext{The credible interval width, $\err_{\MLE}$, is given by}
-	\err_{\GCV} & = 2.58 \; s_{\GCV} \; \sqrt{c_{0} - \vc^T\mCthetaInv\vc }
+	\err_{\GCV} & = 2.58 \; s_{\GCV} \; \sqrt{c_{0,\vtheta} - \vc_{\vtheta}^T\mCthetaInv\vc_{\vtheta} }
 	\end{align*}
 \end{frame}
 
@@ -938,7 +941,7 @@ t_{n-1,0.995} &
 \\
 \err_{\GCV}  =
 \frac{2.58}{n} &
-\left\{\sum_{i=2}^n \frac{\abs{\ty_i}^2}{\lambda_i^2}  \left [ \frac 1n \sum_{i=1}^n \frac{1}{\lambda_i} \right]^{-1}  \times
+\left\{\sum_{i=2}^n \frac{\abs{\ty_i}^2}{\lambda_i^{\alert{2}}}  \left [ \frac 1n \sum_{i=1}^n \frac{1}{\lambda_i} \right]^{-1}  \times
 \left( 1 -  \frac{n}{\lambda_1} \right)  
 \right\}^{1/2}
 \end{align}
@@ -1594,7 +1597,7 @@ For example, explicit expression is available for $\omega_{r}$ in the case of or
 
 \subsection{Fast Bayesian transform}
 
-
+\iffalse
 \begin{frame}{Fast Bayesian Transform}
 	
 	
@@ -1614,11 +1617,35 @@ For example, explicit expression is available for $\omega_{r}$ in the case of or
 	\mC^{(m)} = \frac{1}{n} \mH^{(m)} \mLambda^{(m)} \mH^{(m)}, \quad \text{where} \quad \mH^{({m})} = \underbrace{ \mH^{(1)} \bigotimes \cdots \bigotimes \mH^{(1)} }_{m \; \text{times}}.
 	\end{align}
 \end{frame}
+\fi
 
 
 
-
-
+\begin{frame}{Fast Bayesian Transform}
+	
+	
+	%\begin{theorem}
+		%\label{thrm:hadamard_eigenvector}
+		The Walsh-Hadamard matrix $\mH^{(m)}$ factorizes $\mC_{\vtheta}^{(m)}$, so that the columns of Walsh-Hadamard matrix are the eigenvectors of $\mC_{\vtheta}^{(m)}$, i.e.,
+		\vspace{-2ex}
+		\begin{align*}
+		\mH^{(m)} \mC_{\vtheta}^{(m)}  = \mLambda^{(m)} \mH^{(m)}, \quad m \in \naturals, 
+		\end{align*}
+		where $(m)$ denotes the size of the matrix is $2^m \times 2^m$.
+	%\end{theorem}
+	
+	So,
+	\begin{align*}
+	% \label{eqn:hadamard_fwht}
+	\mC^{(m)} &= \frac{1}{n} \mH^{(m)} \mLambda^{(m)} \mH^{(m)}, \quad \text{where} \quad \mH^{({m})} = \underbrace{ \mH^{(1)} \bigotimes \cdots \bigotimes \mH^{(1)} }_{m \; \text{times}}
+	\\ 
+	& \hspace{2cm}
+	\mH^{(1)} =
+	\begin{pmatrix}
+	1 & 1 \\ 1 & -1
+	\end{pmatrix}.
+	\end{align*}
+\end{frame}
 
 
 
@@ -2154,7 +2181,7 @@ MVN example uses Baker, C1sin and C2sin transforms, Bernoulli order $r=2,4$ and 
 \frame{\frametitle{Summary}
 		\vspace{-4ex}
 \begin{minipage}{\textwidth}
-\linespread{1.3}
+\linespread{1.1}
 \begin{itemize}
 \item Developed a \emph{technique} for a \alert{Fast Bayesian transform}
 \item Developed two \alert{fast automatic Bayesian cubature} algorithms with \alert{$\Order(n\log n)$} complexity
@@ -2163,7 +2190,9 @@ MVN example uses Baker, C1sin and C2sin transforms, Bernoulli order $r=2,4$ and 
  i.e, Kernel order and Lattice-points can be chosen to suit the smoothness of the integrand
 \item Conditioning problem if the kernel $C$ is very smooth
 \item Source code : \alert{\url{https://github.com/GailGithub/GAIL_Dev/tree/feature/BayesianCubature}}.
-\item A part of this work was published as a paper "Fast Automatic Bayesian Cubature Using Lattice Sampling by R. Jagadeeswaran, Fred J. Hickernell" (\alert{\url{https://arxiv.org/abs/1809.09803}})
+\item A part of this work was published as a paper (\ocite{JagHic09a}).
+% "Fast Automatic Bayesian Cubature Using Lattice Sampling by R. Jagadeeswaran, Fred J. Hickernell" Statist. Comp., vol. 44, pp. 2559-2583, 2019. \alert{\url{ https://doi.org/10.1007/s11222-019-09895-9}}
+	% (\alert{\url{https://arxiv.org/abs/1809.09803}})
 \end{itemize}
 \end{minipage}
 }
@@ -2701,7 +2730,9 @@ Finally, the function approximation is
 
 \begin{frame}[allowframebreaks]
 	\frametitle{References}
+	\bibliographystyle{IEEEtran}
 	\bibliography{../FJH22,../FJHown22}{}
+	% \bibliography{../FJHown23}{}	
 	%\bibliography{../mybib}{}
 \end{frame}
 
