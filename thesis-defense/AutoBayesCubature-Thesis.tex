@@ -220,19 +220,19 @@ Adviser: Prof. Fred J Hickernell}
 {
 \frametitle{Numerical Integration}
 \vspace{-5ex}
-A fundamental problem in various fields, including finance, machine learning and statistics,
+A fundamental problem in various fields, including finance, machine learning and statistics:
 \vspace{-2ex}
 \begin{align}
 \label{eqn:defn_mu}
 \mu = \int_{\reals^d} g(\vx) \,  \dif \vx = \int_{[0,1]^d} f(\vx) \,
-\dif\vx  = & \Ex[f(\vX)], \quad \text{where} \quad \vX \sim \cu [0,1]^d
+\dif\vx  = & \Ex[f(\vX)] = ?, \quad \text{where} \quad \vX \sim \cu [0,1]^d
 \end{align}
 \vspace{-5ex}
 \begin{align*}
- &\text{by a  cubature rule} \quad
+ &\text{Use a cubature} \quad
 \hmu_n := w_0 + \sum_{j=1}^{n} f(\vx_j) w_j \qquad
 \\  \vspace{-2ex}
-& \qquad \text{using  points $\{\vx_j \}_{j=1}^{n}$ and associated weights $w_j$.}
+& \qquad \text{with points $\{\vx_j \}_{j=1}^{n}$ and associated weights $w_j$.}
 \end{align*}
 \vspace{-1ex}
 \pause %using  points $\{\vx_j \}_{j=1}^{n}$ and associated weights $w_j$.
@@ -255,11 +255,12 @@ The goal of this work is to
 \begin{frame}{Bayesian Cubature}
 	% Deterministic or Random
 	\vspace*{-4ex}
-	The Bayesian approach for numerical analysis was popularized by \ocite{Dia88a}. 
-	Diaconis interpreted the most well known numerical methods, such as 1) trapezoidal rule and 2) splines, from the statistical point of view.
+	Bayesian approach for numerical analysis popularized by \ocite{Dia88a}; 
+	interpreted trapezoidal rule, splines, and other methods from the statistical point of view.
 	%For example, the trapezoidal rule can be interpreted as a Bayesian 	method with prior information being modeled as a Brownian motion in the sample 	space $C[0, 1)$, the space of continuous functions.
 	
-	Bayesian approach for numerical integration that is known as Bayesian cubature as introduced by \ocite{OHa91a}.
+	% Bayesian approach for numerical integration that is known as Bayesian cubature as introduced by \ocite{OHa91a}.
+	See also \ocite{OHa91a}.
 	
 	
 	% The Bayesian approach for numerical analysis was popularized by Diaconis [7].
@@ -268,9 +269,9 @@ The goal of this work is to
 	\begin{itemize}
 		\item Assume \alert{$f$} is drawn from a Gaussian process 
 		\begin{itemize}
-			\item Need to estimate the mean and Covariance kernel
+			\item Need to estimate the mean and covariance kernel
 		\end{itemize}
-		\item Parameter estimation (Empirical, Cross validation) is expensive in general
+		\item Parameter estimation (Empirical Bayes, Cross validation) is expensive in general
 		\begin{itemize}
 			\item Use points and kernel for which it is cheap
 		\end{itemize}
@@ -282,7 +283,8 @@ The goal of this work is to
 	\vspace*{-4ex}
 	\begin{itemize}
 		\item How to choose \alert{$\{\vx_i\}_{i=1}^n$}, and
-		\alert{$\{w_i\}_{i=1}^n$} to make $\abs{\mu - \hmu_n}$ small? what is $\err_\CI$? \alert{(Bayesian posterior error)}
+		\alert{$\{w_i\}_{i=1}^n$} to make $\abs{\mu - \hmu_n}$ small? How to estimate credible interval $\err_\CI$? 
+		\alert{(Bayesian posterior error)}
 		\item How to find $n$ such that $\abs{\mu - \hmu_n} \le \err_\CI \le \errtol $ ? \alert{(automatic cubature)}
 	\end{itemize}
 }
@@ -334,12 +336,12 @@ The goal of this work is to
 \vspace*{-4ex}
 \alert{Assume random}
 $f \sim \mathcal{GP} (m, s^2C_{\vtheta})$,
-a \alert{Gaussian process} with mean $m$ and covariance kernel $s^2C_{\vtheta}$, $C_{\vtheta}:[0,1] \times [0,1] \to \reals$ .
+a \alert{Gaussian process} with mean $m$ and covariance kernel $s^2C_{\vtheta}$, $C_{\vtheta}:[0,1]^d \times [0,1]^d \to \reals$ .
 \vspace*{-1ex}
 \begin{align*}
-\text{Define} \quad c_{0,\vtheta} &= \int_{[0,1] \times [0,1]} C_{\vtheta} (\vx,\vt) \dvx \dvt, 
+\text{Define} \quad c_{0,\vtheta} &= \int_{[0,1]^d \times [0,1]^d} C_{\vtheta} (\vx,\vt) \dvx \dvt, 
 \\
-\vc_{\vtheta}& = \left( \int_{[0,1] } C_{\vtheta} (\vx_i,\vt) \dvt \right)_{i=1}^n,
+\vc_{\vtheta}& = \left( \int_{[0,1]^d } C_{\vtheta} (\vx_i,\vt) \dvt \right)_{i=1}^n,
 \quad
 \mCtheta =  \biggl( C_{\vtheta} (\vx_i,\vx_j) \biggr)_{i,j=1}^n
 \end{align*}
@@ -401,10 +403,11 @@ s^2_{\MLE}
 \frac{ (1 - \vone^T  \mCthetaInv\vc_{\vtheta} )  \vone }{ \vone^T \mCthetaInv \vone}   +  \vc_{\vtheta} 
 \right)^T  \mCthetaInv \vy  , & \text{(Explicit)} 
 \intertext{The credible interval width, $\err_{\MLE}$, is given by}
-\err_{\MLE} & = 2.58 \; s_{\MLE} \; \sqrt{c_{0,\vtheta} - \vc_{\vtheta}^T\mCthetaInv\vc_{\vtheta} }
+\err_{\MLE} & = 2.58 \; s_{\MLE} \; \sqrt{c_{0,\vtheta} - \vc_{\vtheta}^T\mCthetaInv\vc_{\vtheta} }, \quad \vtheta = \vtheta_\MLE
 \end{align*}
 \pause %\vspace{-3ex}
 % \alert{Why do we need $\vtheta_{\MLE}$?} \quad The sample space spanned by $C_{\vtheta}$ customized to have the integrand $f$ in the middle.
+Computational cost \alert{ $\Order\bigl(n \$(f) + N_{\opt}[n^2\$(C_\vtheta) + n^3] \bigr)$}.
 \end{frame}
 
 
@@ -621,7 +624,7 @@ f  \sim \mathcal{GP} (0, s^2 C_{\vtheta})
 				$\varepsilon>0$; the positive initial sample size, $n_0$;
 				the maximum sample size $n_{\textup{max}}$
 				% \State $n_0 \gets 2^8$ \Comment{start with minimum number of points}
-				\State $n\gets n_0, \; n' \gets 0, \; \errn \gets \infty$
+				\State $n\gets n_0, \; n' \gets 0, \; \err_\CI \gets \infty$
 				%\Do
 				\While{$\err_\CI > \varepsilon$ and $n \le n_{\textup{max}}$} %\Comment{Iterate till error tolerance is met}
 				\State Generate $\{ \vx_i\}_{i=n' + 1}^{n}$ and sample $\{f(\vx_i)\}_{i=n'+1}^{n}$, 
@@ -724,26 +727,19 @@ Choose the kernel $C_{\vtheta}$ and $\{\vx_i\}_{i=1}^n$, so the Gram matrix $\mC
 \end{align*}
 \pause 
 \vspace{-2ex}
-$C_{\vtheta}$ is a fast Bayesian transform kernel, if 
-\begin{subequations} \label{fastcompAssump}
-	% \begin{flushleft}
-	\begin{align}
-	\label{fastcompAssumpA}
-	\mV \text{ may be identified analytically}, \\
-	\label{fastcompAssumpB}
-	\vv_1 = \vV_1 = \vone, \\
-	\label{fastcompAssumpC}
-	\alert{\text{ Computing $\widetilde{\vb} = \mV^H \vb$ requires only $\Order(n \log n)$ operations } \forall \vb.}
-	\end{align}
-	% \end{flushleft}
-\end{subequations}
+$C_{\vtheta}$ is a fast Bayesian transform kernel, if,
+\begin{enumerate}
+	\item $\mV$ { may be identified analytically}
+	\item $\vv_1 = \vV_1 = \vone$
+	\item \alert{Computing $\widetilde{\vb} = \mV^H \vb$ requires only $\Order(n \log n)$ operations  $\forall \vb$.}
+\end{enumerate}
 \vspace{-1.5ex}
 The covariance kernel may also be normalized 
-\begin{align}
-\label{addAssump}
+\begin{align*}
+%\label{addAssump}
 \int_{[0,1]^d} C_\vtheta(\vt,\vx) \, \D \vt = 1 \qquad \forall \vx \in [0,1]^d,
-\text{ leading to $c_0 = 1$ and $\vc = \vone$}.
-\end{align}
+\text{ leading to $c_{0,\vtheta} = 1$ and $\vc_{\vtheta} = \vone$}.
+\end{align*}
 Please note that
 \begin{align*}
 \mLambda &= \diag (\vlambda), \quad \vlambda = (\lambda_1,...,\lambda_n) = \mV^H \vC_1.
@@ -817,94 +813,6 @@ Choose the kernel $C_{\vtheta}$ and $\{\vx_i\}_{i=1}^n$ so the Gram matrix $\mC 
 
 
 
-% \subsection{Full Bayes}
-
-\begin{frame}
-	\frametitle{Parameter estimation - Full Bayes}
-	\vspace*{-6ex}
-	Treat $m$ and $s$ as hyper-parameters with a non-informative, conjugate prior, namely $\vrho_{m,s^2}(\xi, \lambda) \propto 1/\lambda$.
-	Then the posterior density for the integral $\mu$ given the data is
-	\vspace*{-2.0ex}
-	\begin{align*}
-	\rho_{\mu}(z | \vf = \vy) 
-	%& \propto \int_{0}^\infty \int_{-\infty}^\infty \rho_{\mu}(z | \vf = \vy, m = \xi, s^2 = \lambda)  
-	% \rho_{\vf}(\vy | \xi, \lambda ) \rho_{m, s^2}(\xi, \lambda) \, \D \xi \D \lambda \\
-	& \propto \left(1 +  \frac{1}{n-1} \frac{(z - \mu_{\full})^2}{\widehat{\sigma}_{\full}^2} \right)^{-n/2}
-	\end{align*}
-	\pause
-	\vspace{-4ex}
-	\begin{align*}
-	\text{Where} \;
-	\\
-	\mu_{\full} &= \mu_\MLE
-	\\
-	\hsigma^2_{\full} 
-	& = \frac{1}{n-1}
-	\vy^T\left[ \mCthetaInv 
-	- \frac{ \mCthetaInv \vone\vone^T \mCthetaInv}{\vone^T \mCthetaInv \vone}  \right]\vy
-	\times  \left[\frac{(1 - \vc^T \mCthetaInv \vone)^2}{\vone^T \mCthetaInv \vone} + (c_0  -\vc ^T \mCthetaInv \vc) \right]
-	\\ &\mathbb{P}_f \left[ |\mu-\hmu_{\full}|  \leq \err_{\full} \right]  = 99\%,
-	\\ \err_{\full} &:= t_{n-1,0.995} \hat{\sigma}_{\full} > \err_{\MLE}
-	\end{align*}
-\end{frame}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-% \subsection{GCV}
-
-\begin{frame}
-	\frametitle{Parameter estimation - Generalized Cross validation}
-	\vspace*{-5ex}
-	Let $\ty_i = \Ex[f(\vx_i ) | \vf_{-i} = \vy_{-i}]$.
-	The cross-validation criterion, which is to be minimized, is sum of squares of the difference between these conditional expectations and the observed values: :
-	\vspace*{-2.0ex}
-	\begin{align*}
-	%\textup{CV} &= \sum_{i=1}^n (y_i - \ty_i)^2 = \sum_{i=1}^n \left(\frac{\zeta_i }{a_{ii}} \right)^2, \quad 
-	\text{Let}\; \bm{\zeta} &= \mCthetaInv(\vy - m \vone), 
-	% \\
-	% & \qquad 
-	\qquad a_{ii} \; \text{the diagonal elems of} \; \mCthetaInv = \begin{pmatrix} a_{ii}  & \vA_{-i,i}^T \\  \vA_{-i,i} & \mA_{-i,-i}\end{pmatrix}
-	\\
-	\GCV &
-	= \frac{\sum_{i=1}^n\zeta_i^2}{\left(\frac 1n \sum_{i=1}^n a_{ii} \right)^2} 
-	= \frac{(\vy - m\vone)^T \mCtheta^{-2} (\vy - m \vone)}{\left(\frac 1n \trace(\mCthetaInv) \right)^2}.
-	\end{align*}
-	\pause
-	\vspace{-2ex}
-	\begin{align*}
-	\vtheta_{\GCV} &= \argmin_{\vtheta} \left\{\log \left(  \vy^T \left[\mCtheta^{\alert{-2}} - \frac{\mCtheta^{\alert{-2}} \vone \vone^T \mCtheta^{\alert{-2}}}{\vone^T \mCtheta^{\alert{-2}} \vone}  \right] \vy \right)  
-	- 2 \log \left ( \trace(\mCthetaInv) \right ) \right\}
-	\\
-	% s^2_{\GCV} & : = \vy^T \left[\mCtheta^{-2} - \frac{\mCtheta^{-2} \vone \vone^T \mCtheta^{-2}}{\vone^T \mCtheta^{-2} \vone}  \right] \vy  \left[ \trace(\mCthetaInv) \right]^{-1}, 
-	% \quad m_{\GCV} := \frac{\vone^T \mCtheta^{-2} \vy}{\vone^T \mCtheta^{-2} \vone}. 
-	\intertext{The credible interval width, $\err_{\MLE}$, is given by}
-	\err_{\GCV} & = 2.58 \; s_{\GCV} \; \sqrt{c_{0,\vtheta} - \vc_{\vtheta}^T\mCthetaInv\vc_{\vtheta} }
-	\end{align*}
-\end{frame}
-
-
-
 
 
 \subsection{Shape parameter $\vthetaMLE$ and Error Bound}
@@ -915,36 +823,36 @@ Choose the kernel $C_{\vtheta}$ and $\{\vx_i\}_{i=1}^n$ so the Gram matrix $\mC 
 %Using the properties of the \alert{fast Bayesian transform}, the estimates of $\vtheta$ and the error bound \alert{$\errn$} can be computed faster:
 \vspace{-1ex}
 \begin{subequations}
-\label{thetaSimple}
-\begin{align}
+%\label{thetaSimple}
+\begin{align*}
 \vthetaMLE &= 
 \argmin_{\theta} \left[ \log\left(  \sum_{\alert{i=2}}^{n} \frac{|\ty_i|^2}{\lambda_i} \right) + \frac{1}{n}\sum_{i=1}^{n} \log( \lambda_i ) \right]
 \\
 \vtheta_{\GCV} 
-&= \argmin_{\vtheta} \left[ \log \left ( \sum_{\alert{i=2}}^n \frac{\abs{\ty_i}^2}{\lambda_i^2} 
+&= \argmin_{\vtheta} \left[ \log \left ( \sum_{\alert{i=2}}^n \frac{\abs{\ty_i}^2}{\lambda_i^{\alert{2}}} 
 \right) -2\log\left( \sum_{i=1}^n \frac{1}{\lambda_i} \right)
 \right]
-\end{align}
+\end{align*}
 \end{subequations}
 \vspace{-5ex}
 \begin{subequations}
-\label{fastStoppingCriterions}
-\begin{align}
+%\label{fastStoppingCriterions}
+\begin{align*}
 \err_{\MLE} = 
-\frac{2.58}{n} &\left\{ \sum_{i=2}^{n} \frac{\abs{\ty_i}^2}{\lambda_i}  
+\frac{2.58}{n} &\left\{ \sum_{\alert{i=2}}^{n} \frac{\abs{\ty_i}^2}{\lambda_i}  
 \left( 1 - \frac{n}{\lambda_1} \right)\right\}^{1/2}
 \\
 \err_{\full}
 =
-t_{n-1,0.995} &
-\left\{\frac{1}{n(n-1)} \sum_{i=2}^n \frac{\abs{\ty_i}^2}{\lambda_i} \, \left(\frac{\lambda_1}{n}  - 1  \right)\right\}^{1/2}
+\frac{t_{n-1,0.995}}{n} &
+\left\{\frac{\lambda_1}{(n-1)} \sum_{\alert{i=2}}^n \frac{\abs{\ty_i}^2}{\lambda_i} \, \left(1 - \frac{n}{\lambda_1}  \right)\right\}^{1/2}
 \\
 \err_{\GCV}  =
 \frac{2.58}{n} &
-\left\{\sum_{i=2}^n \frac{\abs{\ty_i}^2}{\lambda_i^{\alert{2}}}  \left [ \frac 1n \sum_{i=1}^n \frac{1}{\lambda_i} \right]^{-1}  \times
+\left\{\sum_{\alert{i=2}}^n \frac{\abs{\ty_i}^2}{\lambda_i^{\alert{2}}}  \left [ \frac 1n \sum_{i=1}^n \frac{1}{\lambda_i} \right]^{-1}  \times
 \left( 1 -  \frac{n}{\lambda_1} \right)  
 \right\}^{1/2}
-\end{align}
+\end{align*}
 \end{subequations}
 \vspace{-4ex}
 Similarly, \alert{$\hmu$} can be computed faster
@@ -955,6 +863,13 @@ $ \hmu_\MLE = \hmu_{\full} = \hmu_\GCV =
 % \alert{$\Order(n )$ operations to compute the $\hmu$}. \alert{$\Order(n \log n)$ operations to compute $\tvy$ and $\hat{\vlambda}$, So the $\vthetaMLE$ and $\err$}
 \end{frame}
 
+
+
+
+\begin{frame}{Fast Bayesian Transform}
+	\redroundmathbox{
+\text{Computational cost} \quad { \Order\bigl(n \$(f) + N_{\opt}[n\$(C_\vtheta) + n \log{n} ] \bigr)}.}
+\end{frame}
 
 
 
@@ -1078,11 +993,11 @@ Given the \alert{generating vector $\vh$}, the construction of \alert{n} - Rank-
 \mathsf{L}_{n,\vh} := \lbrace \vx_i :=  (\vh \phi(i-1) + \vDelta) \; \bmod \; 1 ;\ \; i=1,\hdots,n
 \rbrace
 \end{align}
-where $\Delta$ is a random shift and $\bm{h}$ is a \emph{generalized Mahler integer} ($\infty$ digit expression) \smallcite{HicNie03a} also called \alert{generating vector}.
+where $\Delta$ is a random shift and % and $\bm{h}$ is a \emph{generalized Mahler integer} ($\infty$ digit expression) \smallcite{HicNie03a} also called \alert{generating vector}.
 $\phi(i)$ is the Van der Corput sequence in base 2.
 %Let us look at the construction of rank-1 lattice rules.
 %Given a number of points \alert{$n$} and a \alert{``generating vecto'' $z$},
-Then the Lattice rule approximation is
+Then the Lattice rule approximation is:
 \[
 % \frac{1}{n} \sum_{k=1}^{n} f\left( ({ \frac{k \vh}{n} + \vDelta }) \bmod 1 \right)
 \frac{1}{n} \sum_{i=1}^{n} f\left( \vx_i \right).
@@ -1147,9 +1062,9 @@ An example of $n=64$ IID points and Lattice nodes:
 	We call $C_{\vtheta}$, Fourier kernel. Also this kernel satisfies:
 	\vspace*{-0ex}
 	\begin{align*}
-	\alert{c_0} &= \int_{[0,1]^2} C_{\vtheta} (\vx,\vt) \dvx \dvt = \alert{1}, 
+	\alert{c_{0,\vtheta}} &= \int_{[0,1]^{2d}} C_{\vtheta} (\vx,\vt) \dvx \dvt = \alert{1}, 
 	\qquad
-	\alert{\vc} = \left( \int_{[0,1] } C_{\vtheta} (\vx_i,\vt) \dvt \right)_{i=1}^n = \alert{\vone}.
+	\alert{\vc_{\vtheta}} = \left( \int_{[0,1]^d } C_{\vtheta} (\vx_i,\vt) \dvt \right)_{i=1}^n = \alert{\vone}.
 	% \\ \mV &= \Bigl ( \me^{2 \pi n \sqrt{-1} \phi(i-1)\phi(j-1)} \Bigr)_{i = 1}^n
 	\end{align*}
 
@@ -1549,9 +1464,9 @@ The Walsh covariance kernels are of the form
 % Consider the covariance kernels of the form,
 \begin{align}
 \label{eqn:digital_shift_in_kernel}
-C_{\vtheta}(\vx, \vt) = K_{\vtheta} (\vx \ominus \vt).
+C_{\vtheta}(\vx, \vt) = K_{\vtheta} (\vx \ominus \vt)
 \end{align}
-where
+where $\ominus$ is bitwise subtraction and 
 \begin{align}
 \label{eqn:walsh_kernel}
 K_{\vtheta} (\vx \ominus \vt) =  
@@ -1639,7 +1554,7 @@ For example, explicit expression is available for $\omega_{r}$ in the case of or
 	% \label{eqn:hadamard_fwht}
 	\mC^{(m)} &= \frac{1}{n} \mH^{(m)} \mLambda^{(m)} \mH^{(m)}, \quad \text{where} \quad \mH^{({m})} = \underbrace{ \mH^{(1)} \bigotimes \cdots \bigotimes \mH^{(1)} }_{m \; \text{times}}
 	\\ 
-	& \hspace{2cm}
+	& \text{where $\bigotimes$ is Kronecker product and }
 	\mH^{(1)} =
 	\begin{pmatrix}
 	1 & 1 \\ 1 & -1
@@ -1753,8 +1668,8 @@ For example, explicit expression is available for $\omega_{r}$ in the case of or
 			\text{where} \quad \text{payoff}(\vx) =  \me^{-rT}
 			\max\left(\frac 1d \sum_{k=1}^d S_k(x_k) - K, 0 \right)
 			\\
-			S_j(x_j) = S_0 \me^{(r -\sigma^2/2)t_j +
-				\sigma x_j} =\text{stock price at time } t_j = jT/d; 
+			S_\ell(x_\ell) = S_0 \me^{(r -\sigma^2/2)t_\ell +
+				\sigma x_\ell} =\text{stock price at time } t_\ell = \ell T/d; 
 			\end{gather*}
 			\vspace{-1ex}
 		}
@@ -2032,6 +1947,11 @@ MVN example uses Baker, C1sin and C2sin transforms, Bernoulli order $r=2,4$ and 
 			\includegraphics[width=\textwidth]{"../figures/Sobol/Sobol_MVN_guaranteed_time_GCV__d2_r1_2019-Sep-1"}
 			\caption{GCV}
 		\end{subfigure}
+		\centering
+		\begin{subfigure}[b]{0.48\textwidth}
+			\includegraphics[height=3.25cm]{../figures/MVN_guaranteed_time_Matern_d2_2019-Jun-29}
+			\caption{Slow cubature with Mat\'ern  kernel}
+		\end{subfigure}	
 		% \caption{Multivariate normal probability example using 1) Empirical Bayes, 2) GCV, 3) Full Bayes stopping criterion}
 	\end{figure}
 }
@@ -2293,6 +2213,96 @@ Finally, the function approximation is
 
 
 \appendix
+
+
+
+
+
+% \subsection{Full Bayes}
+
+\begin{frame}
+	\frametitle{Parameter estimation - Full Bayes}
+	\vspace*{-6ex}
+	Treat $m$ and $s$ as hyper-parameters with a non-informative, conjugate prior, namely $\vrho_{m,s^2}(\xi, \lambda) \propto 1/\lambda$.
+	Then the posterior density for the integral $\mu$ given the data is
+	\vspace*{-2.0ex}
+	\begin{align*}
+	\rho_{\mu}(z | \vf = \vy) 
+	%& \propto \int_{0}^\infty \int_{-\infty}^\infty \rho_{\mu}(z | \vf = \vy, m = \xi, s^2 = \lambda)  
+	% \rho_{\vf}(\vy | \xi, \lambda ) \rho_{m, s^2}(\xi, \lambda) \, \D \xi \D \lambda \\
+	& \propto \left(1 +  \frac{1}{n-1} \frac{(z - \mu_{\full})^2}{\widehat{\sigma}_{\full}^2} \right)^{-n/2}
+	\end{align*}
+	\pause
+	\vspace{-4ex}
+	\begin{align*}
+	\text{Where} \;
+	\\
+	\mu_{\full} &= \mu_\MLE
+	\\
+	\hsigma^2_{\full} 
+	& = \frac{1}{n-1}
+	\vy^T\left[ \mCthetaInv 
+	- \frac{ \mCthetaInv \vone\vone^T \mCthetaInv}{\vone^T \mCthetaInv \vone}  \right]\vy
+	\times  \left[\frac{(1 - \vc^T \mCthetaInv \vone)^2}{\vone^T \mCthetaInv \vone} + (c_0  -\vc ^T \mCthetaInv \vc) \right]
+	\\ &\mathbb{P}_f \left[ |\mu-\hmu_{\full}|  \leq \err_{\full} \right]  = 99\%,
+	\\ \err_{\full} &:= t_{n-1,0.995} \hat{\sigma}_{\full} > \err_{\MLE}
+	\end{align*}
+\end{frame}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+% \subsection{GCV}
+
+\begin{frame}
+	\frametitle{Parameter estimation - Generalized Cross validation}
+	\vspace*{-5ex}
+	Let $\ty_i = \Ex[f(\vx_i ) | \vf_{-i} = \vy_{-i}]$.
+	The cross-validation criterion, which is to be minimized, is sum of squares of the difference between these conditional expectations and the observed values: :
+	\vspace*{-2.0ex}
+	\begin{align*}
+	%\textup{CV} &= \sum_{i=1}^n (y_i - \ty_i)^2 = \sum_{i=1}^n \left(\frac{\zeta_i }{a_{ii}} \right)^2, \quad 
+	\text{Let}\; \bm{\zeta} &= \mCthetaInv(\vy - m \vone), 
+	% \\
+	% & \qquad 
+	\qquad a_{ii} \; \text{the diagonal elems of} \; \mCthetaInv = \begin{pmatrix} a_{ii}  & \vA_{-i,i}^T \\  \vA_{-i,i} & \mA_{-i,-i}\end{pmatrix}
+	\\
+	\GCV &
+	= \frac{\sum_{i=1}^n\zeta_i^2}{\left(\frac 1n \sum_{i=1}^n a_{ii} \right)^2} 
+	= \frac{(\vy - m\vone)^T \mCtheta^{-2} (\vy - m \vone)}{\left(\frac 1n \trace(\mCthetaInv) \right)^2}.
+	\end{align*}
+	\pause
+	\vspace{-2ex}
+	\begin{align*}
+	\vtheta_{\GCV} &= \argmin_{\vtheta} \left\{\log \left(  \vy^T \left[\mCtheta^{\alert{-2}} - \frac{\mCtheta^{\alert{-2}} \vone \vone^T \mCtheta^{\alert{-2}}}{\vone^T \mCtheta^{\alert{-2}} \vone}  \right] \vy \right)  
+	- 2 \log \left ( \trace(\mCthetaInv) \right ) \right\}
+	\\
+	% s^2_{\GCV} & : = \vy^T \left[\mCtheta^{-2} - \frac{\mCtheta^{-2} \vone \vone^T \mCtheta^{-2}}{\vone^T \mCtheta^{-2} \vone}  \right] \vy  \left[ \trace(\mCthetaInv) \right]^{-1}, 
+	% \quad m_{\GCV} := \frac{\vone^T \mCtheta^{-2} \vy}{\vone^T \mCtheta^{-2} \vone}. 
+	\intertext{The credible interval width, $\err_{\MLE}$, is given by}
+	\err_{\GCV} & = 2.58 \; s_{\GCV} \; \sqrt{c_{0,\vtheta} - \vc_{\vtheta}^T\mCthetaInv\vc_{\vtheta} }
+	\end{align*}
+\end{frame}
 
 
 
