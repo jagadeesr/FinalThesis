@@ -778,7 +778,7 @@ where
 \begin{equation*}
 % \label{FJH:eq:errFull}
 \err_{\textup{full}} 
-:= t_{n_j-1,0.995} \hsigma_{\textup{full}} > \err_\MLE .
+:= t_{n-1,0.995} \hsigma_{\textup{full}} > \err_\MLE .
 \end{equation*}
 Here $t_{n-1,0.995}$ denotes the $99.5$ percentile of a standard Student's $t$-distribution with $n-1$ degrees of freedom. 
 This means that $\mu \vert (\vf = \vy )$, properly centered and scaled, has a Student's $t$-distribution with $n-1$ degrees of freedom.  
@@ -956,7 +956,7 @@ where
 \begin{equation*}
 %\label{FJH:eq:errFull_generic_prior}
 \err_{\textup{full}} 
-:= t_{n_j-1,0.995} \hsigma_{\textup{full}} > \err_\MLE .
+:= t_{n-1,0.995} \hsigma_{\textup{full}} > \err_\MLE .
 \end{equation*}
 
 
@@ -1766,7 +1766,7 @@ If $m=0$ assumption can be made,
 \Section{Full Bayes}
 
 For the full Bayes approach the cubature is the same as for empirical Bayes.  We also defer to empirical Bayes to estimate the parameter $\vtheta$.  The width of the confidence interval is $\err_{\textup{full}} 
-:= t_{n_j-1,0.995} \hsigma_{\textup{full}}$, where $\hsigma_{\textup{full}}^2$ can also be computed swiftly under assumptions \eqref{fastcompAssump}:
+:= t_{n-1,0.995} \hsigma_{\textup{full}}$, where $\hsigma_{\textup{full}}^2$ can also be computed swiftly under assumptions \eqref{fastcompAssump}:
 \begin{align*} %\label{FJH:eq:signmaFull}
 \widehat{\sigma}^2_{\textup{full}} =
 \frac{1}{n(n-1)} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i}
@@ -1782,7 +1782,7 @@ It follows that
 \begin{equation*} % \label{FJH:eq:errFullSimple}
 \err_{\textup{full}}
 =
-t_{n_j-1,0.995}
+t_{n-1,0.995}
 \sqrt{\frac{1}{n(n-1)} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i} \, \left(\frac{\lambda_1}{n}  - 1  \right)}.
 \end{equation*}
 
@@ -3445,6 +3445,7 @@ twice the cost of computing $\mV^{(m)H} \vy^{(1)}$ plus $2n$ additions, where $n
 
 
 \Section{Higher Order Nets}
+
 Higher order digital nets are an extension of $(t,m,d)$-nets, introduced in \cite{Dic08a}. They can be used to numerically integrate smoother functions which are not necessarily periodic, but have square integrable mixed partial derivatives of order $\alpha$, at a rate of $\Order(n^{-\alpha})$ multiplied by a power of a $\log n$ factor using rules corresponding to the modified $(t,m, d)$-nets.
 We want to emphasize that quasi-Monte Carlo rules based on these point sets can achieve convergence rates faster than $\Order(n^{-1})$. 
 Higher order digital nets are constructed using matrix-vector multiplications over finite
@@ -3527,7 +3528,7 @@ where $\lambda_1 = n + \rlambda_1$.  The widths of the credible intervals in \eq
 	\\
 	\label{fastStoppingCriterionFull}
 	\err_{\textup{full}} 
-	& = \frac{t_{n_j-1,0.995}}{n} \sqrt{
+	& = \frac{t_{n-1,0.995}}{n} \sqrt{
 		\frac{\rlambda_1}{n-1} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i}
 	}, \\
 	\label{fastStoppingCriterionGCV}
@@ -3535,7 +3536,7 @@ where $\lambda_1 = n + \rlambda_1$.  The widths of the credible intervals in \eq
 	\frac{2.58}{n}\sqrt{	\frac{\rlambda_1}{\lambda_1} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2}  \left [ \frac 1n \sum_{i=1}^n \frac{1}{\lambda_i} \right]^{-1}} .
 	\end{align}
 \end{subequations}
-Since $\rlambda_1 = \lambda_1 - n$ and $\lambda_1 \sim n$ it follows $\rlambda_1/\lambda_1 \approx \rlambda_1/(n-1)$ and is small for  large $n$.  Moreover, for large $n$, the credible intervals via empirical Bayes and full Bayes are similar, since $t_{n_j-1,0.995}$ is approximately $2.58$. 
+Since $\rlambda_1 = \lambda_1 - n$ and $\lambda_1 \sim n$ it follows $\rlambda_1/\lambda_1 \approx \rlambda_1/(n-1)$ and is small for  large $n$.  Moreover, for large $n$, the credible intervals via empirical Bayes and full Bayes are similar, since $t_{n-1,0.995}$ is approximately $2.58$. 
 
 
 
@@ -4030,7 +4031,7 @@ had the smallest average absolute error. \code{cubBayesNet\_g} used lowest numbe
 
 \JRNote{avoid Exp notation for 2 decimals}
 \begin{table}[ht] % MATLAB Driver: KeisterCubatureExampleBayes.m
-	\arrayrulecolor[HTML]{DB5800}
+	% \arrayrulecolor[HTML]{DB5800}  % Red color stripe
 \centering
 \caption{Comparison of average performance of cubatures for estimating the Keister integral \eqref{eqn:keister_integral} for $1000$ independent runs. 
 These results can be conditionally reproduced with the
@@ -4063,7 +4064,7 @@ The \code{cubBayesNet\_g}  was competitive and had the smallest average absolute
 %\label{eqn:GaussDef}fGenzdef
 
 \begin{table}[ht] % MATLAB Driver: MVNCubatureExampleBayes.m
-	\arrayrulecolor[HTML]{DB5800}
+	% \arrayrulecolor[HTML]{DB5800} % Red color 
 \centering
 \caption{Comparison of average performance of cubatures for estimating the $d=20$ Multivariate Normal \eqref{eqn:fGenzdef} for $1000$ independent runs with $\varepsilon=10^{-3}$. These results can be conditionally reproduced with the script, \code{MVNCubatureExampleBayes.m}, in GAIL. 
 \label{tab3}}	   
@@ -4108,7 +4109,7 @@ where \code{fresnels} is the Fresnel Sine integral,
 
 
 \begin{table}[ht] % MATLAB Driver: MVNCubatureExampleBayes.m
-\arrayrulecolor[HTML]{DB5800}
+	% \arrayrulecolor[HTML]{DB5800}  % Red color stripe
 	\centering
 	\caption{Comparison of average performance of Bayesian Cubature with common shape parameter vs dimension specific shape parameter
 		 for estimating the $d=3$ Fresnel Sine integral. These results can be conditionally reproduced with the script, \code{demoMultiTheta.m}, in GAIL. 

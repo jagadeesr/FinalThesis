@@ -629,7 +629,7 @@ f  \sim \mathcal{GP} (0, s^2 C_{\vtheta})
 				\While{$\err_\CI > \varepsilon$ and $n \le n_{\textup{max}}$} %\Comment{Iterate till error tolerance is met}
 				\State Generate $\{ \vx_i\}_{i=n' + 1}^{n}$ and sample $\{f(\vx_i)\}_{i=n'+1}^{n}$, 
 				\State Compute parameters, % $\vtheta$, 
-				compute error bound \alert{$\err_\CI$ } %\Comment{$\errn$ data driven error bound}
+				compute credible interval \alert{$\err_\CI$ } %\Comment{$\errn$ data driven error bound}
 				%\If{\alert{$\errn \leq \errtol$}}
 				%    \textbf{break}
 				%\EndIf
@@ -671,7 +671,7 @@ d = 3, \quad \va = \begin{pmatrix}
 \end{pmatrix} , \quad 
 \mL = \begin{pmatrix}
 4 & 1 & 1 \\ 0 & 1 & 0.5 \\ 0 & 0 & 0.25
-\end{pmatrix}.
+\end{pmatrix}
 \end{equation*}
 
 \vspace{-3ex}
@@ -989,10 +989,10 @@ $ \hmu_\MLE = \hmu_{\full} = \hmu_\GCV =
 \only<1>{
 Given the \alert{generating vector $\vh$}, the construction of \alert{n} - Rank-1 lattice points \smallcite{DicPil10a} is given by
 %\label{eqn:lattice_defn}
-\begin{align}
+\begin{align*}
 \mathsf{L}_{n,\vh} := \lbrace \vx_i :=  (\vh \phi(i-1) + \vDelta) \; \bmod \; 1 ;\ \; i=1,\hdots,n
 \rbrace
-\end{align}
+\end{align*}
 where $\Delta$ is a random shift and % and $\bm{h}$ is a \emph{generalized Mahler integer} ($\infty$ digit expression) \smallcite{HicNie03a} also called \alert{generating vector}.
 $\phi(i)$ is the Van der Corput sequence in base 2.
 %Let us look at the construction of rank-1 lattice rules.
@@ -1036,9 +1036,7 @@ An example of $n=64$ IID points and Lattice nodes:
 	\end{subfigure}
 \end{figure}
 \vspace{-2ex}
-\centering\redroundmathbox{\text{
-		Shift invariant kernel + Lattice points = `\emph{Symmetric circulant kernel}' matrix
-}}
+
 }
 
 
@@ -1046,7 +1044,7 @@ An example of $n=64$ IID points and Lattice nodes:
 
 
 \begin{frame}
-	{Lattice nodes and shift invariant covariance kernels}
+	{Shift invariant covariance kernels}
 	\vspace*{-6ex}
 	\begin{align*}
 	\redroundmathbox{
@@ -1074,8 +1072,9 @@ An example of $n=64$ IID points and Lattice nodes:
 
 
 
+
 \frame{
-	\frametitle{Fourier kernel}
+	\frametitle{Shift invariant kernels}
 	\vspace{-6ex}
 	\begin{figure}[htp]
 		\centering
@@ -1102,6 +1101,13 @@ An example of $n=64$ IID points and Lattice nodes:
 
 
 
+
+\begin{frame}
+	{Lattice nodes and shift invariant covariance kernels}
+	\centering\redroundmathbox{\text{
+			Shift invariant kernel + Lattice points = `\emph{Symmetric circulant kernel}' matrix
+	}}
+\end{frame}
 
 \iffalse
 \frame{
@@ -1903,7 +1909,7 @@ MVN example uses Baker, C1sin and C2sin transforms, Bernoulli order $r=2,4$ and 
 
 
 \frame{
-\frametitle{Multivariate normal probability: Lattice }
+\frametitle{Multivariate normal probability: Lattice $d=2, r=2, \text{C2Sin}$ }
 \vspace{-5ex}
 \begin{figure}[htp]
     \centering
@@ -1929,7 +1935,7 @@ MVN example uses Baker, C1sin and C2sin transforms, Bernoulli order $r=2,4$ and 
 
 
 \frame{
-	\frametitle{Multivariate normal probability: Sobol' }
+	\frametitle{Multivariate normal probability: Sobol' $d=2, r=1$ }
 	\vspace{-5ex}
 	\begin{figure}[htp]
 		\centering
@@ -1950,7 +1956,7 @@ MVN example uses Baker, C1sin and C2sin transforms, Bernoulli order $r=2,4$ and 
 		\centering
 		\begin{subfigure}[b]{0.48\textwidth}
 			\includegraphics[height=3.25cm]{../figures/MVN_guaranteed_time_Matern_d2_2019-Jun-29}
-			\caption{Slow cubature with Mat\'ern  kernel}
+			\caption{\alert{Slow cubature} with Mat\'ern  kernel}
 		\end{subfigure}	
 		% \caption{Multivariate normal probability example using 1) Empirical Bayes, 2) GCV, 3) Full Bayes stopping criterion}
 	\end{figure}
@@ -1964,7 +1970,7 @@ MVN example uses Baker, C1sin and C2sin transforms, Bernoulli order $r=2,4$ and 
 
 
 \frame{
-\frametitle{Keister Integral: Lattice}
+\frametitle{Keister Integral: Lattice $d=4, r=2, \text{C1Sin}$}
 \vspace{-5ex}
 \begin{figure}[htp]
 	\linespread{0.7}
@@ -1990,7 +1996,7 @@ MVN example uses Baker, C1sin and C2sin transforms, Bernoulli order $r=2,4$ and 
 
 
 \frame{
-	\frametitle{Keister Integral: Sobol'}
+	\frametitle{Keister Integral: Sobol' $d=4, r=2$}
 	\vspace{-5ex}
 	\begin{figure}[htp]
 		\linespread{0.7}
@@ -2018,7 +2024,7 @@ MVN example uses Baker, C1sin and C2sin transforms, Bernoulli order $r=2,4$ and 
 \subsection{Option pricing}
 
 \frame{
-	\frametitle{Option pricing: Lattice}
+	\frametitle{Option pricing: Lattice $d=12, r=1, \text{Baker}$}
 	\vspace{-5ex}
 	\begin{figure}[htp]
 		\linespread{0.7}
@@ -2045,7 +2051,7 @@ MVN example uses Baker, C1sin and C2sin transforms, Bernoulli order $r=2,4$ and 
 
 
 \frame{
-	\frametitle{Option pricing: Sobol'}
+	\frametitle{Option pricing: Sobol' $d=12, r=1$}
 	\vspace{-5ex}
 	\begin{figure}[htp]
 		\linespread{0.7}
@@ -2128,10 +2134,11 @@ MVN example uses Baker, C1sin and C2sin transforms, Bernoulli order $r=2,4$ and 
 % \item Use gradient descent to find optimal $\vtheta$
 \item Diagnostics for Gaussian process assumption
 \item Broaden the choice of numerical examples
-\item Better handling of \alert{conditioning} problem and numerical  errors
+\item Better handling of \alert{conditioning} problem and numerical errors
 \\
 % \item Sobol pointset and Fast Walsh Transform with smooth kernels (More details next) 
-\item Higher order nets and Walsh kernels could be used to achieve higher order or accuracy.
+\item Higher order digital nets and Walsh kernels could be used to achieve higher order of accuracy.
+\item Steepest descent for paramter search.
 \end{itemize}
 \end{minipage}
 }
@@ -2147,12 +2154,12 @@ MVN example uses Baker, C1sin and C2sin transforms, Bernoulli order $r=2,4$ and 
 \begin{itemize}
 \item \alert{Control variates} : 
 We would like to approximate a function of the form
-$ (f - \beta_1 g_1 -, ... , - \beta_p g_p) $, then
+$ (f - \beta_1 g_1 -, ... , - \beta_p g_p) $, assuming
 \begin{align*}
-f = \mathcal{N} \left( \beta_0 + \beta_1 g_1 + , ... , + \beta_p g_p, s^2 \mCtheta  \right)
+f = \mathcal{GP} \left( \beta_0 + \beta_1 g_1 + , ... , + \beta_p g_p, s^2 \mCtheta  \right)
 \end{align*}
 \item \alert{Function approximation} : 
-consider approximating a function of the form
+consider approximating a function $f$, given
 \begin{align*}
 \int_{[0,1]^d} \underbrace{ f(\vphi(\vt)) . \abs{\frac{\partial \vphi}{\partial \vt}} }_{g(\vt)} \dvt,&
 \quad 
