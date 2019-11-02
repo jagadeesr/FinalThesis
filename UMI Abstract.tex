@@ -1,0 +1,82 @@
+\documentclass[12pt]{report}
+
+\usepackage{setspace}
+\doublespacing
+
+\usepackage[letterpaper, lmargin=1.5in, rmargin=1in, tmargin=2in, bmargin=1in]{geometry}
+%\usepackage[letterpaper, total={6in, 8in}]{geometry}
+
+
+%opening
+\title{
+		Fast Automatic Bayesian Cubature Using 
+		Matching Kernels and Designs
+	}
+\author{Jagadeeswaran Rathinavel}
+
+\tolerance=1
+\emergencystretch=\maxdimen
+\hyphenpenalty=10000
+\hbadness=10000
+
+\begin{document}
+	\pagestyle{empty}
+\noindent
+\textbf{FAST AUTOMATIC BAYESIAN CUBATURE USING MATCHING KERNELS AND DESIGNS}
+% \maketitle
+
+\noindent
+Jagadeeswaran Rathinavel., Ph.D.
+
+% \vspace{+2ex}
+\noindent
+Illinois Institute of Technology, December 2019
+
+\noindent
+Adviser: Prof. Fred J Hickernell 
+\\ % 4 double spaces
+
+%\begin{abstract}
+	
+	Automatic cubatures approximate multidimensional integrals to user-specified error tolerances. 
+	In many real-world integration problems, the analytical solution is either unavailable or difficult to compute.
+	To overcome this, one can use numerical algorithms that approximately estimate the value of the integral. 
+	
+	For high dimensional integrals, quasi-Monte Carlo (QMC) methods are very popular.
+	QMC methods are equal-weight quadrature rules where the quadrature points are chosen deterministically, unlike Monte Carlo (MC) methods where the points are chosen randomly.
+	% \JRNote{add ref} 
+	The families of integration lattice nodes and digital nets are the most popular quadrature points used. 
+	These methods consider the integrand to be a deterministic function.
+	% Section 2.2 describes digital sequences and rank-1 lattice node sequences, two of the most common points used in quasi-Monte Carlo.
+	An alternate approach, called Bayesian cubature, postulates the integrand to be an instance of a Gaussian stochastic process.  
+	% For high dimensional problems, it makes sense to fix the sampling density but determine the sample size, $n$, automatically.
+	
+	For high dimensional problems, it is difficult to adaptively change the sampling pattern. But one can automatically determine the sample size, $n$, given a fixed and reasonable sampling pattern. We take this approach using a Bayesian perspective.
+	We assume a Gaussian process parameterized by a constant mean and a covariance function defined by a scale parameter and a function specifying how the integrand values at two different points in the domain are related.
+	These parameters are estimated from integrand values or are given non-informative priors. This leads to a credible interval for the integral.  The sample size, $n$, is chosen to make the credible interval for the Bayesian posterior error no greater than the desired error tolerance. 
+	
+	However, the process just outlined typically requires vector-matrix operations  with a computational cost of $O(n^3)$. Our innovation is to pair low discrepancy nodes with matching kernels, which lowers the computational cost to $O(n \log n)$. 
+	We begin the thesis by introducing the Bayesian approach to calculate the posterior cubature error and define our automatic Bayesian cubature. Although much of this material is known, it is used to develop the necessary foundations.
+	The contributions of this thesis are as follows:
+	\begin{itemize}
+		\item The fast Bayesian transform is introduced. This generalizes the techniques that speedup Bayesian cubature when the kernel matches low discrepancy nodes.
+		\item The fast Bayesian transform approach is demonstrated using two methods: 1) rank-1 lattice sequences and shift-invariant kernels, and 2) Sobol' sequences and Walsh kernels.
+		These two methods are implemented as fast automatic Bayesian cubature algorithms in the Guaranteed Automatic Integration Library (GAIL).
+		\item We develop additional numerical implementation techniques: 
+		1) rewriting the covariance kernel to avoid cancellation error, 
+		2) gradient descent for hyperparameter search, and
+		3) non-integer kernel order selection.
+	\end{itemize}
+	The thesis concludes by applying our fast automatic Bayesian cubature algorithms to three sample integration problems. We show that our algorithms are faster than the basic Bayesian cubature and that they provide answers within the error tolerance in most cases. %A significant portion of this thesis comprising an automatic Bayesian cubature algorithm using lattice sequences and shift-invariant kernels was published and discussed in \cite{JagHic09a, HicJag09a}.
+	
+	The Bayesian cubatures that we develop are guaranteed for integrands belonging to cone of functions which reside in the middle of the sample space. The concept of a cone of functions is explained in the thesis.
+	
+	%\keywords{Bayesian cubature \and Probabilistic numeric methods \and GAIL}
+	% \PACS{PACS code1 \and PACS code2 \and more}
+	% \subclass{MSC code1 \and MSC code2 \and more}
+%\end{abstract}
+
+
+%\section{}
+
+\end{document}
