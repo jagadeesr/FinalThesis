@@ -544,6 +544,31 @@ Page\par}}
 
 
 
+
+% LIST OF Algorithms
+%
+% The \listofalgorithms command is defined to create list of Algorithms page.
+% Also a command called \moreloa is defined to create second, third, etc.,
+% pages for list of Algorithms, if it is necessary. 
+% Single-space list of Algorithms is added to the table of contents.
+
+\def\listofalgorithmss{
+ \begin{center}
+  \tsp{LIST OF ALGORITHMS\\}
+ \end{center}
+ \ssp
+ \noindent Algorithm \hfill Page\@starttoc{loa}
+ \addcontentsline{toc}{chapter}{\noindent LIST OF ALGORITHMS}
+ }
+
+\def\moreloa{\addtocontents{loa}{\newpage\protect\noindent Algorithm\hfill
+Page\par}}
+
+
+
+
+
+
 % LIST OF TABLES
 %
 % The \listoftables command is defined to create list of tables page.

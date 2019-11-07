@@ -32,10 +32,14 @@
 % etc.
 %
 % Jag's 
+% \usepackage{hyperref}
+\usepackage{algorithmicx}
+\usepackage{algorithm}
+
 \usepackage{tabu}
 \usepackage{cancel}
-\usepackage{algorithm}
-\usepackage{algorithmicx}
+
+
 \usepackage{algpseudocode}
 %\usepackage[caption=false]{subfig}
 %\usepackage{subcaption}
@@ -259,6 +263,13 @@
 	\array{*\c@MaxMatrixCols c}}
 \makeatother
 
+%\listofalgorithms
+%\addcontentsline{toc}{section}{List of algorithms}
+
+
+
+
+
 \allowdisplaybreaks[4]
 \begin{document}
 \setlength\abovedisplayskip{0pt}
@@ -333,8 +344,13 @@
 
 \clearpage
 
+% \listofalgorithmss
+% \clearpage
+
 %List of Figures
 \listoffigures
+
+
 
 \clearpage
 
@@ -362,19 +378,19 @@ These parameters are estimated from integrand values or are given non-informativ
 
 However, the process just outlined typically requires vector-matrix operations  with a computational cost of $O(n^3)$. Our innovation is to pair low discrepancy nodes with matching kernels, which lowers the computational cost to $O(n \log n)$. 
 We begin the thesis by introducing the Bayesian approach to calculate the posterior cubature error and define our automatic Bayesian cubature (Chapter~\ref{sec:BC}). Although much of this material is known, it is used to develop the necessary foundations.
-The contributions of this thesis are as follows:
-\begin{itemize}
-	\item The fast Bayesian transform is introduced. This generalizes the techniques that speedup Bayesian cubature when the kernel matches low discrepancy nodes (Chapter~\ref{sec:fast_BC}).
-	\item The fast Bayesian transform approach is demonstrated using two methods: 1) rank-1 lattice sequences and shift-invariant kernels (Chapter~\ref{sec:shift_invariant_kernel}), and 2) Sobol' sequences and Walsh kernels (Chapter~\ref{sec:sobol_walsh}).
+Some of the major contributions of this thesis include the following:
+%\begin{itemize}
+	1) The fast Bayesian transform is introduced. This generalizes the techniques that speedup Bayesian cubature when the kernel matches low discrepancy nodes.
+	2) The fast Bayesian transform approach is demonstrated using two methods: a) rank-1 lattice sequences and shift-invariant kernels, and b) Sobol' sequences and Walsh kernels.
 	These two methods are implemented as fast automatic Bayesian cubature algorithms in the Guaranteed Automatic Integration Library (GAIL).
-	\item We develop additional numerical implementation techniques (Chapter~\ref{sec:NumImpl}): 
-	1) rewriting the covariance kernel to avoid cancellation error, 
-	2) gradient descent for hyperparameter search, and
-	3) non-integer kernel order selection.
-\end{itemize}
-The thesis concludes by applying our fast automatic Bayesian cubature algorithms to three sample integration problems (Chapter~\ref{sec:NumExp}). We show that our algorithms are faster than the basic Bayesian cubature and that they provide answers within the error tolerance in most cases. A significant portion of this thesis comprising an automatic Bayesian cubature algorithm using lattice sequences and shift-invariant kernels was published and discussed in \cite{JagHic09a, HicJag09a}.
+	3) We develop additional numerical implementation techniques: 
+	a) rewriting the covariance kernel to avoid cancellation error, 
+	b) gradient descent for hyperparameter search, and
+	c) non-integer kernel order selection.
+%\end{itemize}
+The thesis concludes by applying our fast automatic Bayesian cubature algorithms to three sample integration problems. We show that our algorithms are faster than the basic Bayesian cubature and that they provide answers within the error tolerance in most cases. A significant portion of this thesis comprising an automatic Bayesian cubature algorithm using lattice sequences and shift-invariant kernels was published and discussed in \cite{JagHic09a, HicJag09a}.
 
-The Bayesian cubatures that we develop are guaranteed for integrands belonging to cone of functions which reside in the middle of the sample space. The concept of a cone of functions is explained in \secref{sec:cone_of_functions}.
+The Bayesian cubatures that we develop are guaranteed for integrands belonging to cone of functions which reside in the middle of the sample space. The concept of a cone of functions is also explained briefly. % in \secref{sec:cone_of_functions}.
 
 %\keywords{Bayesian cubature \and Probabilistic numeric methods \and GAIL}
 % \PACS{PACS code1 \and PACS code2 \and more}
@@ -2120,7 +2136,7 @@ An example of $64$ nodes is given in Figure~\ref{latticefig}.  The even coverage
 \begin{figure}[htp]
 	\centering
 	\includegraphics[width=0.8\linewidth]{ShiftedLatticePoints}
-	\caption{Example of a shifted integration lattice node set  in $d=2$ \label{latticefig} }
+	\caption{Example of a shifted integration lattice node set  in $d=2$. This plot can be reproduced using \code{PlotPoints.m}. \label{latticefig} }
 \end{figure}
 
 \Section{Shift Invariant Kernels}\label{sec:shift_invar_kern}
@@ -2176,7 +2192,7 @@ Plots of $C(\cdot, 0.3)$ are given in \figref{fig:fourierkernel-dim1} for $d=1$ 
 \begin{figure}
 	\centering  % , decodearray={0.2989, 0.5870,  0.1140}
 	\includegraphics[width=0.9\linewidth]{"figures/fourier_kernel_dim_1"}
-	\caption[Fourier kernel]{Shift invariant kernel in $d=1$ shifted by 0.3 to show the discontinuity}
+	\caption[Fourier kernel]{Shift invariant kernel in $d=1$ shifted by 0.3 to show the discontinuity. This plot can be reproduced using \code{plot\_fourier\_kernel.m}}
 	\label{fig:fourierkernel-dim1}
 \end{figure}
 Lattice cubature rules are known to have convergence rates that depend on the smoothness of the integrands, but that are rather independent of the choice of the integration lattice \cite{DicEtal14a}.  Thus, we expect integration lattice node sets to perform well regardless of the smoothness of the covariance kernel.  The bigger concern is whether the derivatives of the integrand are as smooth as the covariance kernel implies.  This topic is touched upon again in Section~\ref{sec:period_var_tx}.
@@ -2879,7 +2895,7 @@ An example of $64$ Sobol' nets in $d=2$ is given in \figref{fig:sobol-fig}.  The
 	\label{fig:sobol-fig}
 	\centering
 	\includegraphics[width=0.8\linewidth]{SSobolPoints}
-	\caption{Example of a scrambled Sobol' node set  in $d=2$ \label{sobolfig} }
+	\caption{Example of a scrambled Sobol' node set  in $d=2$.  This plot can be reproduced using \code{PlotPoints.m}. \label{sobolfig} }
 \end{figure}
 
 
@@ -3771,7 +3787,7 @@ This could be due to the periodization transformed integrand, $f_\textup{GenzP}$
 \Subsection{Using \code{cubBayesNet\_g}}
 Here we use $ f_{\textup{Genz}}$ \eqref{eqn:fGenzdef} without any periodization, and chose $d=3$ and $r=1$. The simulation results for this example integrand are summarized in Figures \ref{fig:Sobol-mvn-guaranteed-MLE}, \ref{fig:Sobol-mvn-guaranteed-FB}, and \ref{fig:Sobol-mvn-guaranteed-GCV}.  In all cases, {\code{cubBayesNet\_g} returns an approximation within the prescribed error tolerance. We used the same setting as before with generic slow Bayesian cubature in \secref{MVN_example} for comparision. For error threshold $\varepsilon=10^{-5}$ with empirical stopping criterion, our fast algorithm takes about 2 seconds as shown in \figref{fig:mvn-guaranteed-MLE} whereas the basic algorithm takes 30 seconds as shown in \figref{fig:MVN_Metern_d2b2}. 
 {\code{cubBayesNet\_g} uses fast Walsh transform which is slower in MATLAB due to the way it was implemented. This is reason it takes more longer the {\code{cubBayesLattice\_g}. 
-But comparing the number of samples, $n$, used for integration provides more insight which directly relates to the alogrithm's computational cost. The {\code{cubBayesLattice\_g} used $n=16384$ samples whereas {\code{cubBayesNet\_g} used $n=32768$ samples even with $r=1$ order kernel.
+But comparing the number of samples, $n$, used for integration provides more insight which directly relates to alogrithm's computational cost. The {\code{cubBayesLattice\_g} used $n=16384$ samples whereas {\code{cubBayesNet\_g} used $n=32768$ samples even with $r=1$ order kernel.
 
 Amongst the three stopping criteria, GCV achieved the results faster than others but it is less conservative. 
 One can also observe from the figures that the credible intervals are narrower than in \figref{fig:mvn-guaranteed-MLE}.
@@ -4124,7 +4140,7 @@ where \code{fresnels} is the Fresnel Sine integral,
 	$
 \end{table}
 
-The results are summarized from the two different approaches in Table \ref{tabMultiTheta}. The first method, called \code{OneTheta}, uses common shape parameter across all the dimensions, whereas the second method, called \code{MultiTheta}, allows the shape parameters to vary across the dimensions. In the \code{MultiTheta} method, the shape parameter search is multivariate, so the magnitude of shape parameter depends on the integrand's magnitude in each dimensions. We have chosen an integrand particularly to demonstrate this aspect \eqref{eqn:fresnels} where we used $d=3$ and the constants $\bm{\upsilon}= (10^{-4}, 1, 10^4)$. The choice of magnitude variations in constants $\bm{\upsilon}$ allows to make the integrand vary significantly across dimensions.
+The results are summarized from the two different approaches in Table \ref{tabMultiTheta}. The first method, called \code{OneTheta}, uses common shape parameter across all the dimensions, whereas the second method, called \code{MultiTheta}, allows the shape parameters to vary across the dimensions. In the \code{MultiTheta} method, the shape parameter search is multivariate, so the magnitude of shape parameter depends on the integrand's magnitude in each dimension. We have chosen an integrand particularly to demonstrate this aspect \eqref{eqn:fresnels} where we used $d=3$ and the constants $\bm{\upsilon}= (10^{-4}, 1, 10^4)$. The choice of magnitude variations in constants $\bm{\upsilon}$ allows to make the integrand varies significantly across dimensions.
 
 We ran this test for 1000 times. In comparison, both the methods successfully computed the integral all the time but \code{MultiTheta} was slightly faster. The \code{MultiTheta} method used less number of samples but the integration error was bigger than the \code{OneTheta}. For the same number of samples, the \code{OneTheta} method will be much faster since the shape parameter search is faster. The \code{MultiTheta} method is useful in scenarios where we want to use smaller size, $n$, and the integrand varies significantly across dimensions.
 
@@ -4525,7 +4541,7 @@ The kernels's optimal shape parameter searched using steepest descent with kerne
 
 
 \item Parallel Algorithm: 
-For more demanding high performance computing applications, where the precision requirements are high, our algorithms will try to use large number samples leading to longer computation time. One approach to overcome this constraint is to use Parallel computing techniques to speedup the algorithm. Most time consuming parts of our algorithm are shape parameter search and fast Bayesian transform computation. Fast Fourier transform (FFT) and Fast Walsh transform are easily amenable to parallelization. There exist plenty of prior work that can be adapted to work with our algorithms. We use radix-2 FFT. One could use a higher radix FFT to make the computations faster. 
+For more demanding high performance computing applications, where the precision requirements are high, our algorithms will try to use large number samples leading to longer computation time. One approach to overcome this constraint is to use Parallel computing techniques to speed up the algorithm. Most time consuming parts of our algorithm are shape parameter search and fast Bayesian transform computation. Fast Fourier transform (FFT) and Fast Walsh transform are easily amenable to parallelization. There exist plenty of prior work that can be adapted to work with our algorithms. We use radix-2 FFT. One could use a higher radix FFT to make the computations faster. 
 
 Another area of improvement is the parameter search. We explored the steepest descent algorithm but the speedup was not significant. One could explore higher order algorithms such as Newton method,  which could find the minima faster. 
 Fast Bayesian transforms are repeatedly computed in every step of the parameter search if it can be avoided by interpolation or other techniques, this could significantly speedup the algorithm.

@@ -1,4 +1,4 @@
-\documentclass[12pt]{report}
+\documentclass[11pt]{report}
 
 \usepackage{setspace}
 \doublespacing
@@ -58,15 +58,15 @@ Adviser: Prof. Fred J Hickernell
 	However, the process just outlined typically requires vector-matrix operations  with a computational cost of $O(n^3)$. Our innovation is to pair low discrepancy nodes with matching kernels, which lowers the computational cost to $O(n \log n)$. 
 	We begin the thesis by introducing the Bayesian approach to calculate the posterior cubature error and define our automatic Bayesian cubature. Although much of this material is known, it is used to develop the necessary foundations.
 	The contributions of this thesis are as follows:
-	\begin{itemize}
-		\item The fast Bayesian transform is introduced. This generalizes the techniques that speedup Bayesian cubature when the kernel matches low discrepancy nodes.
-		\item The fast Bayesian transform approach is demonstrated using two methods: 1) rank-1 lattice sequences and shift-invariant kernels, and 2) Sobol' sequences and Walsh kernels.
-		These two methods are implemented as fast automatic Bayesian cubature algorithms in the Guaranteed Automatic Integration Library (GAIL).
-		\item We develop additional numerical implementation techniques: 
-		1) rewriting the covariance kernel to avoid cancellation error, 
-		2) gradient descent for hyperparameter search, and
-		3) non-integer kernel order selection.
-	\end{itemize}
+%\begin{itemize}
+1) The fast Bayesian transform is introduced. This generalizes the techniques that speedup Bayesian cubature when the kernel matches low discrepancy nodes.
+2) The fast Bayesian transform approach is demonstrated using two methods: a) rank-1 lattice sequences and shift-invariant kernels, and b) Sobol' sequences and Walsh kernels.
+These two methods are implemented as fast automatic Bayesian cubature algorithms in the Guaranteed Automatic Integration Library (GAIL).
+3) We develop additional numerical implementation techniques: 
+a) rewriting the covariance kernel to avoid cancellation error, 
+b) gradient descent for hyperparameter search, and
+c) non-integer kernel order selection.
+%\end{itemize}
 	The thesis concludes by applying our fast automatic Bayesian cubature algorithms to three sample integration problems. We show that our algorithms are faster than the basic Bayesian cubature and that they provide answers within the error tolerance in most cases. %A significant portion of this thesis comprising an automatic Bayesian cubature algorithm using lattice sequences and shift-invariant kernels was published and discussed in \cite{JagHic09a, HicJag09a}.
 	
 	The Bayesian cubatures that we develop are guaranteed for integrands belonging to cone of functions which reside in the middle of the sample space. The concept of a cone of functions is explained in the thesis.
